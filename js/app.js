@@ -33,7 +33,10 @@
     close: "M6 6l12 12 M18 6L6 18",
     grip: "M9 5h.01 M9 12h.01 M9 19h.01 M15 5h.01 M15 12h.01 M15 19h.01",
     cal: "M4 5h16v15H4z M4 9h16 M8 3v4 M16 3v4",
+    bell: "M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9 M13.7 21a2 2 0 01-3.4 0",
+    search: "M10.5 3a7.5 7.5 0 100 15 7.5 7.5 0 000-15 M21 21l-5.3-5.3",
     star: "M12 3l2.6 5.6 6 .8-4.4 4.2 1.1 6L12 17l-5.3 2.8 1.1-6L3.4 9.4l6-.8z",
+    upload: "M12 15V4 M8 8l4-4 4 4 M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3",
   };
   function gLogo(){return '<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>';}
   function LS(){try{return window.localStorage;}catch(e){return null;}}
@@ -42,20 +45,20 @@
   function hasSession(){var s=LS();if(!s)return false;try{return s.getItem("clarity_session")==="1";}catch(e){return false;}}
   function fullReset(){var s=LS();if(s){try{s.removeItem("clarity_profile");s.removeItem("clarity_session");s.removeItem("clarity_biz");}catch(e){}}}
   // ---- Multi-business engine ----
-  var PBFIELDS=["p","name","sentence","done","twhy","queue","pub","qtext","qedit","posts","camp","sel","cols","cardCol","threads","tweak","insSeen","insSaved","insDismiss","extra"];
+  var PBFIELDS=["p","name","sentence","done","twhy","queue","pub","qtext","qedit","posts","camp","sel","cols","cardCol","threads","tweak","insSeen","insSaved","insDismiss","extra","createdAt","hist"];
   function newBizId(){return "b"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);}
-  function makeBiz(){return {id:newBizId(),p:{ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""},name:"",sentence:"",done:{},twhy:{},queue:[],pub:{},qtext:{},qedit:{},posts:{},camp:{status:"off"},sel:{},cols:[],cardCol:{},threads:{},tweak:{},insSeen:false,insSaved:{},insDismiss:{},extra:[]};}
+  function makeBiz(){return {id:newBizId(),p:{ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]},name:"",sentence:"",done:{},twhy:{},queue:[],pub:{},qtext:{},qedit:{},posts:{},camp:{status:"off"},sel:{},cols:[],cardCol:{},threads:{},tweak:{},insSeen:false,insSaved:{},insDismiss:{},extra:[],createdAt:"",hist:{}};}
   function bizById(id){for(var i=0;i<S.biz.length;i++)if(S.biz[i].id===id)return S.biz[i];return null;}
   function bizByIdIn(arr,id){for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return null;}
   function snapshot(){if(S.cur==null)return;var r=bizById(S.cur);if(!r)return;PBFIELDS.forEach(function(f){r[f]=S[f];});}
   function loadBiz(id){snapshot();var r=bizById(id);if(!r)return;PBFIELDS.forEach(function(f){S[f]=r[f];});normBiz();S.cur=id;S.tab="today";}
-  function normBiz(){["done","twhy","pub","qtext","qedit","posts","sel","cardCol","threads","tweak","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};}
-  function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.posts={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
+  function normBiz(){["done","twhy","pub","qtext","qedit","posts","sel","cardCol","threads","tweak","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};}
+  function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.posts={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.createdAt="";S.hist={};S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
   function deriveName(sent,ind){var t=(sent||"").trim();if(t){t=t.replace(/^(i\s+(?:run|own|have|am|bake|make|coach|sell|do|offer|build|teach|help)\s+(?:a|an|my|the)?\s*)/i,"").replace(/\s+(?:and|but|so|because|that|which)\b.*$/i,"").replace(/,.*$/,"").replace(/[.!?].*$/,"").trim();t=t.split(/\s+/).slice(0,4).join(" ").trim();if(t)return t.charAt(0).toUpperCase()+t.slice(1);}return (typeof INDS!=="undefined"&&INDS[ind])||"My business";}
   function initials(nm){nm=(nm||"").trim();if(!nm)return "YB";var w=nm.split(/\s+/);return ((w[0][0]||"")+(w[1]?w[1][0]:(w[0][1]||""))).toUpperCase();}
   function saveAll(){snapshot();var s=LS();if(!s)return;try{s.setItem("clarity_biz",JSON.stringify({list:S.biz,cur:S.cur,email:S.email||""}));}catch(e){}}
   function loadBizData(){var s=LS();if(!s)return null;try{return JSON.parse(s.getItem("clarity_biz"));}catch(e){return null;}}
-  function finalizeBiz(){var b=makeBiz();PBFIELDS.forEach(function(f){b[f]=S[f];});if(!b.name)b.name=deriveName(S.sentence,S.p.ind);b.insSeen=false;S.biz.push(b);S.cur=b.id;S.name=b.name;S.insSeen=false;saveAll();setSession(true);S.screen="app";S.tab="insights";render();toast("Now advising "+b.name);}
+  function finalizeBiz(){var b=makeBiz();PBFIELDS.forEach(function(f){b[f]=S[f];});if(!b.name)b.name=deriveName(S.sentence,S.p.ind);b.insSeen=false;b.createdAt=todayISO();S.createdAt=b.createdAt;b.hist={};S.hist={};S.biz.push(b);S.cur=b.id;S.name=b.name;S.insSeen=false;saveAll();setSession(true);S.screen="insights";S.tab="today";render();toast("Now advising "+b.name);}
   function bootstrap(){var data=loadBizData();if(data&&data.list&&data.list.length){S.biz=data.list;S.email=data.email||"";var cur=data.cur;if(!bizByIdIn(S.biz,cur))cur=S.biz[0].id;loadBiz(cur);S.screen=hasSession()?"app":"login";S.tab="today";return;}var prof=loadProfile();if(prof&&prof.p){var b=makeBiz();b.p=prof.p;b.sentence=prof.sentence||"";b.name=prof.name||deriveName(prof.sentence,prof.p.ind);S.biz=[b];S.email=prof.email||"";loadBiz(b.id);S.screen=hasSession()?"app":"login";S.tab="today";return;}S.screen="welcome";}
   function ico(n, cls) {
     return (
@@ -284,7 +287,7 @@
     website: "",
     useWeb: false,
     name: "",
-    p: { ind: "other", goal: "customers", aud: "any", tone: "warm", type: "", goalSel: "", channels: [], budget: "", loc: "" },
+    p: { ind: "other", goal: "customers", aud: "any", tone: "warm", type: "", goalSel: "", goals: [], channels: [], budget: "", loc: "", locs: [] },
     why: false,
     helping: false,
     helpOpen: false,
@@ -309,13 +312,28 @@
     step: 1,
     cols: [],
     cardCol: {},
+    createdAt: "",
+    hist: {},
     day: "today",
+    dayTo: "",
+    rangeAnchor: "",
     cal: false,
     calMonth: null,
     threads: {},
     tweak: {},
     wtext: {},
     whyOpen: null,
+    locInput: "",
+    locOpen: false,
+    notifOpen: false,
+    acctOpen: false,
+    resultView: "list",
+    resultPost: null,
+    rq: "",
+    rStatus: "all",
+    rPlat: "all",
+    rType: "all",
+    rDate: "all",
     insSeen: false,
     insSaved: {},
     insDismiss: {},
@@ -353,9 +371,14 @@
     S.p.goal = GT_GOAL[S.p.goalSel] || S.p.goal || "customers";
     S.p.aud = mapAud(t) || AUD_DEF[S.p.ind] || "any";
     S.p.tone = TONE_DEF[S.p.ind] || "warm";
-    if (!S.p.loc) {
+    if (!(S.p.locs && S.p.locs.length)) {
       var lc = parseLoc(t);
-      if (lc) S.p.loc = lc;
+      if (lc) {
+        S.p.locs = [lc];
+        S.p.loc = lc;
+      }
+    } else {
+      S.p.loc = S.p.locs[0];
     }
   }
   function parseLoc(t) {
@@ -387,16 +410,69 @@
       return "";
     }
   }
+  function draftSentence() {
+    var ind = BT_IND[S.p.type] || "other";
+    return {
+      food: "Local people who care about quality and story over the cheapest option — I sell them freshly made food and drink they can feel good about.",
+      shop: "Online shoppers who research and read reviews before they buy — I sell them a well-made product with a story and proof they can trust.",
+      services: "Local clients who want someone they can trust, not the cheapest quote — I sell them a service that takes a real problem off their plate.",
+      saas: "Busy teams drowning in tools and short on time — I sell them software that visibly saves them hours in the first week.",
+      creator: "People who follow me for free value and want a specific result — I sell them a course or product that gets them there faster.",
+      other: "The customers who feel the problem I solve most sharply — I sell them the thing that makes that problem go away.",
+    }[ind];
+  }
+  function genName() {
+    var ind = BT_IND[S.p.type] || "other";
+    var pools = {
+      food: ["Hearth & Crumb", "The Daily Loaf", "Copper Kitchen", "Maple & Rye"],
+      shop: ["Northlight Goods", "Everyday & Co", "Willow & Pine", "The Make Shop"],
+      services: ["Clearpath", "Trueline", "Anchor & Co", "Bright Path"],
+      saas: ["Flowstate", "Clarity Labs", "Northstack", "Tidewave"],
+      creator: ["The Signal", "Craft & Co", "Bold Notes", "Framewise"],
+      other: ["Northbound", "Everline", "Bright & Co", "Kindred"],
+    };
+    var pool = pools[ind] || pools.other;
+    var seed = ((S.sentence || "").length + (S.p.loc || "").length + (S.name || "").length + 1) % pool.length;
+    return pool[seed];
+  }
+  var LOC_OPTS = ["United Kingdom", "United States", "Canada", "Australia", "Ireland", "London", "Manchester", "Leeds", "Birmingham", "New York", "Dubai", "Online / nationwide"];
+  function locField() {
+    var chips = (S.p.locs || [])
+      .map(function (l) {
+        return '<span class="locchip">' + esc(l) + '<button class="locx" data-a="locdel" data-k="' + esc(l) + '" aria-label="Remove">' + ico("close") + "</button></span>";
+      })
+      .join("");
+    var remaining = LOC_OPTS.filter(function (o) { return (S.p.locs || []).indexOf(o) < 0; });
+    var menu = S.locOpen
+      ? '<div class="loc-ov" data-a="locclose"></div><div class="locmenu">' +
+        (remaining.length
+          ? remaining.map(function (o) { return '<button class="locopt" data-a="locpick" data-k="' + esc(o) + '">' + esc(o) + "</button>"; }).join("")
+          : '<div class="locmenu-empty">Type your own above and hit add</div>') +
+        "</div>"
+      : "";
+    return (
+      (S.p.locs && S.p.locs.length ? '<div class="locchips">' + chips + "</div>" : "") +
+      '<div class="locwrap' + (S.locOpen ? " open" : "") + '"><div class="locadd"><input class="webinp wide" data-locadd placeholder="Add a city or country…" autocomplete="off" value="' + esc(S.locInput || "") +
+      '"><button class="loc-caret' + (S.locOpen ? " open" : "") + '" data-a="locdrop" aria-label="Suggestions">' + ico("chev") +
+      '</button><button class="btn sm loc-addbtn" data-a="locadd" aria-label="Add">' + ico("plus") + "</button></div>" + menu + "</div>"
+    );
+  }
+  function locLabel() {
+    var l = S.p.locs || [];
+    return l.length ? l.join(", ") : S.p.loc || "";
+  }
   function primaryChannel() {
     var ch = S.p.channels || [];
     for (var i = 0; i < ch.length; i++) if (POSTABLE_CH[ch[i]]) return ch[i];
     return arch().channels[0];
   }
   function prefillLoc() {
-    if (S.p.loc) return;
+    if (!S.p.locs) S.p.locs = [];
+    if (S.p.locs.length) return;
     var fromText = parseLoc(S.useWeb ? S.website : S.sentence);
     var guess = fromText || detectLoc();
     if (guess) {
+      S.p.locs = [guess];
       S.p.loc = guess;
       S.p.locAuto = true;
     }
@@ -507,78 +583,77 @@
   }
   var STEPS = [
     { q: "What kind of business are you growing?", sub: "Pick the closest — you can refine it later." },
-    { q: "What do you want Clarity to help you with first?", sub: "Choose one. This shapes your first moves." },
-    { q: "Who is your ideal customer, and what do you sell them?", sub: "A line or two is plenty. This is where Clara learns the most." },
+    { q: "What do you want Clarity to help you with first?", sub: "Pick all that apply — Clara focuses on these." },
+    { q: "Who is your ideal customer, and what do you sell them?", sub: "A line or two is plenty. Type it, or let Clara draft one you can tweak." },
+    { q: "What do you call your business?", sub: "Your business name — type it, or let Clara suggest one." },
     { q: "Where are you currently marketing your business?", sub: "Select all that apply." },
     { q: "What monthly marketing budget should Clarity plan around?", sub: "Choose one. Clara plans within it." },
     { q: "Where is your business based?", sub: "City or country. This helps Clara surface local suggestions, timing and market signals." },
   ];
   function vSteps() {
     var n = S.step,
+      total = STEPS.length,
       meta = STEPS[n - 1],
       inner = "";
     if (n === 1) {
       for (var k1 in BT) inner += optRow("type", k1, BT[k1]);
       inner = '<div class="optlist">' + inner + "</div>";
     } else if (n === 2) {
-      for (var k2 in GT) inner += optRow("goalSel", k2, GT[k2]);
-      inner = '<div class="optlist">' + inner + "</div>";
+      var gc = "";
+      for (var k2 in GT) {
+        var on2 = (S.p.goals || []).indexOf(k2) >= 0;
+        gc +=
+          '<button class="mchip' + (on2 ? " on" : "") + '" data-a="goalpick" data-k="' + k2 + '">' +
+          (on2 ? ico("check") : "") + GT[k2] + "</button>";
+      }
+      inner = '<div class="mchips">' + gc + "</div>";
     } else if (n === 3) {
       inner =
         '<textarea class="ta" data-model="sentence" placeholder="e.g. Marketing managers at mid-sized companies who need better insight into what their customers want, which messages will resonate, and where to focus their next campaign.">' +
         esc(S.sentence) +
-        "</textarea>";
+        "</textarea><button class=\"genbtn\" data-a=\"gensentence\">" +
+        ico("spark") + " Draft this for me</button>";
     } else if (n === 4) {
+      inner =
+        '<input class="webinp wide" data-model="name" placeholder="e.g. Hearth & Crumb" value="' +
+        esc(S.name || "") +
+        '"><button class="genbtn" data-a="genname">' + ico("spark") + " Suggest a name for me</button>";
+    } else if (n === 5) {
       var chans = "";
       CHANS.forEach(function (c) {
         var on = (S.p.channels || []).indexOf(c) >= 0;
         chans +=
-          '<button class="mchip' +
-          (on ? " on" : "") +
-          '" data-a="chan" data-k="' +
-          esc(c) +
-          '">' +
-          (on ? ico("check") : "") +
-          c +
-          "</button>";
+          '<button class="mchip' + (on ? " on" : "") + '" data-a="chan" data-k="' + esc(c) + '">' +
+          (on ? ico("check") : "") + c + "</button>";
       });
       inner = '<div class="mchips">' + chans + "</div>";
-    } else if (n === 5) {
-      for (var k5 in BUD)
+    } else if (n === 6) {
+      for (var k6 in BUD)
         inner +=
-          '<button class="optrow' +
-          (S.p.budget === k5 ? " on" : "") +
-          '" data-a="bud" data-k="' +
-          k5 +
-          '"><span class="opt-l">' +
-          BUD[k5] +
-          '</span><span class="opt-r">' +
-          (S.p.budget === k5 ? ico("check") : "") +
-          "</span></button>";
+          '<button class="optrow' + (S.p.budget === k6 ? " on" : "") + '" data-a="bud" data-k="' + k6 +
+          '"><span class="opt-l">' + BUD[k6] + '</span><span class="opt-r">' + (S.p.budget === k6 ? ico("check") : "") + "</span></button>";
       inner = '<div class="optlist">' + inner + "</div>";
     } else {
       inner =
-        '<input class="webinp wide" data-pmodel="loc" placeholder="e.g. Leeds, UK" value="' +
-        esc(S.p.loc || "") +
-        '">' +
-        (S.p.locAuto && S.p.loc
-          ? '<div class="autohint">' +
-            ico("compass") +
-            " We recognised your location and filled this in — change it if it’s not right.</div>"
+        locField() +
+        (S.p.locAuto && S.p.locs && S.p.locs.length
+          ? '<div class="autohint">' + ico("compass") + " We recognised your location and added it — add more or remove it if it’s not right.</div>"
           : "");
     }
-    var canNext = n === 1 ? !!S.p.type : n === 2 ? !!S.p.goalSel : true;
-    var nextLabel = n === 6 ? "Build my plan" : "Continue";
+    var canNext = n === 1 ? !!S.p.type : n === 2 ? !!(S.p.goals && S.p.goals.length) : true;
+    var nextLabel = n === total ? "Build my plan" : "Continue";
     var back =
       '<button class="lk mut" data-a="sback">' +
       (n === 1 ? "Back" : ico("arrow") + " Back") +
       "</button>";
     return (
       '<div class="center"><div class="cwrap step"><div class="stepbar"><div class="stepbar-i" style="width:' +
-      Math.round((n / 6) * 100) +
+      Math.round((n / total) * 100) +
       '%"></div></div><div class="stepnum">Question ' +
       n +
-      ' of 6</div><div class="clara">' +
+      " of " +
+      total +
+      '</div><div class="clara">' +
       mk(28) +
       '<span class="nm">Clara</span></div><h1 class="q">' +
       meta.q +
@@ -606,9 +681,9 @@
       mk(56).replace('class="mark m"', 'class="mark bigmark"') +
       '<div class="logo">Clarity<span class="d">.</span></div><div class="tag">Your personal advisor to go-to-market. Tell me what you’re building — I’ll do the marketing thinking, you approve the moves.</div><button class="btn" data-a="start">Get started ' +
       ico("arrow") +
-      '</button><div class="hint">Six quick questions — about a minute. No marketing know-how needed.</div></div><div class="wr"><div class="qbubble"><div class="t">' +
+      '</button><div class="hint">A few quick questions — about a minute. No marketing know-how needed.</div></div><div class="wr"><div class="qbubble"><div class="t">' +
       ico("spark") +
-      " Clara</div><p>“Answer six quick questions and I’ll hand you a plan.”</p></div></div></div>" +
+      " Clara</div><p>“Answer a few quick questions and I’ll hand you a plan.”</p></div></div></div>" +
       restart()
     );
   }
@@ -710,6 +785,16 @@
         "</option>";
     return '<select class="sel" data-sel="' + key + '">' + o + "</select>";
   }
+  function goalChipsHTML() {
+    var out = "";
+    for (var g in GT) {
+      var on = (S.p.goals || []).indexOf(g) >= 0;
+      out +=
+        '<button class="mchip' + (on ? " on" : "") + '" data-a="goalpick" data-k="' + g + '">' +
+        (on ? ico("check") : "") + GT[g] + "</button>";
+    }
+    return out;
+  }
   function selP(key, opts, blank) {
     var o = blank
       ? '<option value=""' + (!S.p[key] ? " selected" : "") + ">" + blank + "</option>"
@@ -797,37 +882,34 @@
       pcardMove("flag", "Your first move", mv, 3)
     );
   }
+  function revrow(label, field) {
+    return '<div class="revrow"><label class="revlbl">' + label + "</label>" + field + "</div>";
+  }
   function vPlan() {
-    var a = arch(),
-      nm = nameOf();
-    var left =
-      '<div class="card understand"><div class="ttl">Here’s what I understood</div><div class="fg"><label>What you’re growing</label>' +
-      selP("type", BT) +
-      '</div><div class="fg"><label>What you want first</label>' +
-      selP("goalSel", GT) +
-      '</div><div class="fg"><label>Who you serve</label>' +
-      sel("aud", AUDS) +
-      '</div><div class="fg2"><div class="fg"><label>Based in</label><input class="pin" data-pmodel="loc" value="' +
-      esc(S.p.loc || "") +
-      '" placeholder="City or country"></div><div class="fg"><label>Monthly budget</label>' +
-      selP("budget", BUD, "Not set") +
-      '</div></div><div class="fg"><label>Your voice</label>' +
-      sel("tone", TONES) +
-      '</div><div class="read"><div class="rl">' +
-      ico("spark") +
-      ' Clara’s read</div><p id="insight">' +
-      a.insight +
-      "</p></div></div>";
+    var nm = nameOf();
+    var chanChips = "";
+    CHANS.forEach(function (c) {
+      var on = (S.p.channels || []).indexOf(c) >= 0;
+      chanChips += '<button class="mchip' + (on ? " on" : "") + '" data-a="chan" data-k="' + esc(c) + '">' + (on ? ico("check") : "") + c + "</button>";
+    });
+    var body =
+      '<div class="review">' +
+      revrow("What you’re growing", selP("type", BT)) +
+      revrow("What you want" + ((S.p.goals || []).length > 1 ? " (pick any)" : " first"), '<div class="mchips plan">' + goalChipsHTML() + "</div>") +
+      revrow("Your ideal customer & what you sell", '<textarea class="ta rev" data-model="sentence">' + esc(S.sentence) + "</textarea>") +
+      revrow("Your business name", '<input class="webinp wide" data-model="name" value="' + esc(S.name || "") + '">') +
+      revrow("Where you’re marketing now", '<div class="mchips plan">' + chanChips + "</div>") +
+      revrow("Monthly budget", selP("budget", BUD, "Not set")) +
+      revrow("Location(s)", locField()) +
+      "</div>";
     return (
-      '<div class="planhead"><h2 class="rh">Here’s your plan' +
+      '<div class="center"><div class="cwrap review-wrap"><div class="clara">' +
+      mk(28) +
+      '<span class="nm">Clara</span></div><h1 class="q">Review your answers' +
       (nm === "there" ? "" : ", " + nm) +
-      ' <span class="live"><span class="livedot"></span>updates live</span></h2><p class="rs">Built from what you told me. Change anything on the left and it rewrites itself.</p></div><div class="grow"><div class="planbody">' +
-      left +
-      '<div><div class="plancards" id="cards">' +
-      planCardsHTML() +
-      '</div></div></div></div><div class="planfoot"><span class="fl">Built from one line — nothing to fill in</span><button class="btn sm" data-a="finish">Looks right — finish setup ' +
-      ico("arrow") +
-      "</button></div>" +
+      '</h1><p class="sub">Here’s everything you told me. Edit anything that’s off, then continue — I’ll build from this.</p>' +
+      body +
+      '<div class="stepfoot"><button class="lk mut" data-a="planback">' + ico("arrow") + ' Back</button><button class="btn" data-a="finish">Looks right — continue ' + ico("arrow") + "</button></div></div></div>" +
       restart()
     );
   }
@@ -1007,6 +1089,8 @@
   function campaignPreview(){var c=campaignFor();return {name:c.name,occ:c.occ,dayTotal:c.dayTotal,moves:c.moves.length};}
   function campCount(){return S.camp&&S.camp.status==="active"?S.camp.moves.length:0;}
   function todayTasks(){var b=baseTasks();if(!campCount())return b;var cm=S.camp.moves.map(function(m){return {icon:m.icon,title:m.title,body:m.body,why:m.why,camp:S.camp.name};});return b.concat(cm);}
+  function taskKind(t){if(t&&t.kind)return t.kind;var s=((t&&t.title)||"")+" "+((t&&t.body)||"");s=s.toLowerCase();if(/send it to|reach \d+|add value in|communities or threads|pick one|re-approach|put one testimonial|warm leads/.test(s))return "action";return "content";}
+  function kindOf(i){return taskKind(todayTasks()[i]);}
   var PLATS = { instagram: "Instagram", linkedin: "LinkedIn", tiktok: "TikTok", facebook: "Facebook", youtube: "YouTube", email: "Email", x: "X", twitter: "X", pinterest: "Pinterest" };
   function movePlat(i) {
     if (S.tweak && S.tweak[i] && S.tweak[i].platform) return S.tweak[i].platform;
@@ -1048,9 +1132,9 @@
       })
       .join("");
     var input =
-      '<div class="winput"><input class="wtext" data-wt="' + i + '" placeholder="Ask Clara or push back…" value="' + esc((S.wtext && S.wtext[i]) || "") +
+      '<div class="winput"><input class="wtext" data-wt="' + i + '" placeholder="Ask Clara, or tell her what feels off…" value="' + esc((S.wtext && S.wtext[i]) || "") +
       '"><button class="wsendbtn" data-a="wsend" data-k="' + i + '" aria-label="Send">' + ico("send") + "</button></div>";
-    return '<div class="wl">' + ico("spark") + " Clara’s reasoning · ask or push back</div><div class=\"wmsgs\">" + body + '</div><div class="wchips">' + chips + "</div>" + input;
+    return '<div class="wl">' + ico("spark") + " Here’s my thinking — ask why, or tell me what feels off</div><div class=\"wmsgs\">" + body + '</div><div class="wchips">' + chips + "</div>" + input;
   }
   function tweakNote(i) {
     var tw = S.tweak && S.tweak[i];
@@ -1062,12 +1146,12 @@
     return '<div class="tc-tweak">' + ico("check") + " Refined with Clara — " + bits.join(" · ") + "</div>";
   }
   function tcard(t, i) {
+    var kind = taskKind(t);
     var st = S.done[i]
       ? "done"
       : S.queue && S.queue.indexOf(i) >= 0
         ? "drafting"
         : "open";
-    var open = !!S.twhy[i];
     var whyBtn =
       '<button class="lk mut" data-a="twhy" data-k="' + i + '">' + ico("spark") + " Why this?</button>";
     var actions;
@@ -1075,40 +1159,25 @@
       actions =
         '<span class="doneflag">' +
         ico("checkc") +
-        (S.done[i] === "skip" ? "Skipped" : "Published") +
-        '</span><button class="lk mut" data-a="tundo" data-k="' +
-        i +
-        '">Undo</button>';
+        (S.done[i] === "skip" ? "Skipped" : S.done[i] === "done" ? "Done" : "Published") +
+        '</span><button class="lk mut" data-a="tundo" data-k="' + i + '">Undo</button>';
     else if (st === "drafting")
       actions =
-        '<button class="lk" data-a="tab" data-k="create">' +
-        ico("arrow") +
-        "Finish in Create</button>" +
-        whyBtn;
+        '<button class="lk" data-a="tab" data-k="create">' + ico("arrow") + "Finish in Create</button>" + whyBtn;
+    else if (kind === "action")
+      actions =
+        '<button class="lk" data-a="tdone" data-k="' + i + '">' + ico("check") + "Mark as done</button>" + whyBtn +
+        '<button class="lk mut" data-a="tskip" data-k="' + i + '">Skip</button>';
     else
       actions =
-        '<button class="lk" data-a="tapprove" data-k="' +
-        i +
-        '">' +
-        ico("check") +
-        "Approve</button>" +
-        whyBtn +
-        '<button class="lk mut" data-a="tskip" data-k="' +
-        i +
-        '">Skip</button>';
-    var badge = st === "drafting" ? '<span class="tc-badge">Drafting</span>' : "";
-    var campChip = t.camp
-      ? '<span class="tc-camp">' + ico("mega") + t.camp + "</span>"
-      : "";
+        '<button class="lk" data-a="tapprove" data-k="' + i + '">' + ico("check") + "Approve</button>" + whyBtn +
+        '<button class="lk mut" data-a="tskip" data-k="' + i + '">Skip</button>';
+    var draftBadge = st === "drafting" ? '<span class="tc-badge">Drafting</span>' : "";
+    var kbadge = '<span class="kbadge ' + kind + '">' + (kind === "action" ? "Action" : "Content") + "</span>";
+    var campChip = t.camp ? '<span class="tc-camp">' + ico("mega") + t.camp + "</span>" : "";
     var chk =
-      st === "open"
-        ? '<button class="tcheck' +
-          (S.sel[i] ? " on" : "") +
-          '" data-a="tsel" data-k="' +
-          i +
-          '" aria-label="Select">' +
-          (S.sel[i] ? ico("check") : "") +
-          "</button>"
+      st === "open" && kind === "content"
+        ? '<button class="tcheck' + (S.sel[i] ? " on" : "") + '" data-a="tsel" data-k="' + i + '" aria-label="Select">' + (S.sel[i] ? ico("check") : "") + "</button>"
         : "";
     return (
       '<div class="tcard' +
@@ -1120,8 +1189,9 @@
       ico(t.icon) +
       '</div><div class="tc-tx"><div class="tc-t">' +
       t.title +
+      kbadge +
       campChip +
-      badge +
+      draftBadge +
       '</div><div class="tc-b">' +
       t.body +
       "</div>" +
@@ -1138,7 +1208,7 @@
     return (
       '<div class="modal-ov" data-a="closewhy"></div><div class="whymod"><div class="whymod-h"><div class="whymod-ttl"><div class="tc-ic">' +
       ico("spark") +
-      '</div><div class="wm-title">Fight your case</div></div><button class="brain-x" data-a="closewhy" aria-label="Close">' +
+      '</div><div class="wm-title">Let’s talk it through</div></div><button class="brain-x" data-a="closewhy" aria-label="Close">' +
       ico("close") +
       '</button></div><div class="whymod-body">' +
       thread(i, t) +
@@ -1147,6 +1217,7 @@
     );
   }
   function vToday() {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(S.day)) S.day = todayISO();
     var nm = nameOf() === "there" ? "" : ", " + nameOf();
     var tasks = todayTasks();
     var cc = campCount();
@@ -1211,7 +1282,7 @@
             ".";
     var openIdx = [];
     for (var o = 0; o < baseLen; o++)
-      if (!S.done[o] && !(S.queue && S.queue.indexOf(o) >= 0)) openIdx.push(o);
+      if (!S.done[o] && !(S.queue && S.queue.indexOf(o) >= 0) && kindOf(o) === "content") openIdx.push(o);
     var selCount = openIdx.filter(function (x) {
       return S.sel[x];
     }).length;
@@ -1235,6 +1306,7 @@
       '" data-a="todayview" data-k="board">' +
       ico("board") +
       " Board</button></div>";
+    var isTodaySingle = S.day === todayISO() && !isRange();
     var head =
       '<div class="todayhead"><div class="th-day">' +
       todayDate() +
@@ -1242,18 +1314,24 @@
       nm +
       '</h1><p class="th-s">' +
       sub +
-      "</p>" +
+      '</p><div class="todayctrls">' +
       toggle +
-      "</div>";
+      '<div class="boardtools">' +
+      dateNav() +
+      "</div></div></div>";
     var tnote =
       '<div class="tnote"><div class="tn-h">' +
       ico("spark") +
-      " Why so few?</div><p>Your full strategy runs behind the scenes. I only surface today’s highest-leverage moves, so you’re never overwhelmed — approve, tweak, or skip and I’ll adapt tomorrow.</p><button class=\"lk\" data-a=\"openbrain\">" +
+      " Why so few?</div><p>Your full strategy runs behind the scenes. I only surface today’s highest-leverage moves, so you’re never overwhelmed — approve, tweak, or skip and I’ll adapt tomorrow.</p><button class=\"lk\" data-a=\"tab\" data-k=\"thinking\">" +
       ico("spark") +
       " See Clara’s full thinking</button></div>";
     var body =
-      S.todayView === "board" ? vBoard() : aa + cards + tnote;
-    return head + offer + banner + body;
+      S.todayView === "board"
+        ? vBoard()
+        : isTodaySingle
+          ? aa + cards + tnote
+          : vHistList();
+    return head + (isTodaySingle ? offer + banner : "") + body;
   }
   function defaultCols() {
     return [
@@ -1275,6 +1353,12 @@
   function todayISO() {
     return isoOf(new Date());
   }
+  function recordHist(entry) {
+    var d = todayISO();
+    if (!S.hist) S.hist = {};
+    if (!S.hist[d]) S.hist[d] = [];
+    S.hist[d].push(entry);
+  }
   function parseISO(s) {
     var p = (s || "").split("-");
     return new Date(+p[0], (+p[1] || 1) - 1, +(p[2] || 1));
@@ -1290,42 +1374,57 @@
     if (diff === -1) return "Tomorrow";
     return parseISO(s).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
   }
-  var HISTPOOL = [
-    { icon: "mega", title: "Shared a customer win" },
-    { icon: "zap", title: "Behind-the-scenes reel" },
-    { icon: "send", title: "Weekly email to your list" },
-    { icon: "bulb", title: "Posted your signature tip" },
-    { icon: "flag", title: "Answered a common question" },
-    { icon: "target", title: "Ran a small promotion" },
-    { icon: "user", title: "Replied to your reviews" },
-  ];
   function cardState(i) {
     if (S.done[i] === "skip") return "skip";
     if (S.pub[i]) return S.posts[i] && S.posts[i].live ? "published" : "scheduled";
+    if (S.done[i] === "done") return "done";
     if (S.posts[i]) return "progress";
     return "approve";
   }
+  function startISO() {
+    return S.createdAt || todayISO();
+  }
+  function clampDate(iso) {
+    var lo = startISO(),
+      hi = todayISO();
+    if (iso < lo) return lo;
+    if (iso > hi) return hi;
+    return iso;
+  }
+  function inBounds(iso) {
+    return iso >= startISO() && iso <= todayISO();
+  }
+  function isRange() {
+    return !!(S.dayTo && S.dayTo !== S.day);
+  }
+  function daysInRange() {
+    var lo = clampDate(S.day),
+      hi = clampDate(isRange() ? S.dayTo : S.day);
+    if (lo > hi) { var t = lo; lo = hi; hi = t; }
+    var out = [], d = parseISO(lo), hd = parseISO(hi), guard = 0;
+    while (d.getTime() <= hd.getTime() && guard < 130) { out.push(isoOf(d)); d.setDate(d.getDate() + 1); guard++; }
+    return out;
+  }
   function dayCards(day) {
-    var out = [],
-      t = todayISO();
-    if (day === t) {
-      var b = baseTasks(),
-        baseLen = b.length;
+    var out = [];
+    if (day === todayISO()) {
+      var b = baseTasks(), baseLen = b.length;
       for (var i = 0; i < baseLen; i++) {
         if (cardState(i) === "skip") continue;
         out.push({ key: "today:" + i, i: i, icon: b[i].icon, title: b[i].title, body: b[i].body, state: cardState(i), post: S.posts[i] });
       }
-    } else if (dayDiff(day, t) > 0) {
-      var seed = 0,
-        c;
-      for (c = 0; c < day.length; c++) seed = (seed * 31 + day.charCodeAt(c)) >>> 0;
-      var n = 2 + (seed % 3);
-      for (var k = 0; k < n; k++) {
-        var it = HISTPOOL[(seed + k) % HISTPOOL.length];
-        out.push({ key: day + ":" + k, icon: it.icon, title: it.title, historical: true });
-      }
+    } else {
+      var h = (S.hist && S.hist[day]) || [];
+      h.forEach(function (e, k) {
+        out.push({ key: day + ":" + k, icon: e.icon, title: e.title, historical: true, kind: e.kind, status: e.status });
+      });
     }
     return out;
+  }
+  function rangeCards() {
+    var days = daysInRange(), all = [];
+    days.forEach(function (dt) { all = all.concat(dayCards(dt)); });
+    return all;
   }
   function colExists(id) {
     for (var i = 0; i < S.cols.length; i++) if (S.cols[i].id === id) return true;
@@ -1335,7 +1434,7 @@
     var stored = S.cardCol[c.key];
     if (stored && colExists(stored)) return stored;
     if (c.historical) return S.cols[S.cols.length - 1].id;
-    var idx = { approve: 0, progress: 1, scheduled: 2, published: 3, skip: 3 }[c.state] || 0;
+    var idx = { approve: 0, progress: 1, scheduled: 2, published: 3, done: 3, skip: 3 }[c.state] || 0;
     return S.cols[Math.min(idx, S.cols.length - 1)].id;
   }
   function bcard2(c) {
@@ -1349,13 +1448,20 @@
     }
     var st = c.state,
       post = c.post || {},
+      kind = taskKind(c),
       a;
     if (st === "approve")
-      a = '<button class="lk" data-a="bapprove" data-k="' + c.i + '">' + ico("check") + 'Approve</button><button class="lk mut" data-a="tskip" data-k="' + c.i + '">Skip</button>';
+      a =
+        (kind === "action"
+          ? '<button class="lk" data-a="tdone" data-k="' + c.i + '">' + ico("check") + "Mark done</button>"
+          : '<button class="lk" data-a="bapprove" data-k="' + c.i + '">' + ico("check") + "Approve</button>") +
+        '<button class="lk mut" data-a="tskip" data-k="' + c.i + '">Skip</button>';
     else if (st === "progress")
       a = '<button class="lk" data-a="tab" data-k="create">' + ico("arrow") + "Open in Create</button>";
     else if (st === "scheduled")
       a = '<span class="bc-sch">' + ico("refresh") + "Scheduled</span>";
+    else if (st === "done")
+      a = '<span class="bc-live">' + ico("checkc") + "Done</span>";
     else
       a = '<span class="bc-live">' + ico("checkc") + 'Live</span><button class="lk mut" data-a="tab" data-k="results">Results</button>';
     var meta =
@@ -1364,7 +1470,7 @@
         : "";
     return (
       '<div class="bcard"' + drag + '><div class="bc-top"><div class="bc-ic">' +
-      ico(c.icon) + '</div><div class="bc-t2">' + c.title + "</div></div>" +
+      ico(c.icon) + '</div><div class="bc-t2">' + c.title + '</div><span class="kbadge sm ' + kind + '">' + (kind === "action" ? "Action" : "Content") + "</span></div>" +
       (c.body ? '<div class="bc-b2">' + c.body + "</div>" : "") + meta +
       '<div class="bc-a">' + a + "</div></div>"
     );
@@ -1385,22 +1491,54 @@
     var t = todayISO();
     for (var d = 1; d <= dim; d++) {
       var iso = cm.y + "-" + String(cm.m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
-      cells += '<button class="cal-cell' + (iso === S.day ? " sel" : "") + (iso === t ? " today" : "") + '" data-a="pickdate" data-k="' + iso + '">' + d + "</button>";
+      if (!inBounds(iso)) {
+        cells += '<span class="cal-cell disabled">' + d + "</span>";
+        continue;
+      }
+      var sel = iso === S.day || (isRange() && iso === S.dayTo);
+      var inr = isRange() && iso > S.day && iso < S.dayTo;
+      cells += '<button class="cal-cell' + (sel ? " sel" : "") + (inr ? " inrange" : "") + (iso === t ? " today" : "") + (S.rangeAnchor && iso === S.rangeAnchor ? " sel" : "") + '" data-a="pickdate" data-k="' + iso + '">' + d + "</button>";
     }
-    return '<div class="cal-ov" data-a="closecal"></div><div class="calpop">' + head + dowRow + '<div class="cal-grid">' + cells + "</div></div>";
+    var hint = '<div class="cal-hint">' + (S.rangeAnchor ? "Pick an end date for a range" : "Pick a day — or click a start then an end for a range") + "</div>";
+    return '<div class="cal-ov" data-a="closecal"></div><div class="calpop">' + head + dowRow + '<div class="cal-grid">' + cells + "</div>" + hint + "</div>";
+  }
+  function dateNav() {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(S.day)) S.day = todayISO();
+    var atStart = S.day <= startISO();
+    var atEnd = (isRange() ? S.dayTo : S.day) >= todayISO();
+    var label = isRange() ? dayLabel(S.day) + " – " + dayLabel(S.dayTo) : dayLabel(S.day);
+    var isNow = S.day === todayISO() && !isRange();
+    return (
+      '<div class="datenav"><button class="dn-arrow prev' + (atStart ? " off" : "") + '" data-a="dayshift" data-k="-1" aria-label="Previous day">' + ico("arrow") +
+      '</button><button class="dn-date" data-a="opencal">' + ico("cal") + " " + label +
+      '</button><button class="dn-arrow' + (atEnd ? " off" : "") + '" data-a="dayshift" data-k="1" aria-label="Next day">' + ico("arrow") + "</button>" +
+      (isNow ? "" : '<button class="lk mut dn-today" data-a="daytoday">Jump to today</button>') +
+      (S.cal ? vCal() : "") + "</div>"
+    );
+  }
+  function histListCard(c) {
+    var status = c.historical
+      ? (c.kind === "action" || c.status === "done" ? "Done" : "Published")
+      : ({ published: "Published", scheduled: "Scheduled", done: "Done", progress: "In progress", approve: "To do" }[c.state] || "");
+    return (
+      '<div class="histcard"><div class="tc-ic">' + ico(c.icon) + '</div><div class="hc-tx"><div class="hc-t">' + c.title + "</div>" +
+      (c.body ? '<div class="hc-b">' + c.body + "</div>" : "") + '</div><span class="hc-st">' + ico("checkc") + status + "</span></div>"
+    );
+  }
+  function vHistList() {
+    var days = daysInRange(), out = "";
+    days.forEach(function (dt) {
+      var cards = dayCards(dt);
+      out += '<div class="histday"><div class="histday-h"><span>' + dayLabel(dt) + '</span><span class="histday-n">' + cards.length + " done</span></div>";
+      out += cards.length ? cards.map(histListCard).join("") : '<div class="histday-empty">Nothing recorded on this day.</div>';
+      out += "</div>";
+    });
+    return '<div class="histlist">' + out + "</div>";
   }
   function vBoard() {
     ensureBoard();
     if (!/^\d{4}-\d{2}-\d{2}$/.test(S.day)) S.day = todayISO();
-    var isToday = S.day === todayISO();
-    var daysel =
-      '<div class="datenav"><button class="dn-arrow prev" data-a="dayshift" data-k="-1" aria-label="Previous day">' + ico("arrow") +
-      '</button><button class="dn-date" data-a="opencal">' + ico("cal") + " " + dayLabel(S.day) +
-      '</button><button class="dn-arrow" data-a="dayshift" data-k="1" aria-label="Next day">' + ico("arrow") + "</button>" +
-      (isToday ? "" : '<button class="lk mut dn-today" data-a="daytoday">Jump to today</button>') +
-      (S.cal ? vCal() : "") +
-      "</div>";
-    var cards = dayCards(S.day);
+    var cards = rangeCards();
     var out = "";
     S.cols.forEach(function (col) {
       var inCol = cards.filter(function (c) { return colOfCard(c) === col.id; });
@@ -1412,7 +1550,7 @@
         '" aria-label="Remove column">' + ico("close") + '</button></div><div class="bcol-body" data-boardcol="' + col.id + '">' + body + "</div></div>";
     });
     out += '<button class="addcol" data-a="addcol">' + ico("plus") + " Add column</button>";
-    return '<div class="boardtools"><div class="daysel">' + daysel + "</div></div><div class=\"board custom\">" + out + "</div>";
+    return '<div class="board custom">' + out + "</div>";
   }
   function moveCol(src, target) {
     if (src === target) return;
@@ -1490,6 +1628,37 @@
       " Add a business</button></div>"
     );
   }
+  function notifDropdown() {
+    var items = [
+      { icon: "bulb", t: "New market insight", d: "62% of first sales now start from a single social post.", time: "2h ago", to: "insights" },
+      { icon: "send", t: "Your post went live", d: "Your scheduled post published at its peak time.", time: "5h ago", to: "results" },
+      { icon: "spark", t: "Clara refreshed your moves", d: "3 new highest-leverage moves are ready in Today.", time: "1d ago", to: "today" },
+    ];
+    var body = items
+      .map(function (n) {
+        return '<button class="notif-item" data-a="notifgo" data-k="' + n.to + '"><span class="notif-ic">' + ico(n.icon) + '</span><span class="notif-tx"><span class="notif-t">' + n.t + '</span><span class="notif-d">' + n.d + '</span><span class="notif-time">' + n.time + "</span></span></button>";
+      })
+      .join("");
+    return '<div class="nav-ov" data-a="closemenus"></div><div class="navpop notifpop"><div class="navpop-h">Notifications<span class="navpop-n">3 new</span></div>' + body + "</div>";
+  }
+  function acctDropdown() {
+    var nm = nameOf() === "there" ? "Your business" : nameOf();
+    return (
+      '<div class="nav-ov" data-a="closemenus"></div><div class="navpop acctpop"><div class="acct-name">' + esc(nm) + '</div>' +
+      '<button class="navmenu-item" data-a="navins">' + ico("bulb") + " Insights</button>" +
+      '<button class="navmenu-item" data-a="tab" data-k="thinking">' + ico("spark") + " Clara’s thinking</button>" +
+      '<button class="navmenu-item" data-a="restart">' + ico("refresh") + " Restart demo</button>" +
+      '<button class="navmenu-item" data-a="logout">' + ico("out") + " Log out</button></div>"
+    );
+  }
+  function navbar() {
+    return (
+      '<div class="navbar"><div class="nav-sp"></div><div class="nav-right">' +
+      '<div class="nav-item"><button class="navbtn bell" data-a="notif" aria-label="Notifications">' + ico("bell") + '<span class="nav-badge">3</span></button>' + (S.notifOpen ? notifDropdown() : "") + "</div>" +
+      '<div class="nav-item"><button class="acctbtn' + (S.acctOpen ? " open" : "") + '" data-a="acctmenu"><span class="avatar sm">' + initials(nameOf() === "there" ? "" : nameOf()) + "</span>" + ico("chev") + "</button>" + (S.acctOpen ? acctDropdown() : "") + "</div>" +
+      "</div></div>"
+    );
+  }
   function vApp() {
     var nm = nameOf() === "there" ? "Your business" : nameOf();
     var ini = initials(nameOf() === "there" ? "" : nameOf());
@@ -1500,7 +1669,9 @@
           ? vCreate()
           : S.tab === "insights"
             ? vInsights()
-            : vResults();
+            : S.tab === "thinking"
+              ? vThinking()
+              : vResults();
     var foot =
       '<div class="rail-foot">' +
       (S.switch ? bizMenu() : "") +
@@ -1514,9 +1685,7 @@
       arch().label +
       '</div></div><span class="chev">' +
       ico("chev") +
-      '</span></button><button class="rail-out" data-a="logout" aria-label="Log out">' +
-      ico("out") +
-      "</button></div>";
+      "</span></button></div>";
     return (
       '<div class="app"><div class="rail"><div class="rail-logo">' +
       mk(30) +
@@ -1524,18 +1693,15 @@
       navItem("today", "Today", "home") +
       navItem("create", "Create", "zap") +
       navItem("results", "Results", "chart") +
-      navItem("insights", "Insights", "bulb") +
-      '<button class="rail-item brainbtn" data-a="openbrain">' +
-      ico("spark") +
-      "<span>Clara’s thinking</span></button>" +
       "</nav>" +
       foot +
-      '</div><div class="main"><div class="main-scroll' +
+      '</div><div class="main">' +
+      navbar() +
+      '<div class="main-scroll' +
       (S.tab === "today" && S.todayView === "board" ? " full" : "") +
       '">' +
       content +
-      "</div></div></div>" +
-      restart()
+      "</div></div></div>"
     );
   }
   function captionFor(task,rev){var a=arch(),tone=S.p.tone,nm=(nameOf()==="there"?"":nameOf());var hooks=({warm:["Here’s the honest version.","A little something from us this week.","Real talk for a second."],bold:["Most people get this wrong.","Let’s be blunt.","Stop scrolling — this matters."],pro:["A quick, useful note.","Worth two minutes.","One thing worth knowing."],playful:["Okay, confession time. ✨","Plot twist. 👀","Hot take incoming. 🌶"]})[tone]||["Here’s the honest version."];var cta=({warm:"If that sounds like you, come say hi.",bold:"Stop settling — you know where to find us.",pro:"Happy to help if this is on your list — just reach out.",playful:"Drop a 🙋 if you’re in — we got you."})[tone]||"";return hooks[(rev||0)%hooks.length]+"\n\n"+a.pos+"\n\n"+cta+(nm?"\n\n— "+nm:"");}
@@ -1543,13 +1709,13 @@
   var FMT_OPTS={image:["Feed post","Carousel","Story","Pin"],video:["Reel","Short","Story"],text:["Post","Article","Thread","Newsletter"]};
   function fmtFor(type,p){var pf=({image:{Instagram:"Feed post",Pinterest:"Pin",Facebook:"Feed post"},video:{TikTok:"Short video",YouTube:"Short",Instagram:"Reel"},text:{LinkedIn:"Post",Email:"Newsletter",X:"Post","Content & SEO":"Article"}})[type]||{};return pf[p]||FMT_OPTS[type][0];}
   var POSTKIT={food:{media:"A close, natural shot of your product mid-craft — flour-dusted, soft daylight, real not staged.",tags:"#madelocal #craftfood #smallbatch #supportlocal"},saas:{media:"A clean before/after or a simple UI frame showing the hours saved — minimal, high-contrast.",tags:"#b2bsaas #productivity #founders #workflow"},fitness:{media:"A candid, real-person shot mid-session — energy over perfection, natural light.",tags:"#fitnessjourney #week1 #coaching #showup"},shop:{media:"A styled-but-honest flat-lay or lifestyle shot — story first, price never.",tags:"#smallbusiness #handmade #shopindie #thestory"},services:{media:"A warm, trustworthy shot — you or your space, faces and credibility over stock.",tags:"#trusted #local #realresults #askanexpert"},creator:{media:"A bold thumbnail-style frame with one clear promise — your face plus the transformation.",tags:"#learnwithme #creator #howto #growth"},other:{media:"A clean, on-brand image that leads with your one clear difference.",tags:"#yourbrand #local #thedifference"}};
-  function buildPost(task,i){var a=arch(),POSTABLE={Instagram:1,LinkedIn:1,TikTok:1,YouTube:1,X:1,Facebook:1,Pinterest:1,Email:1,"Content & SEO":1,"SEO or blog":1,"Google profile":1,Community:1,Website:1},uc=(S.p.channels||[]).filter(function(c){return POSTABLE[c];}),p=uc.length?uc[0]:a.channels[0],ci;if(!uc.length){for(ci=0;ci<a.channels.length;ci++){if(POSTABLE[a.channels[ci]]){p=a.channels[ci];break;}}}if(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].platform)p=S.tweak[i].platform;var ty=inferType(p),kit=POSTKIT[S.p.ind]||POSTKIT.other;return {type:ty,platform:p,format:fmtFor(ty,p),caption:captionFor(task,0),media:ty==="text"?"":kit.media,hashtags:kit.tags,rev:0};}
+  function buildPost(task,i){var a=arch(),POSTABLE={Instagram:1,LinkedIn:1,TikTok:1,YouTube:1,X:1,Facebook:1,Pinterest:1,Email:1,"Content & SEO":1,"SEO or blog":1,"Google profile":1,Community:1,Website:1},uc=(S.p.channels||[]).filter(function(c){return POSTABLE[c];}),cands=uc.length?uc:a.channels.filter(function(c){return POSTABLE[c];});if(!cands.length)cands=[a.channels[0]];var idx=(i!=null?i:0)%cands.length;var p=cands[(idx+cands.length)%cands.length];if(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].platform)p=S.tweak[i].platform;var ty=inferType(p),kit=POSTKIT[S.p.ind]||POSTKIT.other;return {type:ty,platform:p,format:fmtFor(ty,p),caption:captionFor(task,0),media:ty==="text"?"":kit.media,hashtags:kit.tags,rev:0};}
   function typeIcon(ty){return ty==="image"?"img":ty==="video"?"vid":"txt";}
   function typeLabel(ty){return ty==="image"?"Image":ty==="video"?"Video":"Text";}
   function openCreate(indices){S.queue=indices.slice();var tasks=todayTasks();indices.forEach(function(i){if(!S.posts[i])S.posts[i]=buildPost(tasks[i],i);});S.screen="app";S.tab="create";render();}
-  function draftCard(task,i){var post=S.posts[i]||(S.posts[i]=buildPost(task,i)),pub=!!S.pub[i],edit=!pub&&!!S.qedit[i];var dest='<span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span><span class="dc-for">for: '+task.title+'</span>'+(task.camp?'<span class="dc-camp">'+ico("mega")+task.camp+'</span>':'');if(pub)return '<div class="dcard done"><div class="dc-top">'+dest+'</div><div class="dc-a"><span class="doneflag">'+ico("checkc")+(post.scheduled?"Scheduled · "+post.scheduled:"Published")+'</span></div></div>';var view;if(edit){var tc="";["text","image","video"].forEach(function(ty){tc+='<button class="tchip'+(post.type===ty?" on":"")+'" data-a="settype" data-k="'+i+'" data-t="'+ty+'">'+ico(typeIcon(ty))+typeLabel(ty)+'</button>';});var pfo="";arch().channels.forEach(function(c){pfo+='<option value="'+c+'"'+(post.platform===c?" selected":"")+'>'+c+'</option>';});var fmo="";(FMT_OPTS[post.type]||[]).forEach(function(f){fmo+='<option value="'+f+'"'+(post.format===f?" selected":"")+'>'+f+'</option>';});view='<div class="editgrid"><div class="efield"><label>Content type</label><div class="tchips">'+tc+'</div></div><div class="erow"><div class="efield"><label>Platform</label><select class="sel" data-psel="platform" data-k="'+i+'">'+pfo+'</select></div><div class="efield"><label>Format</label><select class="sel" data-psel="format" data-k="'+i+'">'+fmo+'</select></div></div><div class="efield"><label>Caption</label><textarea class="dtext-edit" data-pf="caption" data-pi="'+i+'">'+esc(post.caption)+'</textarea></div>'+(post.type!=="text"?'<div class="efield"><label>'+(post.type==="video"?"Video direction":"Image direction")+'</label><textarea class="mtext-edit" data-pf="media" data-pi="'+i+'">'+esc(post.media)+'</textarea></div>':"")+'<div class="efield"><label>Hashtags</label><input class="hinp" data-pf="hashtags" data-pi="'+i+'" value="'+esc(post.hashtags)+'"></div></div>';}else{view='<div class="dtext">'+esc(post.caption)+"</div>"+(post.media?'<div class="pmedia"><span class="pm-l">'+(post.type==="video"?"Video":"Image")+' direction</span> '+esc(post.media)+"</div>":"")+(post.hashtags?'<div class="ptags">'+esc(post.hashtags)+"</div>":"");}var actions=pub?'<span class="doneflag">'+ico("checkc")+"Published</span>":'<button class="btn sm" data-a="qpublish" data-k="'+i+'">'+ico("send")+' Publish</button><button class="lk mut" data-a="qedit" data-k="'+i+'">'+ico("edit")+(edit?"Done":"Edit")+'</button><button class="lk mut" data-a="qregen" data-k="'+i+'">'+ico("refresh")+"Regenerate</button>";return '<div class="dcard'+(pub?" done":"")+(edit?" editing":"")+'"><div class="dc-top">'+dest+"</div>"+view+'<div class="dc-a">'+actions+"</div></div>";}
+  function draftCard(task,i){var post=S.posts[i]||(S.posts[i]=buildPost(task,i)),pub=!!S.pub[i],edit=!pub&&!!S.qedit[i];var dest='<span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span><span class="dc-for">for: '+task.title+'</span>'+(task.camp?'<span class="dc-camp">'+ico("mega")+task.camp+'</span>':'');if(pub)return '<div class="dcard done"><div class="dc-top">'+dest+'</div><div class="dc-a"><span class="doneflag">'+ico("checkc")+(post.scheduled?"Scheduled · "+post.scheduled:"Published")+'</span><button class="lk" data-a="postresult" data-k="'+i+'">'+ico("chart")+' See results</button></div></div>';var view;if(edit){var tc="";["text","image","video"].forEach(function(ty){tc+='<button class="tchip'+(post.type===ty?" on":"")+'" data-a="settype" data-k="'+i+'" data-t="'+ty+'">'+ico(typeIcon(ty))+typeLabel(ty)+'</button>';});var pfo="";arch().channels.forEach(function(c){pfo+='<option value="'+c+'"'+(post.platform===c?" selected":"")+'>'+c+'</option>';});var fmo="";(FMT_OPTS[post.type]||[]).forEach(function(f){fmo+='<option value="'+f+'"'+(post.format===f?" selected":"")+'>'+f+'</option>';});view='<div class="editgrid"><div class="efield"><label>Content type</label><div class="tchips">'+tc+'</div></div><div class="erow"><div class="efield"><label>Platform</label><select class="sel" data-psel="platform" data-k="'+i+'">'+pfo+'</select></div><div class="efield"><label>Format</label><select class="sel" data-psel="format" data-k="'+i+'">'+fmo+'</select></div></div><div class="efield"><label>Caption</label><textarea class="dtext-edit" data-pf="caption" data-pi="'+i+'">'+esc(post.caption)+'</textarea></div>'+(post.type!=="text"?'<div class="efield"><label>'+(post.type==="video"?"Video direction":"Image direction")+'</label><textarea class="mtext-edit" data-pf="media" data-pi="'+i+'">'+esc(post.media)+'</textarea></div>':"")+'<div class="efield"><label>Hashtags</label><input class="hinp" data-pf="hashtags" data-pi="'+i+'" value="'+esc(post.hashtags)+'"></div></div>';}else{view='<div class="dtext">'+esc(post.caption)+"</div>"+(post.media?'<div class="pmedia"><span class="pm-l">'+(post.type==="video"?"Video":"Image")+' direction</span> '+esc(post.media)+"</div>":"")+(post.hashtags?'<div class="ptags">'+esc(post.hashtags)+"</div>":"");}var actions=pub?'<span class="doneflag">'+ico("checkc")+"Published</span>":'<button class="btn sm" data-a="qpublish" data-k="'+i+'">'+ico("send")+' Publish</button><button class="lk mut" data-a="qedit" data-k="'+i+'">'+ico("edit")+(edit?"Done":"Edit")+'</button><button class="lk mut" data-a="qregen" data-k="'+i+'">'+ico("refresh")+"Regenerate</button>";return '<div class="dcard'+(pub?" done":"")+(edit?" editing":"")+'"><div class="dc-top">'+dest+"</div>"+view+'<div class="dc-a">'+actions+"</div></div>";}
   function createEmpty(){return '<div class="stub"><div class="stub-ic">'+ico("zap")+'</div><h2>Nothing queued yet</h2><p>Approve a move in Today and Clara will draft it here, ready to publish.</p><button class="btn sm" data-a="tab" data-k="today">'+ico("arrow")+' Go to Today</button></div>';}
-  function vCreate(){if(!S.queue||!S.queue.length)return createEmpty();var tasks=todayTasks();var allPub=S.queue.every(function(i){return S.pub[i];});var head='<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">'+(allPub?"Published":S.queue.length>1?"Your content, ready to review":"Ready to publish")+'</h1><p class="th-s">'+(allPub?"Nice work — that’s today’s content live.":"Clara drafted "+(S.queue.length>1?("all "+S.queue.length+" in your voice"):"this in your voice")+". Review, tweak, publish.")+'</p></div>';var cards="";S.queue.forEach(function(i){cards+=draftCard(tasks[i],i);});var foot=allPub?'<div class="tnote"><div class="tn-h">'+ico("checkc")+' Done for today</div><p>Nicely done — that’s today live. <button class="lk" data-a="tab" data-k="results">See your results</button> · <button class="lk" data-a="tab" data-k="today">Back to Today</button></p></div>':"";return head+cards+foot;}
+  function vCreate(){if(!S.queue||!S.queue.length)return createEmpty();var tasks=todayTasks();var allPub=S.queue.every(function(i){return S.pub[i];});var head='<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">'+(allPub?"Published":S.queue.length>1?"Your content, ready to review":"Ready to publish")+'</h1><p class="th-s">'+(allPub?"Nice work — that’s today’s content live.":"Clara drafted "+(S.queue.length>1?("all "+S.queue.length+" in your voice"):"this in your voice")+". Review, tweak, publish.")+'</p></div>';var cards="";S.queue.forEach(function(i){cards+=draftCard(tasks[i],i);});var foot=allPub?'<div class="tnote"><div class="tn-h">'+ico("checkc")+' Done for today</div><p>Nicely done — that’s today live. <button class="lk" data-a="seeresults">See your results</button> · <button class="lk" data-a="tab" data-k="today">Back to Today</button></p></div>':"";return head+cards+foot;}
   function resultsEmpty(){return '<div class="stub"><div class="stub-ic">'+ico("chart")+'</div><h2>Nothing to measure yet</h2><p>Publish a move in Create and its results land here — then they feed back into tomorrow’s Today.</p><button class="btn sm" data-a="tab" data-k="today">'+ico("arrow")+' Go to Today</button></div>';}
   function fmtNum(n){return (n||0).toLocaleString("en-US");}
   function postMetrics(i){var seed=(i+1)*97;var reach=380+((seed*13)%760);var rate=9+(seed%12);var eng=Math.round(reach*rate/100);var clicks=Math.round(eng*(0.18+((seed%7)/50)));var conv=Math.max(0,Math.round(clicks*(0.10+(seed%6)/100)));return {reach:reach,eng:eng,clicks:clicks,conv:conv};}
@@ -1557,48 +1723,84 @@
   function paidStats(nPub){if(!paidEligible())return null;var wk=({"0-250":55,"250-1k":190,"1k-5k":720,"5k-15k":2100,"15k+":4600})[S.p.budget];if(wk==null)wk=180;var seed=(nPub+3)*61;var cpc=+(0.8+(seed%22)/20).toFixed(2);var clicks=Math.round(wk/cpc);var convRate=0.04+(seed%6)/100;var conv=Math.max(1,Math.round(clicks*convRate));var roas=+(2.4+(seed%20)/10).toFixed(1);var cpr=+(wk/conv).toFixed(2);var ch=S.p.channels||[];var via=ch.indexOf("Meta Ads")>=0&&ch.indexOf("Google Ads")>=0?"Meta & Google Ads":ch.indexOf("Meta Ads")>=0?"Meta Ads":ch.indexOf("Google Ads")>=0?"Google Ads":"paid ads";return {spend:wk,cpc:cpc,clicks:clicks,conv:conv,roas:roas,cpr:cpr,via:via};}
   function trendSeries(nPub){var seed=(nPub+1)*37;var out=[];for(var i=0;i<7;i++){var g=0.5+i*0.09;var noise=((seed>>(i%5))%7)/40;out.push(Math.round((0.35+g+noise)*100));}return out;}
   function sparkArea(vals){var w=320,h=88,pad=8;var max=Math.max.apply(null,vals)||1,min=Math.min.apply(null,vals),rng=(max-min)||1;var pts=vals.map(function(v,i){var x=pad+i*((w-2*pad)/(vals.length-1));var y=h-pad-((v-min)/rng)*(h-2*pad);return [x,y];});var line=pts.map(function(p,i){return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ");var area=line+" L"+pts[pts.length-1][0].toFixed(1)+" "+(h-pad)+" L"+pts[0][0].toFixed(1)+" "+(h-pad)+" Z";var last=pts[pts.length-1];return '<svg class="spark" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><path class="spark-fill" d="'+area+'"/><path class="spark-line" d="'+line+'"/><circle class="spark-dot" cx="'+last[0].toFixed(1)+'" cy="'+last[1].toFixed(1)+'" r="3.5"/></svg>';}
+  function postRecords(){
+    var out=[],tasks=todayTasks();
+    for(var k in S.pub){if(!S.pub[k])continue;var i=+k;var p=S.posts[i]||{};var mv=tasks[i]||{};out.push({i:i,name:mv.title||"Post",platform:p.platform||"",type:p.type||"text",format:p.format||"",scheduled:p.scheduled||"",live:!!p.live,status:p.live?"Live":"Scheduled"});}
+    return out;
+  }
+  function recFilters(recs){
+    var q=(S.rq||"").toLowerCase();
+    return recs.filter(function(r){
+      if(q&&r.name.toLowerCase().indexOf(q)<0)return false;
+      if(S.rStatus!=="all"&&r.status!==S.rStatus)return false;
+      if(S.rPlat!=="all"&&r.platform!==S.rPlat)return false;
+      if(S.rType!=="all"&&r.type!==S.rType)return false;
+      if(S.rDate==="today"&&!/today/i.test(r.scheduled))return false;
+      return true;
+    });
+  }
+  function rfSelect(key,opts){var o="";for(var k in opts)o+='<option value="'+k+'"'+(S[key]===k?" selected":"")+'>'+opts[k]+"</option>";return '<select class="rfsel" data-rf="'+key+'">'+o+"</select>";}
+  function rstatCard(l,v,d){return '<div class="rstat"><div class="rs-v">'+v+'</div><div class="rs-l">'+l+'</div>'+(d?'<div class="rs-d">'+d+"</div>":"")+"</div>";}
+  function rrow(r){
+    var x=postMetrics(r.i);
+    return '<button class="rrow" data-rname="'+esc(r.name.toLowerCase())+'" data-a="postresult" data-k="'+r.i+'"><span class="rr-ic">'+ico(typeIcon(r.type))+'</span><span class="rr-main"><span class="rr-name">'+r.name+'</span><span class="rr-sub">'+(r.platform||"—")+(r.scheduled?" · "+r.scheduled:"")+'</span></span><span class="rr-views">'+fmtNum(x.reach)+' views</span><span class="rr-status '+(r.live?"live":"sched")+'">'+r.status+"</span>"+ico("arrow")+"</button>";
+  }
+  function vResultsList(){
+    var recs=postRecords();
+    if(!recs.length)return resultsEmpty();
+    var totR=0,totE=0,totV=0;recs.forEach(function(r){var x=postMetrics(r.i);totR+=x.reach;totE+=x.eng;totV+=x.conv;});
+    var cards='<div class="rgrid r3">'+rstatCard("Total views",fmtNum(totR),"across "+recs.length+" post"+(recs.length>1?"s":""))+rstatCard("Total engagement",fmtNum(totE),(totR?Math.round((totE/totR)*100):0)+"% avg rate")+rstatCard("Conversions",fmtNum(totV),"leads & sales")+"</div>";
+    var plats=[];recs.forEach(function(r){if(r.platform&&plats.indexOf(r.platform)<0)plats.push(r.platform);});
+    var platOpts={all:"All platforms"};plats.forEach(function(p){platOpts[p]=p;});
+    var toolbar='<div class="rtools"><div class="rsearch">'+ico("search")+'<input data-rsearch placeholder="Search by name…" value="'+esc(S.rq||"")+'"></div>'+rfSelect("rStatus",{all:"All statuses",Scheduled:"Scheduled",Live:"Live"})+rfSelect("rPlat",platOpts)+rfSelect("rType",{all:"All types",text:"Text",image:"Image",video:"Video",audio:"Audio"})+rfSelect("rDate",{all:"All dates",today:"Today"})+"</div>";
+    var recsF=recFilters(recs);
+    var rows=recsF.length?recsF.map(rrow).join(""):'<div class="rempty">No posts match your filters.</div>';
+    return '<div class="todayhead"><div class="th-day">Results</div><h1 class="th-t">Your posts</h1><p class="th-s">Everything you’ve scheduled and published. Search, filter, or open a post for full stats.</p></div>'+cards+toolbar+'<div class="rlist">'+rows+"</div>";
+  }
+  function pmetrics(plat, x){
+    var e=x.eng, r=x.reach, c=x.clicks, p=(plat||"").toLowerCase();
+    function R(n){return Math.max(0,Math.round(n));}
+    function pct(a,b){return (b?((a/b)*100).toFixed(1):"0")+"%";}
+    if(p==="instagram")return {label:"Instagram",items:[["Likes",fmtNum(R(e*0.72))],["Comments",fmtNum(R(e*0.08))],["Saves",fmtNum(R(e*0.12))],["Shares",fmtNum(R(e*0.08))],["Profile visits",fmtNum(R(r*0.04))]]};
+    if(p==="linkedin")return {label:"LinkedIn",items:[["Impressions",fmtNum(R(r*1.18))],["Unique impressions",fmtNum(r)],["Reactions",fmtNum(R(e*0.74))],["Comments",fmtNum(R(e*0.1))],["Reposts",fmtNum(R(e*0.09))],["Click-through",pct(c,R(r*1.18))]]};
+    if(p==="facebook")return {label:"Facebook",items:[["Like",fmtNum(R(e*0.58))],["Love",fmtNum(R(e*0.12))],["Haha",fmtNum(R(e*0.06))],["Wow",fmtNum(R(e*0.03))],["Comments",fmtNum(R(e*0.09))],["Shares",fmtNum(R(e*0.07))],["Clicks",fmtNum(c)]]};
+    if(p==="email")return {label:"Email",items:[["Opens",fmtNum(R(r*0.42))],["Open rate",pct(R(r*0.42),r)],["Clicks",fmtNum(c)],["Click rate",pct(c,r)],["Unsubscribes",fmtNum(R(r*0.004))]]};
+    if(p==="tiktok"||p==="youtube")return {label:plat,items:[["Views",fmtNum(R(r*1.1))],["Likes",fmtNum(R(e*0.7))],["Comments",fmtNum(R(e*0.09))],["Shares",fmtNum(R(e*0.14))],["Avg watch","0:"+(12+(r%18)<10?"0":"")+(12+(r%18))]]};
+    return {label:plat||"Post",items:[["Likes",fmtNum(R(e*0.7))],["Comments",fmtNum(R(e*0.12))],["Shares",fmtNum(R(e*0.1))]]};
+  }
+  function vmetrics(i,x){
+    var r=x.reach;function R(n){return Math.round(n);}
+    return [["3-sec views",fmtNum(R(r*0.82))],["10-sec views",fmtNum(R(r*0.54))],["30-sec views",fmtNum(R(r*0.31))],["Avg watch time","0:"+(9+(i*7)%20<10?"0":"")+(9+(i*7)%20)],["Completion",(38+(i*11)%28)+"%"]];
+  }
+  function brkGrid(items){return '<div class="brk">'+items.map(function(it){return '<div class="brk-i"><div class="brk-v">'+it[1]+'</div><div class="brk-l">'+it[0]+'</div></div>';}).join("")+"</div>";}
+  function vPostResult(i){
+    var p=S.posts[i]||{},mv=todayTasks()[i]||{},x=postMetrics(i);
+    var ctr=x.reach?((x.clicks/x.reach)*100).toFixed(1):"0";
+    var stats=[["Views",fmtNum(x.reach),""],["Engaged",fmtNum(x.eng),(x.reach?Math.round((x.eng/x.reach)*100):0)+"% rate"],["Clicks",fmtNum(x.clicks),ctr+"% CTR"],["Conversions",fmtNum(x.conv),"leads & sales"]];
+    var sg=stats.map(function(s){return rstatCard(s[0],s[1],s[2]);}).join("");
+    var series=trendSeries(i+3);
+    var meta='<div class="pr-meta"><span class="dch">'+ico(typeIcon(p.type||"text"))+(p.platform||"")+" · "+(p.format||"")+'</span><span class="rr-status '+(p.live?"live":"sched")+'">'+(p.live?"Live":"Scheduled")+"</span>"+(p.scheduled?'<span class="pr-when">'+ico("cal")+" "+p.scheduled+"</span>":"")+"</div>";
+    var cap=p.caption?'<div class="rsec">The post</div><div class="pr-cap">'+esc(p.caption)+"</div>":"";
+    var read="This "+(p.platform||"post")+" reached "+fmtNum(x.reach)+" people and pulled "+x.eng+" engagements. "+(x.eng/(x.reach||1)>0.11?"That’s an above-average rate — worth doing more like it.":"Solid start — a sharper hook could lift engagement next time.");
+    var pm=pmetrics(p.platform,x);
+    var brk='<div class="rsec paidsec">'+ico("globe")+" "+pm.label+" breakdown</div>"+brkGrid(pm.items);
+    var vid=p.type==="video"?'<div class="rsec paidsec">'+ico("vid")+" Video performance</div>"+brkGrid(vmetrics(i,x)):"";
+    return '<button class="lk mut resback" data-a="resback">'+ico("arrow")+" All posts</button>"+
+      '<div class="todayhead"><div class="th-day">Post statistics</div><h1 class="th-t">'+(mv.title||"Post")+"</h1>"+meta+"</div>"+
+      '<div class="rgrid">'+sg+"</div>"+
+      brk+vid+
+      '<div class="rsec">Reach · last 7 days</div><div class="rtrend">'+sparkArea(series)+"</div>"+
+      cap+
+      '<div class="pr-note">'+ico("spark")+" Metrics shown match what "+pm.label+"’s API returns for a post — simulated here for the mockup.</div>"+
+      '<div class="rread"><div class="rr-h">'+ico("spark")+' Clara’s read</div><p>'+read+"</p></div>";
+  }
   function vResults(){
-    var pub=[];for(var k in S.pub)if(S.pub[k])pub.push(+k);
-    if(!pub.length)return resultsEmpty();
-    var tasks=todayTasks(),g=S.p.goal;
-    var m={},totR=0,totE=0,totC=0,totV=0,maxE=0,top=pub[0];
-    pub.forEach(function(i){var x=postMetrics(i);m[i]=x;totR+=x.reach;totE+=x.eng;totC+=x.clicks;totV+=x.conv;if(x.eng>maxE){maxE=x.eng;top=i;}});
-    var ctr=totR?((totC/totR)*100).toFixed(1):"0";
-    var engRate=totR?Math.round((totE/totR)*100):0;
-    var convLabel=g==="revenue"?"Sales":g==="visibility"?"Conversions":"New enquiries";
-    var followers=Math.max(1,Math.round(totE*0.09));
-    var stats=[
-      ["People reached",fmtNum(totR),"+"+(12+pub.length*5)+"% this week"],
-      ["Engaged",fmtNum(totE),engRate+"% engagement rate"],
-      ["Clicks",fmtNum(totC),ctr+"% click-through"],
-      [convLabel,""+totV,"+"+totV+" this week"],
-      ["New followers","+"+followers,"audience growth"],
-    ];
-    var sg="";stats.forEach(function(s){sg+='<div class="rstat"><div class="rs-v">'+s[1]+'</div><div class="rs-l">'+s[0]+'</div><div class="rs-d">'+s[2]+'</div></div>';});
-    var series=trendSeries(pub.length);
-    var trendPct=Math.max(1,Math.round(((series[6]-series[3])/series[3])*100));
-    var trend='<div class="rsec">This week’s momentum</div><div class="rtrend"><div class="rt-h"><span class="rt-l">Reach · last 7 days</span><span class="rt-d">+'+trendPct+'% vs last week</span></div>'+sparkArea(series)+"</div>";
-    var pd=paidStats(pub.length),paid="";
-    if(pd){
-      var pstats=[
-        ["Ad spend","$"+fmtNum(pd.spend),"this week"],
-        ["Cost per click","$"+pd.cpc,"CPC"],
-        ["Ad clicks",fmtNum(pd.clicks),"from ads"],
-        [convLabel+" (ads)",""+pd.conv,"$"+pd.cpr+" per result"],
-        ["ROAS",pd.roas+"×","return on ad spend"],
-      ];
-      var pg="";pstats.forEach(function(s){pg+='<div class="rstat paid"><div class="rs-v">'+s[1]+'</div><div class="rs-l">'+s[0]+'</div><div class="rs-d">'+s[2]+'</div></div>';});
-      paid='<div class="rsec paidsec">'+ico("target")+" Paid · from your "+pd.via+'</div><div class="rgrid">'+pg+"</div>";
-    }
-    var pl="";pub.forEach(function(i){var post=S.posts[i]||{},mv=tasks[i]||{},x=m[i];var w=Math.round((x.eng/maxE)*100);var pctr=x.reach?((x.clicks/x.reach)*100).toFixed(1):"0";pl+='<div class="rpost'+(i===top?" top":"")+'"><div class="rp-top"><span class="dch">'+ico(typeIcon(post.type||"text"))+(post.platform||"")+" · "+(post.format||"")+(post.scheduled?" · "+post.scheduled:"")+'</span>'+(i===top?'<span class="rp-tag">'+ico("spark")+' Top performer</span>':"")+'</div><div class="rp-move">'+(mv.title||"")+'</div><div class="rp-stats"><span class="rp-n"><b>'+fmtNum(x.reach)+'</b> reached</span><span class="rp-n"><b>'+x.eng+'</b> engaged</span><span class="rp-n"><b>'+x.clicks+'</b> clicks · '+pctr+'%</span></div><div class="rp-bar"><i style="width:'+w+'%"></i></div></div>';});
-    var tp=S.posts[top]||{},tm=tasks[top]||{};
-    var read="Your "+(tp.platform||"top")+" post — “"+(tm.title||"this one")+"” — is pulling ahead, with "+m[top].eng+" engaged from "+fmtNum(m[top].reach)+" reached. I’ll weight tomorrow’s Today toward more like it.";
-    var campBlock=(S.camp&&S.camp.status==="active")?'<div class="tnote camp"><div class="tn-h">'+ico("mega")+' Campaign · '+S.camp.name+'</div><p>Your '+S.camp.name.toLowerCase()+' is live (day '+S.camp.dayN+' of '+S.camp.dayTotal+'). Its posts are folded into the numbers above.</p></div>':"";
-    return '<div class="todayhead"><div class="th-day">Results · this week</div><h1 class="th-t">Results</h1><p class="th-s">How your published moves are actually doing.</p></div><div class="rgrid">'+sg+"</div>"+trend+paid+'<div class="rsec">Your posts</div>'+pl+'<div class="rread"><div class="rr-h">'+ico("spark")+' Clara’s read</div><p>'+read+"</p></div>"+campBlock+'<div class="tnote"><div class="tn-h">'+ico("refresh")+' Feeding tomorrow</div><p>The winners here shape what Clara puts in your Today next — more of what’s working, less of what isn’t.</p></div>';
+    if(S.resultView==="post"&&S.resultPost!=null&&S.pub[S.resultPost])return vPostResult(S.resultPost);
+    return vResultsList();
   }
   function bestTime(k){var p=(S.posts[k]||{}).platform||"";return ({Instagram:"today, 6:30pm",LinkedIn:"Tue, 8:15am","Content & SEO":"Wed, 10:00am",Email:"Thu, 9:00am",TikTok:"today, 7:45pm",YouTube:"Sat, 11:00am",Community:"today, 8:00pm",X:"today, 12:30pm",Pinterest:"Sun, 8:00pm",Facebook:"today, 1:00pm","Local partnerships":"this week",Referrals:"this week","Google profile":"today"})[p]||"today, 6:30pm";}
   function publishModal(){return '<div class="modal-ov"><div class="modal"><div class="orb"><div class="ring"></div><div class="ring r2"></div><div class="core">'+ico("spark")+'</div></div><h3>Clara’s finding the best time to post</h3><div class="line" id="publine">Reading when your audience is most active…</div><div class="pbar"><i id="pubpb"></i></div></div></div>';}
-  function runPublish(k){var lines=["Reading when your audience is most active…","Checking your channel’s peak windows…","Locking in the best moment…"];var i=0;var pb=root.querySelector("#pubpb");if(pb)pb.style.width="15%";var iv=setInterval(function(){var el=root.querySelector("#publine");if(!el||S.publishing==null){clearInterval(iv);return;}i++;if(i<lines.length){el.textContent=lines[i];if(pb)pb.style.width=(15+i*30)+"%";}},560);setTimeout(function(){if(S.publishing==null)return;var t=bestTime(k);S.pub[k]=true;S.done[k]=true;S.qedit[k]=false;if(S.posts[k])S.posts[k].scheduled=t;S.publishing=null;render();toast("Scheduled for "+t+" — Clara picked your peak time");setTimeout(function(){if(S.posts[k]&&S.pub[k]){S.posts[k].live=true;render();}},3200);},2050);}
+  function runPublish(k){var lines=["Reading when your audience is most active…","Checking your channel’s peak windows…","Locking in the best moment…"];var i=0;var pb=root.querySelector("#pubpb");if(pb)pb.style.width="15%";var iv=setInterval(function(){var el=root.querySelector("#publine");if(!el||S.publishing==null){clearInterval(iv);return;}i++;if(i<lines.length){el.textContent=lines[i];if(pb)pb.style.width=(15+i*30)+"%";}},560);setTimeout(function(){if(S.publishing==null)return;var t=bestTime(k);S.pub[k]=true;S.done[k]=true;S.qedit[k]=false;if(S.posts[k])S.posts[k].scheduled=t;S.publishing=null;var _tk=todayTasks()[+k]||{};recordHist({icon:_tk.icon||"send",title:_tk.title||"Published a post",kind:"content"});saveAll();render();toast("Scheduled for "+t+" — Clara picked your peak time");setTimeout(function(){if(S.posts[k]&&S.pub[k]){S.posts[k].live=true;render();}},3200);},2050);}
   function vLogin(){var list=S.biz||[];var returning=list.length>0;var cur=returning?(bizById(S.cur)||list[0]):null;var who=cur?((cur.name&&cur.name.trim())?cur.name:(INDS[cur.p.ind]||"your business")):"";var many=list.length>1;var tag=returning?("Welcome back"+(who&&!many?", "+who:"")+". "+(many?"Sign in and pick up any of your "+list.length+" businesses.":"Your advisor’s kept thinking — pick up where you left off.")):"Your personal advisor to go-to-market. Sign in to get today’s moves.";return '<div class="welcome"><div class="wl"><div class="loginwrap">'+mk(56).replace('class="mark m"','class="mark bigmark"')+'<div class="logo">Clarity<span class="d">.</span></div><div class="tag">'+tag+'</div><div class="loginbox"><button class="btn block gsi" data-a="google">'+gLogo()+' Continue with Google</button><div class="divider"><span>or</span></div><input class="webinp" data-model="email" placeholder="you@business.com" value="'+esc(S.email||"")+'"><button class="btn block" data-a="magiclink" style="margin-top:10px">'+ico("mail")+' Email me a sign-in link</button></div><div class="hint">'+(returning?'<button class="lk mut" data-a="gonew">Set up a different business</button>':'New to Clarity? <button class="lk" data-a="gonew">Get started</button>')+'</div></div></div><div class="wr"><div class="qbubble"><div class="t">'+ico("spark")+' Clara</div><p>“'+(returning?"Good to see you again — I’ve got today’s moves ready.":"Give me one sentence and I’ll hand you a plan.")+'”</p></div></div></div>'+restart();}
   function vMagic(){return '<div class="center"><div class="cwrap" style="max-width:440px;text-align:center"><div style="text-align:center">'+mk(56).replace('class="mark m"','class="mark bigmark"')+'</div><h1 class="q" style="margin-top:6px">Check your inbox</h1><p class="sub">I’ve sent a sign-in link to <b>'+esc(S.email||"your email")+'</b>. Click it and you’re in — no password to remember.</p><button class="btn" data-a="magicopen">Open the sign-in link '+ico("arrow")+'</button><div class="hint" style="margin-top:16px"><button class="lk mut" data-a="tologin">Back</button> · Demo shortcut — no real email is sent.</div></div></div>'+restart();}
   function bsec(t, inner) {
@@ -1613,13 +1815,13 @@
       "</span></div>"
     );
   }
-  function brainPanel() {
+  function vThinking() {
     var a = arch(),
       d = DEEP[S.p.ind] || DEEP.other;
     var bt = BT[S.p.type] || INDS[S.p.ind] || "Business";
     var goal = GT[S.p.goalSel] || GOALS[S.p.goal] || "—";
     var aud = AUDS[S.p.aud] || "your audience";
-    var loc = S.p.loc || "—";
+    var loc = locLabel() || "—";
     var bud = BUD[S.p.budget] || "Not set";
     var uc = (S.p.channels || []).filter(function (c) {
       return c !== "I’m not marketing yet";
@@ -1721,11 +1923,8 @@
       .join("");
     var log = bsec("What I did, step by step", '<div class="bp-log">' + lg + "</div>");
     return (
-      '<div class="brain-ov" data-a="closebrain"></div><aside class="brain"><div class="brain-h"><div class="brain-t">' +
-      ico("spark") +
-      " Clara’s thinking</div><button class=\"brain-x\" data-a=\"closebrain\" aria-label=\"Close\">" +
-      ico("close") +
-      '</button></div><div class="brain-sub">The full working behind what you see. Read as much or as little as you like.</div><div class="brain-body">' +
+      '<div class="todayhead"><div class="th-day">' + ico("spark") + " Clara’s thinking</div><h1 class=\"th-t\">The full working behind your plan</h1><p class=\"th-s\">Everything Clara figured out about your business — read as much or as little as you like.</p></div>" +
+      '<div class="thinkwrap">' +
       overview +
       persona +
       pos +
@@ -1733,71 +1932,62 @@
       channels +
       why +
       log +
-      "</div></aside>"
+      "</div>"
     );
   }
-  function insights() {
-    var a = arch(),
-      d = DEEP[S.p.ind] || DEEP.other,
-      aud = (AUDS[S.p.aud] || "your customers").toLowerCase(),
-      loc = S.p.loc,
-      bud = S.p.budget,
-      ch = primaryChannel(),
-      indl = INDS[S.p.ind] || "your market";
-    var list = [];
-    list.push({ t: "Rivals are leaving a gap you can take", d: d.rivals + " " + a.pos + " Most competitors say the same thing, so a sharper, more specific message stands out fast.", score: 89, tags: ["Competition", "Positioning"], src: d.sources[0] });
-    list.push({ t: "You can win without being the cheapest", d: "Across " + indl + ", buyers who care about quality convert on trust and proof, not price. Holding at or above the middle with clear proof protects margin better than discounting.", score: 83, tags: ["Pricing"], src: "Pricing & Willingness-to-Pay Study 2025" });
-    list.push({ t: d.market.split(".")[0] + ".", d: d.market + " Leaning into this now, before it saturates, is where the early advantage sits.", score: 80, tags: ["Market", "Demand"], src: d.sources[1] });
-    list.push({ t: aud.charAt(0).toUpperCase() + aud.slice(1) + " are most reachable on " + ch, d: "For " + indl + ", " + ch + " is where " + aud + " spend attention and act. Concentrating effort there beats spreading thin across every channel.", score: 76, tags: ["Channels"], src: "Channel Engagement Benchmarks 2025" });
-    if (["1k-5k", "5k-15k", "15k+"].indexOf(bud) >= 0)
-      list.push({ t: "Your budget can support a small paid test", d: "At your budget, a modest paid test on " + ch + " or search could accelerate what's already working organically. Start with one audience and one message, then scale what converts.", score: 72, tags: ["Paid", "Budget"], src: "SMB Paid Media Benchmarks 2025" });
-    else
-      list.push({ t: "Organic-first is the right call at your budget", d: "You don't need ad spend to move first. Consistent, useful content on " + ch + " plus referrals will compound — revisit paid once you have proof of what resonates.", score: 70, tags: ["Organic", "Budget"], src: "SMB Growth Study 2025" });
-    if (loc)
-      list.push({ t: "Local signal: demand around " + loc, d: "Being specific to " + loc + " — local references, timing to local peak hours, and community presence — lifts relevance and trust for a business like yours. National messaging leaves that edge on the table.", score: 74, tags: ["Local"], src: "Local Marketing Impact Report 2025" });
-    list.push({ t: "Add your website and I’ll sharpen these", d: "Right now these are built from your answers. Give me your website or a price list and I can compare your actual pricing and offers against competitors, and flag where you’re over- or under-priced.", score: null, tags: ["Tip"], nudge: true, src: "" });
-    return list;
+  var INS_POOL = [
+    { stat: "3 in 4", line: "of local buyers check you online before they ever walk in", source: "Local Consumer Report" },
+    { stat: "+18%", line: "more shoppers are choosing quality over the lowest price this quarter", source: "Bloomberg" },
+    { stat: "62%", line: "of first sales now start from a single social post", source: "BBC" },
+    { stat: "2×", line: "the reach when a post leads with a real customer story", source: "Social Media Today" },
+    { stat: "40%", line: "of small businesses are shifting budget toward short video", source: "Reuters" },
+    { stat: "1 in 3", line: "buyers say reviews matter to them more than price", source: "Trustpilot" },
+    { stat: "9–11am", line: "is when your audience is most active midweek", source: "Channel Benchmarks" },
+    { stat: "71%", line: "discover a new local business through a friend’s recommendation", source: "YouGov" },
+    { stat: "+25%", line: "engagement on posts that answer a common customer question", source: "HubSpot" },
+    { stat: "48hrs", line: "is how long a trend stays hot before it saturates", source: "TrendWatch" },
+  ];
+  function insightsFor(dateISO) {
+    var base = dayDiff("2020-01-01", dateISO);
+    var start = ((base % INS_POOL.length) + INS_POOL.length) % INS_POOL.length;
+    var out = [];
+    for (var i = 0; i < 5; i++) {
+      var idx = (start + i) % INS_POOL.length;
+      var p = INS_POOL[idx];
+      out.push({ id: "h" + idx, stat: p.stat, line: p.line, source: p.source });
+    }
+    return out;
   }
-  function insCard(c, i) {
-    var id = "in" + i;
-    if (S.insDismiss[id]) return "";
-    var saved = !!S.insSaved[id];
-    var tags = c.tags.map(function (tg) { return '<span class="ins-tag">' + tg + "</span>"; }).join("");
-    var score = c.score != null ? '<span class="ins-score">' + c.score + "</span>" : '<span class="ins-score tip">' + ico("bulb") + "</span>";
-    var actions = c.nudge
-      ? '<button class="lk mut" data-a="insdismiss" data-k="' + id + '">Dismiss</button>'
-      : '<button class="lk" data-a="insmove" data-k="' + i + '">' + ico("plus") + "Turn into a move</button>" +
-        '<button class="lk mut" data-a="inssave" data-k="' + id + '">' + ico("star") + (saved ? "Saved" : "Save") + "</button>" +
-        '<button class="lk mut" data-a="insdismiss" data-k="' + id + '">Dismiss</button>';
+  function insHeadCard(c, readonly) {
+    var saved = !!(S.insSaved && S.insSaved[c.id]);
     return (
-      '<div class="inscard' + (c.nudge ? " nudge" : "") + (saved ? " saved" : "") + '"><div class="ins-top">' + score + '<div class="ins-tags">' + tags + "</div></div>" +
-      '<button class="ins-body" data-a="insopen" data-k="' + i + '"><div class="ins-t">' + c.t + '</div><div class="ins-d">' + c.d.split(". ")[0] + ".</div></button>" +
-      (c.src ? '<div class="ins-src">' + ico("globe") + esc(c.src) + "</div>" : "") +
-      '<div class="ins-a">' + actions + "</div></div>"
+      '<div class="inshead"><div class="ih-stat">' + c.stat + '</div><div class="ih-line">' + c.line + '</div><div class="ih-foot"><span class="ih-src">' + ico("globe") + " " + c.source + "</span>" +
+      (readonly ? "" : '<button class="ih-save' + (saved ? " on" : "") + '" data-a="inssave" data-k="' + c.id + '">' + ico("star") + (saved ? "Saved" : "Save") + "</button>") +
+      "</div></div>"
     );
   }
   function vInsights() {
-    var all = insights(),
-      reveal = !S.insSeen,
-      nm = nameOf() === "there" ? "your business" : nameOf();
-    var head = reveal
-      ? '<div class="todayhead"><div class="th-day">' + ico("spark") + ' Clara did the homework</div><h1 class="th-t">Before you start — here’s what I found</h1><p class="th-s">A first read on your market and competitors, built from your answers. Skim these, then jump into today’s moves.</p></div>'
-      : '<div class="todayhead"><div class="th-day">Insights</div><h1 class="th-t">What I’m seeing in your market</h1><p class="th-s">Market and competitor signals for ' + nm + ". Save the useful ones, or turn them into a move.</p></div>";
-    var cont = reveal ? '<div class="ins-cont"><button class="btn" data-a="inscontinue">Continue to Today ' + ico("arrow") + "</button></div>" : "";
-    var cards = all.map(insCard).join("");
-    return head + cont + '<div class="insgrid">' + cards + '</div><div class="tnote"><div class="tn-h">' + ico("spark") + ' Illustrative</div><p>These are seeded from your answers to show the shape of Clara’s market read. Connected to live research, they’d refresh on their own.</p></div>';
-  }
-  function insDetailModal() {
-    var i = S.insDetail,
-      all = insights(),
-      c = all[i];
-    if (!c) return "";
-    var tags = c.tags.map(function (tg) { return '<span class="ins-tag">' + tg + "</span>"; }).join("");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(S.day)) S.day = todayISO();
+    var list = insightsFor(S.day).map(function (c) { return insHeadCard(c, false); }).join("");
+    var savedCount = Object.keys(S.insSaved || {}).filter(function (k) { return S.insSaved[k]; }).length;
+    var when = S.day === todayISO() ? "today’s read" : dayLabel(S.day) + "’s read";
     return (
-      '<div class="modal-ov" data-a="insclose"></div><div class="whymod"><div class="whymod-h"><div class="whymod-ttl"><div class="tc-ic">' + ico("compass") + '</div><div class="wm-title">' + c.t + '</div></div><button class="brain-x" data-a="insclose" aria-label="Close">' + ico("close") + '</button></div><div class="whymod-body"><div class="ins-tags" style="margin-bottom:11px">' + tags + (c.score != null ? '<span class="ins-tag score">' + c.score + " relevance</span>" : "") + '</div><p class="bp-p">' + c.d + "</p>" +
-      (c.src ? '<div class="ins-src" style="margin-top:12px">' + ico("globe") + esc(c.src) + "</div>" : "") +
-      (c.nudge ? "" : '<div class="ins-a" style="margin-top:15px"><button class="btn sm" data-a="insmove" data-k="' + i + '">' + ico("plus") + " Turn into a move</button></div>") +
-      "</div></div>"
+      '<div class="todayhead"><div class="th-day">Insights · ' + when + '</div><h1 class="th-t">What’s moving in your market</h1><p class="th-s">Quick headlines Clara picked up. They refresh every day — save any worth keeping.</p><div class="todayctrls"><div class="boardtools">' +
+      dateNav() +
+      "</div></div></div>" +
+      '<div class="inshead-grid">' + list + "</div>" +
+      '<div class="tnote"><div class="tn-h">' + ico("spark") + " Illustrative</div><p>Sample stats and sources for the mockup. Live, these refresh daily from real market signals" + (savedCount ? " · " + savedCount + " saved" : "") + ".</p></div>"
+    );
+  }
+  function vInsReveal() {
+    var list = insightsFor(todayISO()).slice(0, 4).map(function (c) { return insHeadCard(c, true); }).join("");
+    return (
+      '<div class="center"><div class="cwrap insrev"><div class="clara">' +
+      mk(28) +
+      '<span class="nm">Clara</span></div><h1 class="q">Before you start, a quick read</h1><p class="sub">A few things moving in your market right now. Skim them — I’ll refresh these every day inside Insights.</p>' +
+      '<div class="inshead-grid">' + list + "</div>" +
+      '<div class="ins-cont"><button class="btn" data-a="inscontinue">Continue to Today ' + ico("arrow") + "</button></div></div></div>" +
+      restart()
     );
   }
   function render() {
@@ -1820,11 +2010,11 @@
               ? vPlan()
               : S.screen === "done"
                 ? vDone()
-                : vApp();
+                : S.screen === "insights"
+                  ? vInsReveal()
+                  : vApp();
     if (S.publishing != null) h += publishModal();
-    if (S.brain) h += brainPanel();
     if (S.whyOpen != null) h += whyModal();
-    if (S.insDetail != null) h += insDetailModal();
     app.innerHTML = h;
     bind();
   }
@@ -1920,6 +2110,42 @@
           if (S.cols[i].id === id) S.cols[i].name = el.value;
       });
     });
+    app.querySelectorAll("[data-rf]").forEach(function (el) {
+      el.addEventListener("change", function () {
+        S[el.getAttribute("data-rf")] = el.value;
+        render();
+      });
+    });
+    app.querySelectorAll("[data-rsearch]").forEach(function (el) {
+      el.addEventListener("input", function () {
+        S.rq = el.value;
+        var q = el.value.toLowerCase();
+        app.querySelectorAll(".rrow").forEach(function (row) {
+          var n = row.getAttribute("data-rname") || "";
+          row.style.display = !q || n.indexOf(q) >= 0 ? "" : "none";
+        });
+      });
+    });
+    app.querySelectorAll("[data-locadd]").forEach(function (el) {
+      el.addEventListener("input", function () {
+        S.locInput = el.value;
+      });
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          act("locadd");
+        }
+      });
+    });
+    app.querySelectorAll("[data-upfile]").forEach(function (el) {
+      el.addEventListener("change", function () {
+        var f = el.files && el.files[0];
+        if (f) {
+          S.p.siteFile = f.name;
+          render();
+        }
+      });
+    });
     app.querySelectorAll("[data-wt]").forEach(function (el) {
       var wi = el.getAttribute("data-wt");
       el.addEventListener("input", function () {
@@ -1959,21 +2185,82 @@
           toast("Pick one to continue");
           return;
         }
-        if (S.step === 2 && !S.p.goalSel) {
-          toast("Pick one to continue");
+        if (S.step === 2 && !(S.p.goals && S.p.goals.length)) {
+          toast("Pick at least one");
           return;
         }
         if (S.step === 3 && !(S.sentence || "").trim()) {
           toast("Tell Clara a little about your customer");
           return;
         }
-        if (S.step >= 6) {
+        if (S.step === 4 && !(S.name || "").trim()) {
+          toast("Add a name, or let Clara suggest one");
+          return;
+        }
+        if (S.step >= 7) {
           go();
         } else {
           S.step++;
-          if (S.step === 6) prefillLoc();
+          if (S.step === 7) prefillLoc();
           render();
         }
+        break;
+      case "goalpick":
+        if (!S.p.goals) S.p.goals = [];
+        var _gi = S.p.goals.indexOf(k);
+        if (_gi >= 0) S.p.goals.splice(_gi, 1);
+        else S.p.goals.push(k);
+        S.p.goalSel = S.p.goals[0] || "";
+        if (S.p.goalSel) S.p.goal = GT_GOAL[S.p.goalSel] || S.p.goal;
+        render();
+        break;
+      case "gensentence":
+        S.sentence = draftSentence();
+        render();
+        toast("Drafted — tweak it to fit");
+        break;
+      case "locadd":
+        var lv = (S.locInput || "").trim();
+        if (!lv) {
+          toast("Type a location to add");
+          return;
+        }
+        if (!S.p.locs) S.p.locs = [];
+        if (S.p.locs.indexOf(lv) < 0) S.p.locs.push(lv);
+        S.p.loc = S.p.locs[0];
+        S.locInput = "";
+        S.p.locAuto = false;
+        S.locOpen = false;
+        render();
+        break;
+      case "locdrop":
+        S.locOpen = !S.locOpen;
+        render();
+        break;
+      case "locclose":
+        S.locOpen = false;
+        render();
+        break;
+      case "locpick":
+        if (!S.p.locs) S.p.locs = [];
+        if (S.p.locs.indexOf(k) < 0) S.p.locs.push(k);
+        S.p.loc = S.p.locs[0];
+        S.locInput = "";
+        S.p.locAuto = false;
+        render();
+        break;
+      case "locdel":
+        if (S.p.locs) {
+          var _li = S.p.locs.indexOf(k);
+          if (_li >= 0) S.p.locs.splice(_li, 1);
+        }
+        S.p.loc = (S.p.locs && S.p.locs[0]) || "";
+        render();
+        break;
+      case "genname":
+        S.name = genName();
+        render();
+        toast("Here’s a name — change it if you like");
         break;
       case "sback":
         if (S.step <= 1) {
@@ -1981,6 +2268,11 @@
         } else {
           S.step--;
         }
+        render();
+        break;
+      case "planback":
+        S.screen = "steps";
+        if (!S.step || S.step < 1) S.step = STEPS.length;
         render();
         break;
       case "ex":
@@ -2147,11 +2439,60 @@
         break;
       case "tab":
         if (k !== "insights" && !S.insSeen) S.insSeen = true;
+        if (k === "results") { S.resultView = "list"; S.resultPost = null; }
         S.tab = k;
+        S.acctOpen = false;
+        S.notifOpen = false;
+        render();
+        break;
+      case "postresult":
+        S.tab = "results";
+        S.resultView = "post";
+        S.resultPost = +k;
+        S.acctOpen = false;
+        S.notifOpen = false;
+        render();
+        break;
+      case "resback":
+        S.resultView = "list";
+        S.resultPost = null;
+        render();
+        break;
+      case "seeresults":
+        S.tab = "results";
+        var _pq = (S.queue || []).filter(function (qi) { return S.pub[qi]; });
+        if (_pq.length === 1) { S.resultView = "post"; S.resultPost = _pq[0]; }
+        else { S.resultView = "list"; S.resultPost = null; }
         render();
         break;
       case "todayview":
         S.todayView = k;
+        render();
+        break;
+      case "notif":
+        S.notifOpen = !S.notifOpen;
+        S.acctOpen = false;
+        render();
+        break;
+      case "acctmenu":
+        S.acctOpen = !S.acctOpen;
+        S.notifOpen = false;
+        render();
+        break;
+      case "closemenus":
+        S.notifOpen = false;
+        S.acctOpen = false;
+        render();
+        break;
+      case "notifgo":
+        if (k === "results") { S.resultView = "list"; S.resultPost = null; }
+        S.tab = k;
+        S.notifOpen = false;
+        render();
+        break;
+      case "navins":
+        S.tab = "insights";
+        S.acctOpen = false;
         render();
         break;
       case "setday":
@@ -2160,11 +2501,13 @@
         break;
       case "opencal":
         S.cal = !S.cal;
+        S.rangeAnchor = "";
         if (S.cal) S.calMonth = { y: parseISO(S.day).getFullYear(), m: parseISO(S.day).getMonth() };
         render();
         break;
       case "closecal":
         S.cal = false;
+        S.rangeAnchor = "";
         render();
         break;
       case "calshift":
@@ -2176,18 +2519,34 @@
         render();
         break;
       case "pickdate":
-        S.day = k;
-        S.cal = false;
+        if (!S.rangeAnchor) {
+          S.rangeAnchor = k;
+          S.day = k;
+          S.dayTo = "";
+        } else {
+          var _lo = k < S.rangeAnchor ? k : S.rangeAnchor;
+          var _hi = k < S.rangeAnchor ? S.rangeAnchor : k;
+          S.day = _lo;
+          S.dayTo = _lo === _hi ? "" : _hi;
+          S.rangeAnchor = "";
+          S.cal = false;
+        }
         render();
         break;
       case "dayshift":
         var dd = parseISO(S.day);
         dd.setDate(dd.getDate() + +k);
-        S.day = isoOf(dd);
+        var ni = isoOf(dd);
+        if (!inBounds(ni)) return;
+        S.day = ni;
+        S.dayTo = "";
+        S.rangeAnchor = "";
         render();
         break;
       case "daytoday":
         S.day = todayISO();
+        S.dayTo = "";
+        S.rangeAnchor = "";
         render();
         break;
       case "addcol":
@@ -2217,50 +2576,18 @@
         moveCol(k, t);
         render();
         break;
-      case "openbrain":
-        S.brain = true;
-        render();
-        break;
-      case "closebrain":
-        S.brain = false;
-        render();
-        break;
       case "inscontinue":
         S.insSeen = true;
+        S.screen = "app";
         S.tab = "today";
         saveAll();
         render();
         break;
       case "inssave":
+        if (!S.insSaved) S.insSaved = {};
         S.insSaved[k] = !S.insSaved[k];
         saveAll();
         render();
-        break;
-      case "insdismiss":
-        S.insDismiss[k] = true;
-        saveAll();
-        render();
-        break;
-      case "insopen":
-        S.insDetail = +k;
-        render();
-        break;
-      case "insclose":
-        S.insDetail = null;
-        render();
-        break;
-      case "insmove":
-        var ic = insights()[+k];
-        if (ic) {
-          if (!S.extra) S.extra = [];
-          S.extra.push({ icon: "flag", title: "Post about: " + ic.t, body: "Clara turned a market insight into a move — create a piece around this angle this week.", why: "You flagged this insight as worth acting on, so I added it to Today. Approve it and I’ll draft the content around “" + ic.t + "”." });
-          S.insDetail = null;
-          S.insSeen = true;
-          S.tab = "today";
-          saveAll();
-          render();
-          toast("Added to Today — approve it to draft");
-        }
         break;
       case "bapprove":
         if (!S.posts[+k]) S.posts[+k] = buildPost(todayTasks()[+k], +k);
@@ -2275,7 +2602,7 @@
       case "approveall":
         var idx = [];
         var _base = todayTasks().length - campCount();
-        for (var _i = 0; _i < _base; _i++) if (!S.done[_i]) idx.push(_i);
+        for (var _i = 0; _i < _base; _i++) if (!S.done[_i] && kindOf(_i) === "content") idx.push(_i);
         if (!idx.length) {
           toast("Nothing left to set up");
           return;
@@ -2323,7 +2650,7 @@
         var _b1 = todayTasks().length - campCount();
         var _op = [];
         for (var _s1 = 0; _s1 < _b1; _s1++)
-          if (!S.done[_s1] && !(S.queue && S.queue.indexOf(_s1) >= 0))
+          if (!S.done[_s1] && !(S.queue && S.queue.indexOf(_s1) >= 0) && kindOf(_s1) === "content")
             _op.push(_s1);
         var _all =
           _op.length &&
@@ -2340,7 +2667,7 @@
         var _b2 = todayTasks().length - campCount();
         var _op2 = [];
         for (var _s2 = 0; _s2 < _b2; _s2++)
-          if (!S.done[_s2] && !(S.queue && S.queue.indexOf(_s2) >= 0))
+          if (!S.done[_s2] && !(S.queue && S.queue.indexOf(_s2) >= 0) && kindOf(_s2) === "content")
             _op2.push(_s2);
         var _selIdx = _op2.filter(function (x) {
           return S.sel[x];
@@ -2356,6 +2683,14 @@
         openCreate(_target);
         break;
       }
+      case "tdone":
+        S.done[k] = "done";
+        var _dt = todayTasks()[+k] || {};
+        recordHist({ icon: _dt.icon || "check", title: _dt.title || "Completed an action", kind: "action" });
+        saveAll();
+        render();
+        toast("Marked done — counted in your results");
+        break;
       case "tskip":
         S.done[k] = "skip";
         S.twhy[k] = false;
@@ -2409,7 +2744,7 @@
           website: "",
           useWeb: false,
           name: "",
-          p: { ind: "other", goal: "customers", aud: "any", tone: "warm", type: "", goalSel: "", channels: [], budget: "", loc: "" },
+          p: { ind: "other", goal: "customers", aud: "any", tone: "warm", type: "", goalSel: "", goals: [], channels: [], budget: "", loc: "", locs: [] },
           why: false,
           helping: false,
           helpOpen: false,
@@ -2434,13 +2769,28 @@
           step: 1,
           cols: [],
           cardCol: {},
+          createdAt: "",
+          hist: {},
           day: "today",
+          dayTo: "",
+          rangeAnchor: "",
           cal: false,
           calMonth: null,
           threads: {},
           tweak: {},
           wtext: {},
           whyOpen: null,
+          locInput: "",
+          locOpen: false,
+          notifOpen: false,
+          acctOpen: false,
+          resultView: "list",
+          resultPost: null,
+          rq: "",
+          rStatus: "all",
+          rPlat: "all",
+          rType: "all",
+          rDate: "all",
           insSeen: false,
           insSaved: {},
           insDismiss: {},
