@@ -37,6 +37,7 @@
     search: "M10.5 3a7.5 7.5 0 100 15 7.5 7.5 0 000-15 M21 21l-5.3-5.3",
     star: "M12 3l2.6 5.6 6 .8-4.4 4.2 1.1 6L12 17l-5.3 2.8 1.1-6L3.4 9.4l6-.8z",
     upload: "M12 15V4 M8 8l4-4 4 4 M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3",
+    mic: "M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3 M5 11a7 7 0 0014 0 M12 18v3 M8 21h8",
   };
   function gLogo(){return '<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>';}
   function LS(){try{return window.localStorage;}catch(e){return null;}}
@@ -45,15 +46,15 @@
   function hasSession(){var s=LS();if(!s)return false;try{return s.getItem("clarity_session")==="1";}catch(e){return false;}}
   function fullReset(){var s=LS();if(s){try{s.removeItem("clarity_profile");s.removeItem("clarity_session");s.removeItem("clarity_biz");}catch(e){}}}
   // ---- Multi-business engine ----
-  var PBFIELDS=["p","name","sentence","done","twhy","queue","pub","qtext","qedit","posts","camp","sel","cols","cardCol","threads","tweak","insSeen","insSaved","insDismiss","extra","createdAt","hist"];
+  var PBFIELDS=["p","name","sentence","done","twhy","queue","pub","qtext","qedit","qdraft","posts","ownTasks","camp","sel","cols","cardCol","threads","tweak","insSeen","insSaved","insDismiss","extra","createdAt","hist"];
   function newBizId(){return "b"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);}
-  function makeBiz(){return {id:newBizId(),p:{ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]},name:"",sentence:"",done:{},twhy:{},queue:[],pub:{},qtext:{},qedit:{},posts:{},camp:{status:"off"},sel:{},cols:[],cardCol:{},threads:{},tweak:{},insSeen:false,insSaved:{},insDismiss:{},extra:[],createdAt:"",hist:{}};}
+  function makeBiz(){return {id:newBizId(),p:{ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]},name:"",sentence:"",done:{},twhy:{},queue:[],pub:{},qtext:{},qedit:{},qdraft:{},posts:{},ownTasks:{},camp:{status:"off"},sel:{},cols:[],cardCol:{},threads:{},tweak:{},insSeen:false,insSaved:{},insDismiss:{},extra:[],createdAt:"",hist:{}};}
   function bizById(id){for(var i=0;i<S.biz.length;i++)if(S.biz[i].id===id)return S.biz[i];return null;}
   function bizByIdIn(arr,id){for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return null;}
   function snapshot(){if(S.cur==null)return;var r=bizById(S.cur);if(!r)return;PBFIELDS.forEach(function(f){r[f]=S[f];});}
   function loadBiz(id){snapshot();var r=bizById(id);if(!r)return;PBFIELDS.forEach(function(f){S[f]=r[f];});normBiz();S.cur=id;S.tab="today";}
-  function normBiz(){["done","twhy","pub","qtext","qedit","posts","sel","cardCol","threads","tweak","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};}
-  function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.posts={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.createdAt="";S.hist={};S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
+  function normBiz(){["done","twhy","pub","qtext","qedit","qdraft","posts","ownTasks","sel","cardCol","threads","tweak","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};}
+  function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.qdraft={};S.posts={};S.ownTasks={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.createdAt="";S.hist={};S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
   function deriveName(sent,ind){var t=(sent||"").trim();if(t){t=t.replace(/^(i\s+(?:run|own|have|am|bake|make|coach|sell|do|offer|build|teach|help)\s+(?:a|an|my|the)?\s*)/i,"").replace(/\s+(?:and|but|so|because|that|which)\b.*$/i,"").replace(/,.*$/,"").replace(/[.!?].*$/,"").trim();t=t.split(/\s+/).slice(0,4).join(" ").trim();if(t)return t.charAt(0).toUpperCase()+t.slice(1);}return (typeof INDS!=="undefined"&&INDS[ind])||"My business";}
   function initials(nm){nm=(nm||"").trim();if(!nm)return "YB";var w=nm.split(/\s+/);return ((w[0][0]||"")+(w[1]?w[1][0]:(w[0][1]||""))).toUpperCase();}
   function saveAll(){snapshot();var s=LS();if(!s)return;try{s.setItem("clarity_biz",JSON.stringify({list:S.biz,cur:S.cur,email:S.email||""}));}catch(e){}}
@@ -270,7 +271,7 @@
   var GOAL_GT = { customers: "leads", revenue: "sales", visibility: "content", edge: "competitors" };
   var BUD = { "0-250": "$0–$250", "250-1k": "$250–$1,000", "1k-5k": "$1,000–$5,000", "5k-15k": "$5,000–$15,000", "15k+": "$15,000+", unsure: "I’m not sure yet" };
   var CHANS = ["Website", "Instagram", "Facebook", "TikTok", "LinkedIn", "Email", "Google Ads", "Meta Ads", "SEO or blog", "In-person sales", "Referrals or word of mouth", "I’m not marketing yet"];
-  var POSTABLE_CH = { Instagram: 1, LinkedIn: 1, TikTok: 1, Facebook: 1, Email: 1, "SEO or blog": 1, Website: 1 };
+  var POSTABLE_CH = { Instagram: 1, LinkedIn: 1, TikTok: 1, Facebook: 1, Email: 1, "SEO or blog": 1 };
   // ---- Depth content for the "Clara's thinking" panel ----
   var DEEP = {
     food: { market: "Local food discovery has moved to social and search — most new customers find places like yours on Instagram or Google before they ever walk in.", rivals: "Most nearby spots compete on price or convenience and neglect story. That is the gap you own.", sources: ["Local Consumer Review Trends 2025", "Instagram for Local Business — usage study"] },
@@ -299,6 +300,13 @@
     pub: {},
     qtext: {},
     qedit: {},
+    qdraft: {},
+    cFilter: "all",
+    createView: "list",
+    cMonth: null,
+    composing: false,
+    compose: { type: "", platform: "", angleSel: null, ownText: "", angles: [] },
+    ownTasks: {},
     posts: {},
     camp: { status: "off" },
     sel: {},
@@ -910,7 +918,7 @@
       (nm === "there" ? "" : ", " + nm) +
       '</h1><p class="sub">Here’s everything you told me. Edit anything that’s off, then continue — I’ll build from this.</p>' +
       body +
-      '<div class="stepfoot"><button class="lk mut" data-a="planback">' + ico("arrow") + ' Back</button><button class="btn" data-a="finish">Looks right — continue ' + ico("arrow") + "</button></div></div></div>" +
+      '<div class="stepfoot"><button class="lk mut" data-a="planback">' + ico("arrow") + ' Back</button><button class="btn" data-a="finish">Build my plan ' + ico("arrow") + "</button></div></div></div>" +
       restart()
     );
   }
@@ -1072,14 +1080,21 @@
         },
         {
           icon: "target",
+          kind: "action",
           title: "Re-approach 10 warm leads",
           body: "People who showed interest and went quiet — I’ve drafted the nudge.",
           why: "The cheapest revenue is interest you already earned. Reviving warm leads beats chasing strangers.",
         },
         {
           icon: "bulb",
-          title: "Add proof at the decision point",
-          body: "Put one testimonial or result where " + au + " decide to buy.",
+          kind: "content",
+          title: "Publish a proof post",
+          body:
+            "Post one real testimonial or result on " +
+            (ch[2] || ch[0]) +
+            ", aimed where " +
+            au +
+            " decide to buy.",
           why: "A little proof at the deciding moment lifts conversion more than more traffic does.",
         },
       ],
@@ -1091,7 +1106,7 @@
   function campCount(){return S.camp&&S.camp.status==="active"?S.camp.moves.length:0;}
   function todayTasks(){var b=baseTasks();if(!campCount())return b;var cm=S.camp.moves.map(function(m){return {icon:m.icon,title:m.title,body:m.body,why:m.why,camp:S.camp.name};});return b.concat(cm);}
   function taskKind(t){if(t&&t.kind)return t.kind;var s=((t&&t.title)||"")+" "+((t&&t.body)||"");s=s.toLowerCase();if(/send it to|reach \d+|add value in|communities or threads|pick one|re-approach|put one testimonial|warm leads/.test(s))return "action";return "content";}
-  function kindOf(i){return taskKind(todayTasks()[i]);}
+  function kindOf(i){return taskKind(taskAt(i));}
   var PLATS = { instagram: "Instagram", linkedin: "LinkedIn", tiktok: "TikTok", facebook: "Facebook", youtube: "YouTube", email: "Email", x: "X", twitter: "X", pinterest: "Pinterest" };
   function movePlat(i) {
     if (S.tweak && S.tweak[i] && S.tweak[i].platform) return S.tweak[i].platform;
@@ -1173,7 +1188,8 @@
       actions =
         '<button class="lk" data-a="tapprove" data-k="' + i + '">' + ico("check") + "Approve</button>" + whyBtn +
         '<button class="lk mut" data-a="tskip" data-k="' + i + '">Skip</button>';
-    var draftBadge = st === "drafting" ? '<span class="tc-badge">Drafting</span>' : "";
+    var post = kind === "content" ? (S.posts[i] || buildPost(t, i)) : null;
+    var platBadge = post ? '<span class="tc-plat">' + ico(typeIcon(post.type)) + post.platform + "</span>" : "";
     var kbadge = '<span class="kbadge ' + kind + '">' + (kind === "action" ? "Action" : "Content") + "</span>";
     var campChip = t.camp ? '<span class="tc-camp">' + ico("mega") + t.camp + "</span>" : "";
     var chk =
@@ -1191,8 +1207,8 @@
       '</div><div class="tc-tx"><div class="tc-t">' +
       t.title +
       kbadge +
+      platBadge +
       campChip +
-      draftBadge +
       '</div><div class="tc-b">' +
       t.body +
       "</div>" +
@@ -1259,7 +1275,7 @@
         " moves done</div></div>";
     }
     var cards = "";
-    for (var i = 0; i < baseLen; i++) cards += tcard(tasks[i], i);
+    for (var i = 0; i < baseLen; i++) if (!S.done[i]) cards += tcard(tasks[i], i);
     if (cc) {
       var nextC = -1;
       for (var c = baseLen; c < tasks.length; c++)
@@ -1269,6 +1285,11 @@
         }
       if (nextC >= 0) cards += tcard(tasks[nextC], nextC);
     }
+    if (!cards)
+      cards =
+        '<div class="tnote donenote"><div class="tn-h">' +
+        ico("checkc") +
+        ' All done for today</div><p>Every move’s handled — nice work. Fresh moves land tomorrow. You can review what went out in <button class="lk" data-a="tab" data-k="results">Results</button>.</p></div>';
     var baseDone = 0;
     for (var b = 0; b < baseLen; b++) if (S.done[b]) baseDone++;
     var sub =
@@ -1293,15 +1314,20 @@
         : "";
     var toggle =
       '<div class="viewtog"><button class="vt' +
-      (S.todayView !== "board" ? " on" : "") +
+      (S.todayView !== "board" && S.todayView !== "calendar" ? " on" : "") +
       '" data-a="todayview" data-k="list">' +
       ico("list") +
       ' List</button><button class="vt' +
       (S.todayView === "board" ? " on" : "") +
       '" data-a="todayview" data-k="board">' +
       ico("board") +
-      " Board</button></div>";
+      ' Board</button><button class="vt' +
+      (S.todayView === "calendar" ? " on" : "") +
+      '" data-a="todayview" data-k="calendar">' +
+      ico("cal") +
+      " Calendar</button></div>";
     var isTodaySingle = S.day === todayISO() && !isRange();
+    var isCal = S.todayView === "calendar";
     var head =
       '<div class="todayhead"><div class="th-day">' +
       todayDate() +
@@ -1309,22 +1335,22 @@
       sub +
       '</p><div class="todayctrls">' +
       toggle +
-      '<div class="boardtools">' +
-      dateNav() +
-      "</div></div></div>";
+      (isCal ? "" : '<div class="boardtools">' + dateNav() + "</div>") +
+      "</div></div>";
     var tnote =
       '<div class="tnote"><div class="tn-h">' +
       ico("spark") +
       " Why so few?</div><p>Your full strategy runs behind the scenes. I only surface today’s highest-leverage moves, so you’re never overwhelmed — approve, tweak, or skip and I’ll adapt tomorrow.</p><button class=\"lk\" data-a=\"tab\" data-k=\"thinking\">" +
       ico("spark") +
       " See Clara’s full thinking</button></div>";
-    var body =
-      S.todayView === "board"
+    var body = isCal
+      ? vTodayCal()
+      : S.todayView === "board"
         ? vBoard()
         : isTodaySingle
           ? aa + cards + tnote
           : vHistList();
-    return head + (isTodaySingle ? offer + banner : "") + body;
+    return head + (isTodaySingle && !isCal ? offer + banner : "") + body;
   }
   function defaultCols() {
     return [
@@ -1725,16 +1751,103 @@
   }
   function captionFor(task,rev){var a=arch(),tone=S.p.tone,nm=(nameOf()==="there"?"":nameOf());var hooks=({warm:["Here’s the honest version.","A little something from us this week.","Real talk for a second."],bold:["Most people get this wrong.","Let’s be blunt.","Stop scrolling — this matters."],pro:["A quick, useful note.","Worth two minutes.","One thing worth knowing."],playful:["Okay, confession time. ✨","Plot twist. 👀","Hot take incoming. 🌶"]})[tone]||["Here’s the honest version."];var cta=({warm:"If that sounds like you, come say hi.",bold:"Stop settling — you know where to find us.",pro:"Happy to help if this is on your list — just reach out.",playful:"Drop a 🙋 if you’re in — we got you."})[tone]||"";return hooks[(rev||0)%hooks.length]+"\n\n"+a.pos+"\n\n"+cta+(nm?"\n\n— "+nm:"");}
   function inferType(p){if(/instagram|pinterest|facebook/i.test(p))return "image";if(/tiktok|youtube/i.test(p))return "video";return "text";}
-  var FMT_OPTS={image:["Feed post","Carousel","Story","Pin"],video:["Reel","Short","Story"],text:["Post","Article","Thread","Newsletter"]};
+  var FMT_OPTS={image:["Feed post","Carousel","Story","Pin"],video:["Reel","Short","Story"],text:["Post","Article","Thread","Newsletter"],audio:["Podcast","Audiogram","Voice note"]};
   function fmtFor(type,p){var pf=({image:{Instagram:"Feed post",Pinterest:"Pin",Facebook:"Feed post"},video:{TikTok:"Short video",YouTube:"Short",Instagram:"Reel"},text:{LinkedIn:"Post",Email:"Newsletter",X:"Post","Content & SEO":"Article"}})[type]||{};return pf[p]||FMT_OPTS[type][0];}
   var POSTKIT={food:{media:"A close, natural shot of your product mid-craft — flour-dusted, soft daylight, real not staged.",tags:"#madelocal #craftfood #smallbatch #supportlocal"},saas:{media:"A clean before/after or a simple UI frame showing the hours saved — minimal, high-contrast.",tags:"#b2bsaas #productivity #founders #workflow"},fitness:{media:"A candid, real-person shot mid-session — energy over perfection, natural light.",tags:"#fitnessjourney #week1 #coaching #showup"},shop:{media:"A styled-but-honest flat-lay or lifestyle shot — story first, price never.",tags:"#smallbusiness #handmade #shopindie #thestory"},services:{media:"A warm, trustworthy shot — you or your space, faces and credibility over stock.",tags:"#trusted #local #realresults #askanexpert"},creator:{media:"A bold thumbnail-style frame with one clear promise — your face plus the transformation.",tags:"#learnwithme #creator #howto #growth"},other:{media:"A clean, on-brand image that leads with your one clear difference.",tags:"#yourbrand #local #thedifference"}};
-  function buildPost(task,i){var a=arch(),POSTABLE={Instagram:1,LinkedIn:1,TikTok:1,YouTube:1,X:1,Facebook:1,Pinterest:1,Email:1,"Content & SEO":1,"SEO or blog":1,"Google profile":1,Community:1,Website:1},uc=(S.p.channels||[]).filter(function(c){return POSTABLE[c];}),cands=uc.length?uc:a.channels.filter(function(c){return POSTABLE[c];});if(!cands.length)cands=[a.channels[0]];var idx=(i!=null?i:0)%cands.length;var p=cands[(idx+cands.length)%cands.length];if(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].platform)p=S.tweak[i].platform;var ty=inferType(p),kit=POSTKIT[S.p.ind]||POSTKIT.other;return {type:ty,platform:p,format:fmtFor(ty,p),caption:captionFor(task,0),media:ty==="text"?"":kit.media,hashtags:kit.tags,rev:0};}
-  function typeIcon(ty){return ty==="image"?"img":ty==="video"?"vid":"txt";}
-  function typeLabel(ty){return ty==="image"?"Image":ty==="video"?"Video":"Text";}
+  function buildPost(task,i){var a=arch(),POSTABLE={Instagram:1,LinkedIn:1,TikTok:1,YouTube:1,X:1,Facebook:1,Pinterest:1,Email:1,"Content & SEO":1,"SEO or blog":1,"Google profile":1,Community:1},uc=(S.p.channels||[]).filter(function(c){return POSTABLE[c];}),cands=uc.length?uc:a.channels.filter(function(c){return POSTABLE[c];});if(!cands.length)cands=[a.channels[0]];var idx=(i!=null?i:0)%cands.length;var p=cands[(idx+cands.length)%cands.length];if(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].platform)p=S.tweak[i].platform;var ty=inferType(p),kit=POSTKIT[S.p.ind]||POSTKIT.other;return {type:ty,platform:p,format:fmtFor(ty,p),caption:captionFor(task,0),media:ty==="text"?"":kit.media,hashtags:kit.tags,rev:0};}
+  function typeIcon(ty){return ty==="image"?"img":ty==="video"?"vid":ty==="audio"?"mic":"txt";}
+  function typeLabel(ty){return ty==="image"?"Image":ty==="video"?"Video":ty==="audio"?"Audio":"Text";}
+  function mediaLabel(ty){return ty==="video"?"Video direction":ty==="audio"?"Audio direction / script":"Image direction";}
+  function mediaWord(ty){return ty==="video"?"Video":ty==="audio"?"Audio":"Image";}
   function openCreate(indices){S.queue=indices.slice();var tasks=todayTasks();indices.forEach(function(i){if(!S.posts[i])S.posts[i]=buildPost(tasks[i],i);});S.screen="app";S.tab="create";render();}
-  function draftCard(task,i){var post=S.posts[i]||(S.posts[i]=buildPost(task,i)),pub=!!S.pub[i],edit=!pub&&!!S.qedit[i];var dest='<span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span><span class="dc-for">for: '+task.title+'</span>'+(task.camp?'<span class="dc-camp">'+ico("mega")+task.camp+'</span>':'');if(pub)return '<div class="dcard done"><div class="dc-top">'+dest+'</div><div class="dc-a"><span class="doneflag">'+ico("checkc")+(post.scheduled?"Scheduled · "+post.scheduled:"Published")+'</span><button class="lk" data-a="postresult" data-k="'+i+'">'+ico("chart")+' See results</button></div></div>';var view;if(edit){var tc="";["text","image","video"].forEach(function(ty){tc+='<button class="tchip'+(post.type===ty?" on":"")+'" data-a="settype" data-k="'+i+'" data-t="'+ty+'">'+ico(typeIcon(ty))+typeLabel(ty)+'</button>';});var pfo="";arch().channels.forEach(function(c){pfo+='<option value="'+c+'"'+(post.platform===c?" selected":"")+'>'+c+'</option>';});var fmo="";(FMT_OPTS[post.type]||[]).forEach(function(f){fmo+='<option value="'+f+'"'+(post.format===f?" selected":"")+'>'+f+'</option>';});view='<div class="editgrid"><div class="efield"><label>Content type</label><div class="tchips">'+tc+'</div></div><div class="erow"><div class="efield"><label>Platform</label><select class="sel" data-psel="platform" data-k="'+i+'">'+pfo+'</select></div><div class="efield"><label>Format</label><select class="sel" data-psel="format" data-k="'+i+'">'+fmo+'</select></div></div><div class="efield"><label>Caption</label><textarea class="dtext-edit" data-pf="caption" data-pi="'+i+'">'+esc(post.caption)+'</textarea></div>'+(post.type!=="text"?'<div class="efield"><label>'+(post.type==="video"?"Video direction":"Image direction")+'</label><textarea class="mtext-edit" data-pf="media" data-pi="'+i+'">'+esc(post.media)+'</textarea></div>':"")+'<div class="efield"><label>Hashtags</label><input class="hinp" data-pf="hashtags" data-pi="'+i+'" value="'+esc(post.hashtags)+'"></div></div>';}else{view='<div class="dtext">'+esc(post.caption)+"</div>"+(post.media?'<div class="pmedia"><span class="pm-l">'+(post.type==="video"?"Video":"Image")+' direction</span> '+esc(post.media)+"</div>":"")+(post.hashtags?'<div class="ptags">'+esc(post.hashtags)+"</div>":"");}var actions=pub?'<span class="doneflag">'+ico("checkc")+"Published</span>":'<button class="btn sm" data-a="qpublish" data-k="'+i+'">'+ico("send")+' Publish</button><button class="lk mut" data-a="qedit" data-k="'+i+'">'+ico("edit")+(edit?"Done":"Edit")+'</button><button class="lk mut" data-a="qregen" data-k="'+i+'">'+ico("refresh")+"Regenerate</button>";return '<div class="dcard'+(pub?" done":"")+(edit?" editing":"")+'"><div class="dc-top">'+dest+"</div>"+view+'<div class="dc-a">'+actions+"</div></div>";}
-  function createEmpty(){return '<div class="stub"><div class="stub-ic">'+ico("zap")+'</div><h2>Nothing queued yet</h2><p>Approve a move in Today and Clara will draft it here, ready to publish.</p><button class="btn sm" data-a="tab" data-k="today">'+ico("arrow")+' Go to Today</button></div>';}
-  function vCreate(){if(!S.queue||!S.queue.length)return createEmpty();var tasks=todayTasks();var allPub=S.queue.every(function(i){return S.pub[i];});var head='<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">'+(allPub?"Published":S.queue.length>1?"Your content, ready to review":"Ready to publish")+'</h1><p class="th-s">'+(allPub?"Nice work — that’s today’s content live.":"Clara drafted "+(S.queue.length>1?("all "+S.queue.length+" in your voice"):"this in your voice")+". Review, tweak, publish.")+'</p></div>';var cards="";S.queue.forEach(function(i){cards+=draftCard(tasks[i],i);});var foot=allPub?'<div class="tnote"><div class="tn-h">'+ico("checkc")+' Done for today</div><p>Nicely done — that’s today live. <button class="lk" data-a="seeresults">See your results</button> · <button class="lk" data-a="tab" data-k="today">Back to Today</button></p></div>':"";return head+cards+foot;}
+  function qStatus(i){if(S.pub[i])return "scheduled";if(S.qdraft[i])return "draft";return "pending";}
+  function draftCard(task,i){var post=S.posts[i]||(S.posts[i]=buildPost(task,i)),pub=!!S.pub[i],draft=!pub&&!!S.qdraft[i],edit=!pub&&!!S.qedit[i];var dest='<span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span><span class="dc-for">for: '+task.title+'</span>'+(task.camp?'<span class="dc-camp">'+ico("mega")+task.camp+'</span>':'');if(pub)return '<div class="dcard done"><div class="dc-top">'+dest+'</div><div class="dc-a"><span class="doneflag">'+ico("checkc")+(post.scheduled?"Scheduled · "+post.scheduled:"Published")+'</span><button class="lk" data-a="postresult" data-k="'+i+'">'+ico("chart")+' See results</button></div></div>';var flag=draft&&!edit?'<div class="draftflag">'+ico("checkc")+' Draft saved — it’s waiting under <b>Drafts</b>. Schedule it whenever you’re ready.</div>':"";var view;if(edit){var tc="";["text","image","video","audio"].forEach(function(ty){tc+='<button class="tchip'+(post.type===ty?" on":"")+'" data-a="settype" data-k="'+i+'" data-t="'+ty+'">'+ico(typeIcon(ty))+typeLabel(ty)+'</button>';});var pfo="";arch().channels.forEach(function(c){pfo+='<option value="'+c+'"'+(post.platform===c?" selected":"")+'>'+c+'</option>';});var fmo="";(FMT_OPTS[post.type]||[]).forEach(function(f){fmo+='<option value="'+f+'"'+(post.format===f?" selected":"")+'>'+f+'</option>';});view='<div class="editgrid"><div class="efield"><label>Content type</label><div class="tchips">'+tc+'</div></div><div class="erow"><div class="efield"><label>Platform</label><select class="sel" data-psel="platform" data-k="'+i+'">'+pfo+'</select></div><div class="efield"><label>Format</label><select class="sel" data-psel="format" data-k="'+i+'">'+fmo+'</select></div></div><div class="efield"><label>Caption</label><textarea class="dtext-edit" data-pf="caption" data-pi="'+i+'">'+esc(post.caption)+'</textarea></div>'+(post.type!=="text"?'<div class="efield"><label>'+mediaLabel(post.type)+'</label><textarea class="mtext-edit" data-pf="media" data-pi="'+i+'">'+esc(post.media)+'</textarea></div>':"")+'<div class="efield"><label>Hashtags</label><input class="hinp" data-pf="hashtags" data-pi="'+i+'" value="'+esc(post.hashtags)+'"></div></div>';}else{view='<div class="dtext">'+esc(post.caption)+"</div>"+(post.media?'<div class="pmedia"><span class="pm-l">'+mediaWord(post.type)+' direction</span> '+esc(post.media)+"</div>":"")+(post.hashtags?'<div class="ptags">'+esc(post.hashtags)+"</div>":"");}var pubBtn='<button class="btn sm" data-a="qpublish" data-k="'+i+'">'+ico("send")+(draft?' Schedule it':' Publish')+'</button>';var draftBtn='<button class="lk mut" data-a="qdraftsave" data-k="'+i+'">'+ico("flag")+(draft?"Update draft":"Save as draft")+'</button>';var editBtn='<button class="lk mut" data-a="qedit" data-k="'+i+'">'+ico("edit")+(edit?"Done editing":"Edit")+'</button>';var regenBtn='<button class="lk mut" data-a="qregen" data-k="'+i+'">'+ico("refresh")+"Regenerate</button>";var actions=pubBtn+draftBtn+editBtn+regenBtn;return '<div class="dcard'+(draft?" drafted":"")+(edit?" editing":"")+'"><div class="dc-top">'+dest+"</div>"+flag+view+'<div class="dc-a">'+actions+"</div></div>";}
+  function createEmpty(){return '<div class="stub"><div class="stub-ic">'+ico("zap")+'</div><h2>Nothing queued yet</h2><p>Approve a move in Today and Clara will draft it here — or create a post of your own.</p><div class="stub-a"><button class="btn sm" data-a="conew">'+ico("plus")+' Create a post</button><button class="lk mut" data-a="tab" data-k="today">'+ico("arrow")+' Go to Today</button></div></div>';}
+  function slotISO(k){var raw=(S.posts[k]&&S.posts[k].scheduled)||bestTime(k);var day=(raw.split(",")[0]||"").trim().toLowerCase();var base=new Date();if(day==="today")return isoOf(base);if(day==="this week"){var d0=new Date(base);d0.setDate(d0.getDate()+3);return isoOf(d0);}var names=["sun","mon","tue","wed","thu","fri","sat"];var idx=names.indexOf(day.slice(0,3));if(idx<0)return isoOf(base);var add=(idx-base.getDay()+7)%7;if(add===0)add=7;var d=new Date(base);d.setDate(d.getDate()+add);return isoOf(d);}
+  function slotTime(k){var raw=(S.posts[k]&&S.posts[k].scheduled)||bestTime(k);return (raw.split(",")[1]||"").trim();}
+  function schedPosts(){var out=[];(S.queue||[]).forEach(function(i){if(S.pub[i])out.push({i:i,iso:slotISO(i),time:slotTime(i),post:S.posts[i]||{},task:taskAt(i)});});return out;}
+  function cCalMonth(){if(S.cMonth)return S.cMonth;var sched=schedPosts();var d=sched.length?parseISO(sched.map(function(s){return s.iso;}).sort()[0]):new Date();return {y:d.getFullYear(),m:d.getMonth()};}
+  function calRender(byDay,cm,opts){
+    opts=opts||{};
+    var first=new Date(cm.y,cm.m,1),startDow=(first.getDay()+6)%7,dim=new Date(cm.y,cm.m+1,0).getDate();
+    var title=first.toLocaleDateString("en-GB",{month:"long",year:"numeric"});
+    var dows=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    var head='<div class="ccal-h"><button class="cal-nav prev" data-a="'+opts.monthAction+'" data-k="-1">'+ico("arrow")+'</button><span class="cal-title">'+title+'</span><button class="cal-nav" data-a="'+opts.monthAction+'" data-k="1">'+ico("arrow")+'</button></div>';
+    var dowRow='<div class="ccal-grid ccal-dow">'+dows.map(function(d){return "<span>"+d+"</span>";}).join("")+"</div>";
+    var cells="",t=todayISO();
+    for(var e=0;e<startDow;e++)cells+='<div class="ccal-cell empty"></div>';
+    for(var d=1;d<=dim;d++){
+      var iso=cm.y+"-"+String(cm.m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"),items=byDay[iso]||[];
+      var chips=items.slice(0,2).map(function(s){return '<div class="ccal-chip'+(s.done?" done":"")+'">'+ico(s.icon)+'<span>'+s.label+'</span></div>';}).join("");
+      if(items.length>2)chips+='<div class="ccal-more">+'+(items.length-2)+' more</div>';
+      cells+='<div class="ccal-cell'+(iso===t?" today":"")+(items.length?" has":"")+'"><span class="ccal-d">'+d+'</span>'+chips+'</div>';
+    }
+    var grid='<div class="ccal-grid ccal-body">'+cells+"</div>";
+    var agenda=Object.keys(byDay).sort().map(function(iso){var items=byDay[iso];return '<div class="sched-day"><div class="sched-day-h">'+ico("cal")+" "+dayLabel(iso)+'</div>'+items.map(function(s){var clk=s.i!=null,open=clk?"button":"div",at=clk?' data-a="postresult" data-k="'+s.i+'"':'';return '<'+open+' class="sched-row'+(clk?"":" static")+'"'+at+'><span class="rr-ic">'+ico(s.icon)+'</span><span class="rr-main"><span class="rr-name">'+s.title+'</span><span class="rr-sub">'+(s.sub||"")+'</span></span><span class="rr-status '+(s.statusCls||"sched")+'">'+(s.status||"")+'</span>'+(clk?ico("arrow"):"")+'</'+open+'>';}).join("")+"</div>";}).join("");
+    return '<div class="ccal">'+head+dowRow+grid+'</div><div class="rsec">'+(opts.agendaTitle||"Scheduled posts")+'</div>'+agenda;
+  }
+  function postItem(s){return {icon:typeIcon(s.post.type),label:s.post.platform||"Post",title:s.task.title||"Post",sub:(s.post.platform||"")+(s.time?" · "+s.time:""),i:s.i,status:s.post.live?"Live":"Scheduled",statusCls:s.post.live?"live":"sched"};}
+  function vCreateCal(){
+    var sched=schedPosts();
+    if(!sched.length)return '<div class="rempty" style="margin-top:14px">Nothing scheduled yet — publish a post and it’ll land on the calendar.</div>';
+    var byDay={};sched.forEach(function(s){(byDay[s.iso]=byDay[s.iso]||[]).push(postItem(s));});
+    return calRender(byDay,cCalMonth(),{monthAction:"cmonth",agendaTitle:"Scheduled posts"});
+  }
+  function vTodayCal(){
+    var byDay={},t=todayISO();
+    schedPosts().forEach(function(s){if(s.iso>=t){(byDay[s.iso]=byDay[s.iso]||[]).push(postItem(s));}});
+    baseTasks().forEach(function(tk,i){if(!S.done[i]&&!S.pub[i]){(byDay[t]=byDay[t]||[]).push({icon:tk.icon,label:tk.title.split(" ").slice(0,2).join(" "),title:tk.title,sub:taskKind(tk)==="action"?"Action · to do":"Content · to draft",status:"Planned",statusCls:"sched"});}});
+    Object.keys(S.hist||{}).forEach(function(iso){if(iso<t){(S.hist[iso]||[]).forEach(function(h){(byDay[iso]=byDay[iso]||[]).push({icon:h.icon||"checkc",label:(h.title||"Done").split(" ").slice(0,2).join(" "),title:h.title||"Done",sub:"Completed",done:true,status:"Done",statusCls:"live"});});}});
+    if(!Object.keys(byDay).length)return '<div class="rempty" style="margin-top:14px">Nothing on your calendar yet — approve and schedule moves and they’ll show here.</div>';
+    return calRender(byDay,cCalMonth(),{monthAction:"cmonth",agendaTitle:"Your content calendar"});
+  }
+  function taskAt(i){return todayTasks()[i]||(S.ownTasks&&S.ownTasks[i])||{};}
+  function nextOwnIdx(){var n=900;while((S.ownTasks&&S.ownTasks[n])||S.posts[n])n++;return n;}
+  function angleTitle(a){var w=(a||"Custom post").trim().replace(/[.!?]+$/,"").split(/\s+/).slice(0,6).join(" ");return w.charAt(0).toUpperCase()+w.slice(1);}
+  function angleSuggestions(type,plat){
+    var nm=nameOf()==="there"?"your business":nameOf();
+    var au=(AUDS[S.p.aud]||"your customers").toLowerCase();
+    var pool=[
+      "Feature your best offer and why "+au+" need it right now",
+      "Show the behind-the-scenes of how "+nm+" really works",
+      "Teach one thing "+au+" always ask you about",
+      "Share a customer win — a real before and after",
+      "Give your honest take on something everyone in your space gets wrong",
+      "Answer the question "+au+" have right before they buy",
+      (type==="video"?"Walk through your process in a quick clip":"Break down your process step by step"),
+    ];
+    var s=(plat.length+type.length)%pool.length,out=[];
+    for(var k=0;k<3;k++)out.push(pool[(s+k)%pool.length]);
+    return out;
+  }
+  function captionFromAngle(angle,type,plat){
+    var tone=S.p.tone,nm=(nameOf()==="there"?"":nameOf());
+    var hook=({warm:"Here’s the honest version.",bold:"Let’s be blunt.",pro:"A quick, useful note.",playful:"Okay, confession time. ✨"})[tone]||"Here’s the honest version.";
+    var cta=({warm:"If that sounds like you, come say hi.",bold:"Stop settling — you know where to find us.",pro:"Happy to help if this is on your list — just reach out.",playful:"Drop a 🙋 if you’re in — we got you."})[tone]||"";
+    var b=(angle||"").trim();b=b.charAt(0).toUpperCase()+b.slice(1);if(b&&!/[.!?]$/.test(b))b+=".";
+    return hook+"\n\n"+b+"\n\n"+cta+(nm?"\n\n— "+nm:"");
+  }
+  function vCompose(){
+    var c=S.compose,types=[["text","Text"],["image","Image"],["video","Video"],["audio","Audio"]];
+    var tchips=types.map(function(tp){return '<button class="ocard'+(c.type===tp[0]?" on":"")+'" data-a="cotype" data-t="'+tp[0]+'">'+ico(typeIcon(tp[0]))+" "+tp[1]+"</button>";}).join("");
+    var chans=(S.p.channels||[]).filter(function(x){return POSTABLE_CH[x];});if(!chans.length)chans=arch().channels.filter(function(x){return POSTABLE_CH[x];});if(!chans.length)chans=["Instagram"];
+    var pchips=chans.map(function(pl){return '<button class="ocard'+(c.platform===pl?" on":"")+'" data-a="coplat" data-k="'+pl+'">'+pl+"</button>";}).join("");
+    var angleSec="";
+    if(c.type&&c.platform){
+      if(!c.angles||!c.angles.length)c.angles=angleSuggestions(c.type,c.platform);
+      var cards=c.angles.map(function(a,idx){return '<button class="anglecard'+(c.angleSel===idx?" on":"")+'" data-a="coangle" data-k="'+idx+'"><span class="ac-n">'+(idx+1)+'</span><span class="ac-t">'+esc(a)+"</span>"+(c.angleSel===idx?ico("check"):"")+"</button>";}).join("");
+      var ownCard='<button class="anglecard own'+(c.angleSel==="own"?" on":"")+'" data-a="coangle" data-k="own"><span class="ac-n">'+ico("edit")+'</span><span class="ac-t">I have my own idea</span>'+(c.angleSel==="own"?ico("check"):"")+"</button>";
+      var ownBox=c.angleSel==="own"?'<textarea class="ownbox" data-coown placeholder="Tell Clara what you want this post to be about — e.g. why I started this bakery">'+esc(c.ownText||"")+"</textarea>":"";
+      angleSec='<div class="rsec">Pick an angle</div><div class="anglelist">'+cards+ownCard+"</div>"+ownBox;
+    }
+    var canGen=c.type&&c.platform&&c.angleSel!=null;
+    var foot='<div class="stepfoot"><button class="lk mut" data-a="cocancel">'+ico("arrow")+' Cancel</button><button class="btn'+(canGen?"":" disabled")+'" data-a="cogen">'+ico("spark")+" Generate post</button></div>";
+    return '<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">Create a post</h1><p class="th-s">Pick a type and platform, then choose an angle — or bring your own.</p></div>'+
+      '<div class="rsec">Content type</div><div class="ocardrow">'+tchips+"</div>"+
+      '<div class="rsec">Platform</div><div class="ocardrow">'+pchips+"</div>"+
+      angleSec+foot;
+  }
+  function vCreate(){if(S.composing)return vCompose();if(!S.queue||!S.queue.length)return createEmpty();var tasks=todayTasks();var q=S.queue;var nPend=0,nDraft=0,nSched=0;q.forEach(function(i){var st=qStatus(i);if(st==="scheduled")nSched++;else if(st==="draft")nDraft++;else nPend++;});var allPub=nSched===q.length;var head='<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">'+(allPub?"Published":q.length>1?"Your content, ready to review":"Ready to publish")+'</h1><p class="th-s">'+(allPub?"Nice work — that’s today’s content live.":"Clara drafted "+(q.length>1?("all "+q.length+" in your voice"):"this in your voice")+". Review, tweak, publish — or save as a draft for later.")+'</p></div>';var newBtn='<button class="btn sm createnew" data-a="conew">'+ico("plus")+' Create a post</button>';var top='<div class="createtop">'+head+newBtn+'</div>';var vtog=nSched>0?'<div class="viewtog cvtog"><button class="vt'+(S.createView!=="calendar"?" on":"")+'" data-a="createview" data-k="list">'+ico("list")+' List</button><button class="vt'+(S.createView==="calendar"?" on":"")+'" data-a="createview" data-k="calendar">'+ico("cal")+' Calendar</button></div>':"";if(nSched>0&&S.createView==="calendar")return top+vtog+vCreateCal();var filt=S.cFilter||"all";var bar="";if(q.length>1||nDraft){function cf(k,label,n){return '<button class="cf'+(filt===k?" on":"")+'" data-a="cfilter" data-k="'+k+'">'+label+' <span class="cf-n">'+n+'</span></button>';}bar='<div class="cfilter">'+cf("all","All",q.length)+cf("pending","Pending",nPend)+cf("draft","Drafts",nDraft)+cf("scheduled","Scheduled",nSched)+'</div>';}var shown=q.filter(function(i){return filt==="all"||qStatus(i)===filt;});var cards="";shown.forEach(function(i){cards+=draftCard(taskAt(i),i);});if(!shown.length)cards='<div class="rempty">No '+(filt==="pending"?"pending":filt==="draft"?"draft":filt==="scheduled"?"scheduled":"")+' posts right now.</div>';var foot=allPub?'<div class="tnote"><div class="tn-h">'+ico("checkc")+' Done for today</div><p>Nicely done — that’s today live. <button class="lk" data-a="seeresults">See your results</button> · <button class="lk" data-a="tab" data-k="today">Back to Today</button></p></div>':"";return top+vtog+bar+cards+foot;}
   function resultsEmpty(){return '<div class="stub"><div class="stub-ic">'+ico("chart")+'</div><h2>Nothing to measure yet</h2><p>Publish a move in Create and its results land here — then they feed back into tomorrow’s Today.</p><button class="btn sm" data-a="tab" data-k="today">'+ico("arrow")+' Go to Today</button></div>';}
   function fmtNum(n){return (n||0).toLocaleString("en-US");}
   function postMetrics(i){var seed=(i+1)*97;var reach=380+((seed*13)%760);var rate=9+(seed%12);var eng=Math.round(reach*rate/100);var clicks=Math.round(eng*(0.18+((seed%7)/50)));var conv=Math.max(0,Math.round(clicks*(0.10+(seed%6)/100)));return {reach:reach,eng:eng,clicks:clicks,conv:conv};}
@@ -1743,8 +1856,8 @@
   function trendSeries(nPub){var seed=(nPub+1)*37;var out=[];for(var i=0;i<7;i++){var g=0.5+i*0.09;var noise=((seed>>(i%5))%7)/40;out.push(Math.round((0.35+g+noise)*100));}return out;}
   function sparkArea(vals){var w=320,h=88,pad=8;var max=Math.max.apply(null,vals)||1,min=Math.min.apply(null,vals),rng=(max-min)||1;var pts=vals.map(function(v,i){var x=pad+i*((w-2*pad)/(vals.length-1));var y=h-pad-((v-min)/rng)*(h-2*pad);return [x,y];});var line=pts.map(function(p,i){return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ");var area=line+" L"+pts[pts.length-1][0].toFixed(1)+" "+(h-pad)+" L"+pts[0][0].toFixed(1)+" "+(h-pad)+" Z";var last=pts[pts.length-1];return '<svg class="spark" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><path class="spark-fill" d="'+area+'"/><path class="spark-line" d="'+line+'"/><circle class="spark-dot" cx="'+last[0].toFixed(1)+'" cy="'+last[1].toFixed(1)+'" r="3.5"/></svg>';}
   function postRecords(){
-    var out=[],tasks=todayTasks();
-    for(var k in S.pub){if(!S.pub[k])continue;var i=+k;var p=S.posts[i]||{};var mv=tasks[i]||{};out.push({i:i,name:mv.title||"Post",platform:p.platform||"",type:p.type||"text",format:p.format||"",scheduled:p.scheduled||"",live:!!p.live,status:p.live?"Live":"Scheduled"});}
+    var out=[];
+    for(var k in S.pub){if(!S.pub[k])continue;var i=+k;var p=S.posts[i]||{};var mv=taskAt(i);out.push({i:i,name:mv.title||"Post",platform:p.platform||"",type:p.type||"text",format:p.format||"",scheduled:p.scheduled||"",live:!!p.live,status:p.live?"Live":"Scheduled"});}
     return out;
   }
   function recFilters(recs){
@@ -1776,41 +1889,149 @@
     var rows=recsF.length?recsF.map(rrow).join(""):'<div class="rempty">No posts match your filters.</div>';
     return '<div class="todayhead"><div class="th-day">Results</div><h1 class="th-t">Your posts</h1><p class="th-s">Everything you’ve scheduled and published. Search, filter, or open a post for full stats.</p></div>'+cards+toolbar+'<div class="rlist">'+rows+"</div>";
   }
-  function pmetrics(plat, x){
-    var e=x.eng, r=x.reach, c=x.clicks, p=(plat||"").toLowerCase();
-    function R(n){return Math.max(0,Math.round(n));}
-    function pct(a,b){return (b?((a/b)*100).toFixed(1):"0")+"%";}
-    if(p==="instagram")return {label:"Instagram",items:[["Likes",fmtNum(R(e*0.72))],["Comments",fmtNum(R(e*0.08))],["Saves",fmtNum(R(e*0.12))],["Shares",fmtNum(R(e*0.08))],["Profile visits",fmtNum(R(r*0.04))]]};
-    if(p==="linkedin")return {label:"LinkedIn",items:[["Impressions",fmtNum(R(r*1.18))],["Unique impressions",fmtNum(r)],["Reactions",fmtNum(R(e*0.74))],["Comments",fmtNum(R(e*0.1))],["Reposts",fmtNum(R(e*0.09))],["Click-through",pct(c,R(r*1.18))]]};
-    if(p==="facebook")return {label:"Facebook",items:[["Like",fmtNum(R(e*0.58))],["Love",fmtNum(R(e*0.12))],["Haha",fmtNum(R(e*0.06))],["Wow",fmtNum(R(e*0.03))],["Comments",fmtNum(R(e*0.09))],["Shares",fmtNum(R(e*0.07))],["Clicks",fmtNum(c)]]};
-    if(p==="email")return {label:"Email",items:[["Opens",fmtNum(R(r*0.42))],["Open rate",pct(R(r*0.42),r)],["Clicks",fmtNum(c)],["Click rate",pct(c,r)],["Unsubscribes",fmtNum(R(r*0.004))]]};
-    if(p==="tiktok"||p==="youtube")return {label:plat,items:[["Views",fmtNum(R(r*1.1))],["Likes",fmtNum(R(e*0.7))],["Comments",fmtNum(R(e*0.09))],["Shares",fmtNum(R(e*0.14))],["Avg watch","0:"+(12+(r%18)<10?"0":"")+(12+(r%18))]]};
-    return {label:plat||"Post",items:[["Likes",fmtNum(R(e*0.7))],["Comments",fmtNum(R(e*0.12))],["Shares",fmtNum(R(e*0.1))]]};
+  var CHART_COLORS=["#6c5ce7","#00b894","#0984e3","#f0a92e","#e17055","#e84393","#00cec9"];
+  function pad2(n){return (n<10?"0":"")+n;}
+  function aPct(a,b){return (b?((a/b)*100).toFixed(1):"0")+"%";}
+  function last7Labels(){var nm=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];var out=[];var d=new Date();for(var k=6;k>=0;k--){var dd=new Date(d);dd.setDate(d.getDate()-k);out.push(nm[dd.getDay()]);}return out;}
+  function daySeries(i,total){var s=(i+1)*53;var raw=[],sum=0;for(var k=0;k<7;k++){var v=0.55+(((s>>(k%5))+k*7)%10)/10;raw.push(v);sum+=v;}return raw.map(function(v){return Math.max(1,Math.round(total*v/sum));});}
+  function retenPts(i){var s=(i+1)*29;var base=[1,0.86,0.74,0.65,0.58,0.52,0.47,0.43,0.4];return base.map(function(v,k){return Math.max(0.12,Math.min(1,v-((s>>(k%5))%4)/100));});}
+  function chartArea(vals,labels){
+    var w=680,h=180,padL=40,padR=12,padT=14,padB=28,n=vals.length;var max=Math.max.apply(null,vals)||1,iw=w-padL-padR,ih=h-padT-padB;
+    var P=vals.map(function(v,i){return [padL+(n===1?iw/2:i*(iw/(n-1))),padT+ih-(v/max)*ih];});
+    var line=P.map(function(p,i){return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ");
+    var area=line+" L"+P[n-1][0].toFixed(1)+" "+(padT+ih)+" L"+P[0][0].toFixed(1)+" "+(padT+ih)+" Z";
+    var grid="",yl="";[0,0.5,1].forEach(function(g){var y=padT+ih-g*ih;grid+='<line class="ch-grid" x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+y.toFixed(1)+'"/>';yl+='<text class="ch-yl" x="'+(padL-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+fmtNum(Math.round(max*g))+'</text>';});
+    var dots=P.map(function(p){return '<circle class="ch-dot" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.2"/>';}).join("");
+    var xl=(labels||[]).map(function(l,i){return '<text class="ch-xl" x="'+P[i][0].toFixed(1)+'" y="'+(h-8)+'" text-anchor="middle">'+l+'</text>';}).join("");
+    return '<svg class="chart" viewBox="0 0 '+w+' '+h+'">'+grid+yl+'<path class="ch-area" d="'+area+'"/><path class="ch-line" d="'+line+'"/>'+dots+xl+'</svg>';
   }
-  function vmetrics(i,x){
-    var r=x.reach;function R(n){return Math.round(n);}
-    return [["3-sec views",fmtNum(R(r*0.82))],["10-sec views",fmtNum(R(r*0.54))],["30-sec views",fmtNum(R(r*0.31))],["Avg watch time","0:"+(9+(i*7)%20<10?"0":"")+(9+(i*7)%20)],["Completion",(38+(i*11)%28)+"%"]];
+  function chartBars(items,color){
+    var max=Math.max.apply(null,items.map(function(it){return it[1];}))||1;
+    return '<div class="bars">'+items.map(function(it){var wp=Math.max(3,(it[1]/max)*100);return '<div class="barrow"><span class="bar-l">'+it[0]+'</span><span class="bar-track"><span class="bar-fill" style="width:'+wp.toFixed(1)+'%;background:'+(color||"var(--accent)")+'"></span></span><span class="bar-v">'+fmtNum(it[1])+'</span></div>';}).join("")+'</div>';
+  }
+  function chartDonut(segs){
+    var total=segs.reduce(function(a,s){return a+s.value;},0)||1,r=52,cx=60,cy=60,circ=2*Math.PI*r,off=0;
+    var arcs=segs.map(function(s){var len=s.value/total*circ;var el='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+s.color+'" stroke-width="15" stroke-dasharray="'+len.toFixed(2)+' '+(circ-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 '+cx+' '+cy+')"/>';off+=len;return el;}).join("");
+    var legend=segs.map(function(s){return '<div class="lg-i"><span class="lg-dot" style="background:'+s.color+'"></span><span class="lg-t">'+s.label+'</span><b>'+Math.round(s.value/total*100)+'%</b></div>';}).join("");
+    return '<div class="donutwrap"><svg class="donut" viewBox="0 0 120 120">'+arcs+'<circle cx="60" cy="60" r="44" fill="var(--panel)"/></svg><div class="legend">'+legend+'</div></div>';
+  }
+  function chartReten(pts){
+    var w=680,h=180,padL=40,padR=12,padT=14,padB=28,n=pts.length,iw=w-padL-padR,ih=h-padT-padB;
+    var P=pts.map(function(y,i){return [padL+i*(iw/(n-1)),padT+ih-y*ih];});
+    var line=P.map(function(p,i){return (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" ");
+    var area=line+" L"+P[n-1][0].toFixed(1)+" "+(padT+ih)+" L"+P[0][0].toFixed(1)+" "+(padT+ih)+" Z";
+    var grid="",yl="";[0,0.5,1].forEach(function(g){var y=padT+ih-g*ih;grid+='<line class="ch-grid" x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(w-padR)+'" y2="'+y.toFixed(1)+'"/>';yl+='<text class="ch-yl" x="'+(padL-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+Math.round(g*100)+'%</text>';});
+    var xn=["Start","25%","50%","75%","End"],xl="";xn.forEach(function(l,i){var x=padL+i*(iw/4);xl+='<text class="ch-xl" x="'+x.toFixed(1)+'" y="'+(h-8)+'" text-anchor="middle">'+l+'</text>';});
+    return '<svg class="chart" viewBox="0 0 '+w+' '+h+'">'+grid+yl+'<path class="ch-area reten" d="'+area+'"/><path class="ch-line reten" d="'+line+'"/>'+xl+'</svg>';
+  }
+  function analyticsFor(plat,type,i){
+    var x=postMetrics(i),r=x.reach,e=x.eng,c=x.clicks,cv=x.conv,s=(i+1)*97;
+    function R(n){return Math.max(0,Math.round(n));}
+    var impr=R(r*(1.18+(s%16)/100)),col=CHART_COLORS,p=(plat||"").toLowerCase();
+    var A={engTitle:"Engagement",engColor:col[0],disc:null,discTitle:"How people found it"};
+    if(/instagram/.test(p)){
+      var likes=R(e*0.71),cm=R(e*0.07),sv=R(e*0.14),sh=R(e*0.08),pv=R(r*0.05),fol=R(r*0.009);
+      A.kpis=[["Reach",fmtNum(r),"accounts"],["Impressions",fmtNum(impr),""],["Engagement",aPct(e,r),"rate"],["Saves",fmtNum(sv),""]];
+      A.eng=[["Likes",likes],["Comments",cm],["Saves",sv],["Shares",sh]];
+      A.disc=[{label:"Home",value:58,color:col[0]},{label:"Explore",value:22,color:col[1]},{label:"Profile",value:12,color:col[2]},{label:"Other",value:8,color:col[3]}];
+      A.full=[["Accounts reached",fmtNum(r)],["Impressions",fmtNum(impr)],["Likes",fmtNum(likes)],["Comments",fmtNum(cm)],["Saves",fmtNum(sv)],["Shares",fmtNum(sh)],["Profile visits",fmtNum(pv)],["Follows from post",fmtNum(fol)],["Engagement rate",aPct(e,r)]];
+      A.label="Instagram";A.note="Mirrors Instagram’s Professional dashboard / Graph API insights for a post or reel.";
+    }else if(/linkedin/.test(p)){
+      var reac=R(e*0.73),cm=R(e*0.10),rp=R(e*0.08),cl=c,lk=R(reac*0.60),cel=R(reac*0.15),sup=R(reac*0.09),insi=R(reac*0.11),lov=R(reac*0.05);
+      A.kpis=[["Impressions",fmtNum(impr),""],["Members reached",fmtNum(r),""],["Engagement",aPct(e,impr),"rate"],["Clicks",fmtNum(cl),aPct(cl,impr)+" CTR"]];
+      A.engColor=col[2];A.eng=[["Reactions",reac],["Comments",cm],["Reposts",rp],["Clicks",cl]];
+      A.disc=[{label:"Feed",value:74,color:col[2]},{label:"Notifications",value:12,color:col[0]},{label:"Search",value:9,color:col[1]},{label:"Profile",value:5,color:col[3]}];A.discTitle="Where it was seen";
+      A.full=[["Impressions",fmtNum(impr)],["Members reached",fmtNum(r)],["Reactions",fmtNum(reac)],["— Like",fmtNum(lk)],["— Celebrate",fmtNum(cel)],["— Support",fmtNum(sup)],["— Insightful",fmtNum(insi)],["— Love",fmtNum(lov)],["Comments",fmtNum(cm)],["Reposts",fmtNum(rp)],["Clicks",fmtNum(cl)],["CTR",aPct(cl,impr)],["Engagement rate",aPct(e,impr)]];
+      A.label="LinkedIn";A.note="Mirrors LinkedIn’s post analytics / Marketing API fields.";
+    }else if(/facebook/.test(p)){
+      var org=R(r*0.82),paid=r-org,reac=R(e*0.66),cm=R(e*0.10),sh=R(e*0.08),lc=c,oc=R(c*0.4),neg=R(r*0.004),like=R(reac*0.62),love=R(reac*0.16),care=R(reac*0.07),haha=R(reac*0.08),wow=R(reac*0.05);
+      A.kpis=[["Reach",fmtNum(r),""],["Impressions",fmtNum(impr),""],["Engagement",aPct(e,r),"rate"],["Link clicks",fmtNum(lc),""]];
+      A.engColor=col[2];A.eng=[["Reactions",reac],["Comments",cm],["Shares",sh],["Link clicks",lc]];
+      A.disc=[{label:"Feed",value:67,color:col[2]},{label:"Shares",value:16,color:col[1]},{label:"Groups",value:10,color:col[0]},{label:"Other",value:7,color:col[3]}];
+      A.full=[["Reach",fmtNum(r)],["Organic reach",fmtNum(org)],["Paid reach",fmtNum(paid)],["Impressions",fmtNum(impr)],["— Like",fmtNum(like)],["— Love",fmtNum(love)],["— Care",fmtNum(care)],["— Haha",fmtNum(haha)],["— Wow",fmtNum(wow)],["Comments",fmtNum(cm)],["Shares",fmtNum(sh)],["Link clicks",fmtNum(lc)],["Other clicks",fmtNum(oc)],["Negative feedback",fmtNum(neg)]];
+      A.label="Facebook";A.note="Mirrors Facebook Page insights / Graph API post fields.";
+    }else if(/email/.test(p)){
+      var sent=R(r*1.05),deliv=r,opens=R(r*0.44),uopens=R(opens*0.85),cl=c,ucl=R(c*0.82),unsub=R(r*0.004),spam=R(r*0.0006),bounce=sent-deliv;
+      A.kpis=[["Open rate",aPct(opens,deliv),""],["Click rate",aPct(cl,deliv),""],["Delivered",fmtNum(deliv),""],["Unsubscribes",fmtNum(unsub),""]];
+      A.engTitle="Delivery funnel";A.engColor=col[1];A.eng=[["Sent",sent],["Delivered",deliv],["Opened",opens],["Clicked",cl]];
+      A.full=[["Sent",fmtNum(sent)],["Delivered",fmtNum(deliv)],["Bounce rate",aPct(bounce,sent)],["Unique opens",fmtNum(uopens)],["Open rate",aPct(opens,deliv)],["Total opens",fmtNum(opens)],["Unique clicks",fmtNum(ucl)],["Click rate",aPct(cl,deliv)],["Click-to-open",aPct(cl,opens)],["Unsubscribes",fmtNum(unsub)],["Spam reports",fmtNum(spam)]];
+      A.label="Email";A.note="Mirrors what an ESP like Mailchimp or Klaviyo reports for a campaign.";
+    }else if(/tiktok/.test(p)){
+      var views=R(impr*1.15),lk=R(e*0.80),cm=R(e*0.06),sh=R(e*0.10),sv=R(e*0.04),pvz=R(r*0.05),fol=R(r*0.012);
+      A.kpis=[["Views",fmtNum(views),""],["Avg watch","0:"+pad2(9+(s%14)),""],["Completed",(34+(s%26))+"%","of viewers"],["New followers",fmtNum(fol),""]];
+      A.engColor=col[6];A.eng=[["Likes",lk],["Comments",cm],["Shares",sh],["Saves",sv]];
+      A.disc=[{label:"For You",value:88,color:col[0]},{label:"Following",value:5,color:col[1]},{label:"Sound",value:3,color:col[2]},{label:"Search & profile",value:4,color:col[3]}];A.discTitle="Traffic source";
+      A.full=[["Video views",fmtNum(views)],["Reach",fmtNum(r)],["Total play time",fmtNum(R(views*0.35))+" min"],["Avg watch time","0:"+pad2(9+(s%14))],["Watched full video",(34+(s%26))+"%"],["Likes",fmtNum(lk)],["Comments",fmtNum(cm)],["Shares",fmtNum(sh)],["Saves",fmtNum(sv)],["Profile views",fmtNum(pvz)],["New followers",fmtNum(fol)]];
+      A.label="TikTok";A.note="Mirrors TikTok’s post analytics for a video.";
+    }else if(/youtube/.test(p)){
+      var views=R(impr*1.1),yimpr=R(views*14),likes=R(e*0.78),cm=R(e*0.12),sh=R(e*0.10),subs=R(views*0.012),wh=(views*(0.02+(s%5)/100)).toFixed(1);
+      A.kpis=[["Views",fmtNum(views),""],["Watch time",wh+" hrs",""],["Avg view","0:"+pad2(20+(s%40)),"duration"],["Subscribers","+"+fmtNum(subs),""]];
+      A.engColor=col[4];A.eng=[["Likes",likes],["Comments",cm],["Shares",sh]];
+      A.disc=[{label:"Browse",value:32,color:col[0]},{label:"Suggested",value:29,color:col[1]},{label:"Search",value:22,color:col[2]},{label:"External",value:10,color:col[3]},{label:"Direct",value:7,color:col[4]}];A.discTitle="Traffic sources";
+      A.full=[["Views",fmtNum(views)],["Impressions",fmtNum(yimpr)],["Impressions CTR",aPct(views,yimpr)],["Watch time",wh+" hrs"],["Avg view duration","0:"+pad2(20+(s%40))],["Avg percentage viewed",(38+(s%30))+"%"],["Likes",fmtNum(likes)],["Comments",fmtNum(cm)],["Shares",fmtNum(sh)],["Subscribers gained","+"+fmtNum(subs)]];
+      A.label="YouTube";A.note="Mirrors YouTube Studio / Analytics API for a video.";
+    }else if(/^x$|twitter/.test(p)){
+      var lk=R(e*0.55),rp=R(e*0.12),rpl=R(e*0.08),bm=R(e*0.10),pc=R(r*0.02),lc=c,de=R(e*0.15),fl=R(r*0.004);
+      A.kpis=[["Impressions",fmtNum(impr),""],["Engagements",fmtNum(e),""],["Engagement",aPct(e,impr),"rate"],["Link clicks",fmtNum(lc),""]];
+      A.engColor=col[2];A.eng=[["Likes",lk],["Reposts",rp],["Replies",rpl],["Bookmarks",bm]];
+      A.disc=[{label:"Timeline",value:72,color:col[0]},{label:"Search",value:12,color:col[1]},{label:"Profile",value:10,color:col[2]},{label:"Other",value:6,color:col[3]}];
+      A.full=[["Impressions",fmtNum(impr)],["Engagements",fmtNum(e)],["Engagement rate",aPct(e,impr)],["Likes",fmtNum(lk)],["Reposts",fmtNum(rp)],["Replies",fmtNum(rpl)],["Bookmarks",fmtNum(bm)],["Profile clicks",fmtNum(pc)],["Link clicks",fmtNum(lc)],["Detail expands",fmtNum(de)],["New follows",fmtNum(fl)]];
+      A.label="X";A.note="Mirrors X (Twitter) post analytics fields.";
+    }else if(/pinterest/.test(p)){
+      var sv=R(e*0.7),pc=R(e*0.2),ob=R(c),reac=R(e*0.1);
+      A.kpis=[["Impressions",fmtNum(impr),""],["Saves",fmtNum(sv),""],["Pin clicks",fmtNum(pc),""],["Outbound clicks",fmtNum(ob),""]];
+      A.engColor=col[5];A.eng=[["Saves",sv],["Pin clicks",pc],["Outbound clicks",ob],["Reactions",reac]];
+      A.disc=[{label:"Home",value:54,color:col[0]},{label:"Search",value:30,color:col[1]},{label:"Related",value:12,color:col[2]},{label:"Other",value:4,color:col[3]}];
+      A.full=[["Impressions",fmtNum(impr)],["Reach",fmtNum(r)],["Saves",fmtNum(sv)],["Pin clicks",fmtNum(pc)],["Outbound clicks",fmtNum(ob)],["Save rate",aPct(sv,impr)],["Engagement rate",aPct(e,impr)]];
+      A.label="Pinterest";A.note="Mirrors Pinterest analytics for a Pin.";
+    }else if(/seo|blog|content|website/.test(p)){
+      var pvv=impr,uni=r,r25=R(uni*0.92),r50=R(uni*0.71),r75=R(uni*0.48),r100=R(uni*0.32);
+      A.kpis=[["Pageviews",fmtNum(pvv),""],["Unique visitors",fmtNum(uni),""],["Avg time",(1+(s%3))+":"+pad2(10+(s%50)),"on page"],["Conversions",fmtNum(cv),""]];
+      A.engTitle="Scroll depth";A.engColor=col[1];A.eng=[["Reached 25%",r25],["Reached 50%",r50],["Reached 75%",r75],["Finished",r100]];
+      A.disc=[{label:"Organic",value:61,color:col[1]},{label:"Direct",value:18,color:col[0]},{label:"Social",value:14,color:col[2]},{label:"Referral",value:7,color:col[3]}];A.discTitle="Traffic sources";
+      A.full=[["Pageviews",fmtNum(pvv)],["Unique visitors",fmtNum(uni)],["Avg time on page",(1+(s%3))+":"+pad2(10+(s%50))],["Bounce rate",(38+(s%30))+"%"],["Avg scroll depth",(52+(s%30))+"%"],["Conversions",fmtNum(cv)],["Conversion rate",aPct(cv,uni)]];
+      A.label="Website";A.note="Mirrors GA4-style page and traffic metrics.";
+    }else if(/google/.test(p)){
+      var svv=R(r*0.62),mvv=r-svv,calls=R(r*0.02),dirs=R(r*0.03),wc=c,ph=R(r*0.2);
+      A.kpis=[["Profile views",fmtNum(r),""],["Website clicks",fmtNum(wc),""],["Calls",fmtNum(calls),""],["Directions",fmtNum(dirs),""]];
+      A.engTitle="Customer actions";A.engColor=col[3];A.eng=[["Calls",calls],["Directions",dirs],["Website clicks",wc],["Photo views",ph]];
+      A.disc=[{label:"Search",value:68,color:col[0]},{label:"Maps",value:32,color:col[1]}];A.discTitle="Where you were found";
+      A.full=[["Total views",fmtNum(r)],["Search views",fmtNum(svv)],["Maps views",fmtNum(mvv)],["Calls",fmtNum(calls)],["Direction requests",fmtNum(dirs)],["Website clicks",fmtNum(wc)],["Photo views",fmtNum(ph)]];
+      A.label="Google Business Profile";A.note="Mirrors Google Business Profile performance metrics.";
+    }else{
+      var lk=R(e*0.7),cm=R(e*0.12),sh=R(e*0.1);
+      A.kpis=[["Reach",fmtNum(r),""],["Engaged",fmtNum(e),aPct(e,r)+" rate"],["Clicks",fmtNum(c),""],["Conversions",fmtNum(cv),""]];
+      A.eng=[["Reactions",lk],["Comments",cm],["Shares",sh]];
+      A.full=[["Reach",fmtNum(r)],["Impressions",fmtNum(impr)],["Reactions",fmtNum(lk)],["Comments",fmtNum(cm)],["Shares",fmtNum(sh)],["Clicks",fmtNum(c)],["Conversions",fmtNum(cv)]];
+      A.label=plat||"Post";A.note="Simulated engagement metrics for the mockup.";
+    }
+    return A;
   }
   function brkGrid(items){return '<div class="brk">'+items.map(function(it){return '<div class="brk-i"><div class="brk-v">'+it[1]+'</div><div class="brk-l">'+it[0]+'</div></div>';}).join("")+"</div>";}
   function vPostResult(i){
-    var p=S.posts[i]||{},mv=todayTasks()[i]||{},x=postMetrics(i);
-    var ctr=x.reach?((x.clicks/x.reach)*100).toFixed(1):"0";
-    var stats=[["Views",fmtNum(x.reach),""],["Engaged",fmtNum(x.eng),(x.reach?Math.round((x.eng/x.reach)*100):0)+"% rate"],["Clicks",fmtNum(x.clicks),ctr+"% CTR"],["Conversions",fmtNum(x.conv),"leads & sales"]];
-    var sg=stats.map(function(s){return rstatCard(s[0],s[1],s[2]);}).join("");
-    var series=trendSeries(i+3);
+    var p=S.posts[i]||{},mv=taskAt(i),x=postMetrics(i),A=analyticsFor(p.platform,p.type,i);
+    var lp=(p.platform||"").toLowerCase(),isAud=p.type==="audio",isVid=p.type==="video"||/youtube|tiktok/.test(lp),isMedia=isVid||isAud,isMail=/email/.test(lp);
     var meta='<div class="pr-meta"><span class="dch">'+ico(typeIcon(p.type||"text"))+(p.platform||"")+" · "+(p.format||"")+'</span><span class="rr-status '+(p.live?"live":"sched")+'">'+(p.live?"Live":"Scheduled")+"</span>"+(p.scheduled?'<span class="pr-when">'+ico("cal")+" "+p.scheduled+"</span>":"")+"</div>";
+    var kpi='<div class="rgrid">'+A.kpis.map(function(k){return rstatCard(k[0],k[1],k[2]);}).join("")+"</div>";
+    var reachLabel=isMail?"Opens":isAud?"Plays":isVid?"Views":"Reach";
+    var total=isMail?Math.round(x.reach*0.44):isMedia?Math.round(x.reach*1.1):x.reach;
+    var trend='<div class="rsec">'+reachLabel+" · last 7 days</div><div class=\"chartcard\">"+chartArea(daySeries(i,total),last7Labels())+"</div>";
+    var engSec='<div class="rsec">'+A.engTitle+'</div><div class="chartcard">'+chartBars(A.eng,A.engColor)+"</div>";
+    var vidSec="";
+    if(isMedia){
+      var plays=Math.round(x.reach*1.1),vw=isAud?"Listened":"Viewed";
+      var funnel=[[vw+" 3s",Math.round(plays*0.82)],[vw+" 10s",Math.round(plays*0.55)],[vw+" 30s",Math.round(plays*0.34)],[(isAud?"Finished":"Watched to end"),Math.round(plays*0.29)]];
+      vidSec='<div class="rsec">Audience retention</div><div class="chartcard">'+chartReten(retenPts(i))+'</div><div class="rsec">'+(isAud?"Listen-through":"Watch-through")+'</div><div class="chartcard">'+chartBars(funnel,CHART_COLORS[4])+"</div>";
+    }
+    var discSec=A.disc?'<div class="rsec">'+A.discTitle+'</div><div class="chartcard">'+chartDonut(A.disc)+"</div>":"";
+    var full='<div class="rsec">Full breakdown · '+A.label+"</div>"+brkGrid(A.full);
     var cap=p.caption?'<div class="rsec">The post</div><div class="pr-cap">'+esc(p.caption)+"</div>":"";
-    var read="This "+(p.platform||"post")+" reached "+fmtNum(x.reach)+" people and pulled "+x.eng+" engagements. "+(x.eng/(x.reach||1)>0.11?"That’s an above-average rate — worth doing more like it.":"Solid start — a sharper hook could lift engagement next time.");
-    var pm=pmetrics(p.platform,x);
-    var brk='<div class="rsec paidsec">'+ico("globe")+" "+pm.label+" breakdown</div>"+brkGrid(pm.items);
-    var vid=p.type==="video"?'<div class="rsec paidsec">'+ico("vid")+" Video performance</div>"+brkGrid(vmetrics(i,x)):"";
+    var rate=x.eng/(x.reach||1);
+    var read="This "+A.label+" "+(isMail?"email":"post")+" reached "+fmtNum(x.reach)+(isMail?" inboxes":" people")+" and pulled "+fmtNum(x.eng)+" engagements. "+(rate>0.11?"That’s an above-average rate — worth doing more like it.":"Solid start — a sharper hook could lift engagement next time.");
     return '<button class="lk mut resback" data-a="resback">'+ico("arrow")+" All posts</button>"+
       '<div class="todayhead"><div class="th-day">Post statistics</div><h1 class="th-t">'+(mv.title||"Post")+"</h1>"+meta+"</div>"+
-      '<div class="rgrid">'+sg+"</div>"+
-      brk+vid+
-      '<div class="rsec">Reach · last 7 days</div><div class="rtrend">'+sparkArea(series)+"</div>"+
-      cap+
-      '<div class="pr-note">'+ico("spark")+" Metrics shown match what "+pm.label+"’s API returns for a post — simulated here for the mockup.</div>"+
+      kpi+trend+engSec+vidSec+discSec+full+cap+
+      '<div class="pr-note">'+ico("spark")+" "+A.note+" Numbers are simulated for the mockup.</div>"+
       '<div class="rread"><div class="rr-h">'+ico("spark")+' Clara’s read</div><p>'+read+"</p></div>";
   }
   function vResults(){
@@ -1819,7 +2040,7 @@
   }
   function bestTime(k){var p=(S.posts[k]||{}).platform||"";return ({Instagram:"today, 6:30pm",LinkedIn:"Tue, 8:15am","Content & SEO":"Wed, 10:00am",Email:"Thu, 9:00am",TikTok:"today, 7:45pm",YouTube:"Sat, 11:00am",Community:"today, 8:00pm",X:"today, 12:30pm",Pinterest:"Sun, 8:00pm",Facebook:"today, 1:00pm","Local partnerships":"this week",Referrals:"this week","Google profile":"today"})[p]||"today, 6:30pm";}
   function publishModal(){return '<div class="modal-ov"><div class="modal"><div class="orb"><div class="ring"></div><div class="ring r2"></div><div class="core">'+ico("spark")+'</div></div><h3>Clara’s finding the best time to post</h3><div class="line" id="publine">Reading when your audience is most active…</div><div class="pbar"><i id="pubpb"></i></div></div></div>';}
-  function runPublish(k){var lines=["Reading when your audience is most active…","Checking your channel’s peak windows…","Locking in the best moment…"];var i=0;var pb=root.querySelector("#pubpb");if(pb)pb.style.width="15%";var iv=setInterval(function(){var el=root.querySelector("#publine");if(!el||S.publishing==null){clearInterval(iv);return;}i++;if(i<lines.length){el.textContent=lines[i];if(pb)pb.style.width=(15+i*30)+"%";}},560);setTimeout(function(){if(S.publishing==null)return;var t=bestTime(k);S.pub[k]=true;S.done[k]=true;S.qedit[k]=false;if(S.posts[k])S.posts[k].scheduled=t;S.publishing=null;var _tk=todayTasks()[+k]||{};recordHist({icon:_tk.icon||"send",title:_tk.title||"Published a post",kind:"content"});saveAll();render();toast("Scheduled for "+t+" — Clara picked your peak time");setTimeout(function(){if(S.posts[k]&&S.pub[k]){S.posts[k].live=true;render();}},3200);},2050);}
+  function runPublish(k){var lines=["Reading when your audience is most active…","Checking your channel’s peak windows…","Locking in the best moment…"];var i=0;var pb=root.querySelector("#pubpb");if(pb)pb.style.width="15%";var iv=setInterval(function(){var el=root.querySelector("#publine");if(!el||S.publishing==null){clearInterval(iv);return;}i++;if(i<lines.length){el.textContent=lines[i];if(pb)pb.style.width=(15+i*30)+"%";}},560);setTimeout(function(){if(S.publishing==null)return;var t=bestTime(k);S.pub[k]=true;S.done[k]=true;S.qedit[k]=false;S.qdraft[k]=false;if(S.posts[k])S.posts[k].scheduled=t;S.publishing=null;var _tk=taskAt(+k);recordHist({icon:_tk.icon||"send",title:_tk.title||"Published a post",kind:"content"});saveAll();render();toast("Scheduled for "+t+" — Clara picked your peak time");setTimeout(function(){if(S.posts[k]&&S.pub[k]){S.posts[k].live=true;render();}},3200);},2050);}
   function vLogin(){var list=S.biz||[];var returning=list.length>0;var cur=returning?(bizById(S.cur)||list[0]):null;var who=cur?((cur.name&&cur.name.trim())?cur.name:(INDS[cur.p.ind]||"your business")):"";var many=list.length>1;var tag=returning?("Welcome back"+(who&&!many?", "+who:"")+". "+(many?"Sign in and pick up any of your "+list.length+" businesses.":"Your advisor’s kept thinking — pick up where you left off.")):"Your personal advisor to go-to-market. Sign in to get today’s moves.";return '<div class="welcome"><div class="wl"><div class="loginwrap">'+mk(56).replace('class="mark m"','class="mark bigmark"')+'<div class="logo">Clarity<span class="d">.</span></div><div class="tag">'+tag+'</div><div class="loginbox"><button class="btn block gsi" data-a="google">'+gLogo()+' Continue with Google</button><div class="divider"><span>or</span></div><input class="webinp" data-model="email" placeholder="you@business.com" value="'+esc(S.email||"")+'"><button class="btn block" data-a="magiclink" style="margin-top:10px">'+ico("mail")+' Email me a sign-in link</button></div><div class="hint">'+(returning?'<button class="lk mut" data-a="gonew">Set up a different business</button>':'New to Clarity? <button class="lk" data-a="gonew">Get started</button>')+'</div></div></div><div class="wr"><div class="qbubble"><div class="t">'+ico("spark")+' Clara</div><p>“'+(returning?"Good to see you again — I’ve got today’s moves ready.":"Give me one sentence and I’ll hand you a plan.")+'”</p></div></div></div>'+restart();}
   function vMagic(){return '<div class="center"><div class="cwrap" style="max-width:440px;text-align:center"><div style="text-align:center">'+mk(56).replace('class="mark m"','class="mark bigmark"')+'</div><h1 class="q" style="margin-top:6px">Check your inbox</h1><p class="sub">I’ve sent a sign-in link to <b>'+esc(S.email||"your email")+'</b>. Click it and you’re in — no password to remember.</p><button class="btn" data-a="magicopen">Open the sign-in link '+ico("arrow")+'</button><div class="hint" style="margin-top:16px"><button class="lk mut" data-a="tologin">Back</button> · Demo shortcut — no real email is sent.</div></div></div>'+restart();}
   function bsec(t, inner) {
@@ -2047,6 +2268,11 @@
       el.addEventListener("input", function () {
         S.posts[el.getAttribute("data-pi")][el.getAttribute("data-pf")] =
           el.value;
+      });
+    });
+    app.querySelectorAll("[data-coown]").forEach(function (el) {
+      el.addEventListener("input", function () {
+        S.compose.ownText = el.value;
       });
     });
     app.querySelectorAll("[data-psel]").forEach(function (el) {
@@ -2374,12 +2600,7 @@
         refreshPlan();
         break;
       case "finish":
-        if (hasSession()) {
-          finalizeBiz();
-        } else {
-          S.screen = "done";
-          render();
-        }
+        buildPlan();
         break;
       case "enter":
         finalizeBiz();
@@ -2647,6 +2868,92 @@
         S.qedit[k] = !S.qedit[k];
         render();
         break;
+      case "qdraftsave":
+        S.qdraft[k] = true;
+        S.qedit[k] = false;
+        saveAll();
+        render();
+        toast("Saved as draft — find it under Drafts in Create");
+        break;
+      case "cfilter":
+        S.cFilter = k;
+        render();
+        break;
+      case "createview":
+        S.createView = k;
+        if (k === "calendar" && !S.cMonth) S.cMonth = cCalMonth();
+        render();
+        break;
+      case "cmonth":
+        var _cm = cCalMonth(),
+          _m = _cm.m + +k,
+          _y = _cm.y;
+        if (_m < 0) {
+          _m = 11;
+          _y--;
+        }
+        if (_m > 11) {
+          _m = 0;
+          _y++;
+        }
+        S.cMonth = { y: _y, m: _m };
+        render();
+        break;
+      case "conew":
+        S.composing = true;
+        S.compose = { type: "", platform: "", angleSel: null, ownText: "", angles: [] };
+        render();
+        break;
+      case "cocancel":
+        S.composing = false;
+        render();
+        break;
+      case "cotype":
+        S.compose.type = t;
+        render();
+        break;
+      case "coplat":
+        S.compose.platform = k;
+        render();
+        break;
+      case "coangle":
+        S.compose.angleSel = k === "own" ? "own" : +k;
+        render();
+        break;
+      case "cogen": {
+        var cc2 = S.compose;
+        if (!(cc2.type && cc2.platform && cc2.angleSel != null)) {
+          toast("Pick a type, platform and angle");
+          return;
+        }
+        var angle = cc2.angleSel === "own" ? (cc2.ownText || "").trim() : cc2.angles[cc2.angleSel];
+        if (!angle) {
+          toast("Type your idea first");
+          return;
+        }
+        var oi = nextOwnIdx(),
+          kit = POSTKIT[S.p.ind] || POSTKIT.other;
+        if (!S.ownTasks) S.ownTasks = {};
+        S.ownTasks[oi] = { icon: "spark", kind: "content", title: angleTitle(angle), body: angle, own: true };
+        S.posts[oi] = {
+          type: cc2.type,
+          platform: cc2.platform,
+          format: fmtFor(cc2.type, cc2.platform),
+          caption: captionFromAngle(angle, cc2.type, cc2.platform),
+          media: cc2.type === "text" ? "" : cc2.type === "audio" ? "Short spoken segment — natural and conversational, about 60 seconds." : kit.media,
+          hashtags: kit.tags,
+          rev: 0,
+        };
+        if (S.queue.indexOf(oi) < 0) S.queue.push(oi);
+        S.composing = false;
+        S.compose = { type: "", platform: "", angleSel: null, ownText: "", angles: [] };
+        S.createView = "list";
+        S.cFilter = "all";
+        saveAll();
+        render();
+        toast("Post ready — review and publish");
+        break;
+      }
       case "qregen":
         S.posts[k].rev = (S.posts[k].rev || 0) + 1;
         S.posts[k].caption = captionFor(todayTasks()[+k], S.posts[k].rev);
@@ -2658,7 +2965,8 @@
         pt.type = t;
         pt.format = fmtFor(t, pt.platform);
         if (t === "text") pt.media = "";
-        else if (!pt.media) pt.media = (POSTKIT[S.p.ind] || POSTKIT.other).media;
+        else if (t === "audio") pt.media = "Short spoken segment — natural and conversational, about 60 seconds.";
+        else if (!pt.media || pt.media.indexOf("spoken segment") >= 0) pt.media = (POSTKIT[S.p.ind] || POSTKIT.other).media;
         render();
         break;
       case "tsel":
@@ -2823,6 +3131,10 @@
   }
   function go() {
     parse();
+    S.screen = "plan";
+    render();
+  }
+  function buildPlan() {
     S.screen = "think";
     render();
     runThink();
@@ -2860,8 +3172,12 @@
     }, 560);
     setTimeout(function () {
       if (S.screen === "think") {
-        S.screen = "plan";
-        render();
+        if (hasSession()) {
+          finalizeBiz();
+        } else {
+          S.screen = "done";
+          render();
+        }
       }
     }, 2900);
   }
