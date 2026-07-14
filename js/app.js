@@ -327,6 +327,7 @@
     locOpen: false,
     notifOpen: false,
     acctOpen: false,
+    trail: ["today"],
     resultView: "list",
     resultPost: null,
     rq: "",
@@ -1272,14 +1273,8 @@
     for (var b = 0; b < baseLen; b++) if (S.done[b]) baseDone++;
     var sub =
       baseDone >= baseLen
-        ? "Your core moves are done — nice. Fresh moves land tomorrow."
-        : baseDone > 0
-          ? baseDone + " of " + baseLen + " done. Keep going."
-          : "Your " +
-            baseLen +
-            " highest-leverage moves for today" +
-            (cc ? ", plus your campaign" : "") +
-            ".";
+        ? "You’re all caught up for today — nice work. Fresh moves land tomorrow."
+        : "These are the few moves worth your time today. Approve, tweak, or skip each one — Clara learns from what you do.";
     var openIdx = [];
     for (var o = 0; o < baseLen; o++)
       if (!S.done[o] && !(S.queue && S.queue.indexOf(o) >= 0) && kindOf(o) === "content") openIdx.push(o);
@@ -1310,9 +1305,7 @@
     var head =
       '<div class="todayhead"><div class="th-day">' +
       todayDate() +
-      '</div><h1 class="th-t">Today' +
-      nm +
-      '</h1><p class="th-s">' +
+      '</div><h1 class="th-t">Here’s what Clara lined up for today</h1><p class="th-s">' +
       sub +
       '</p><div class="todayctrls">' +
       toggle +
@@ -1651,15 +1644,41 @@
       '<button class="navmenu-item" data-a="logout">' + ico("out") + " Log out</button></div>"
     );
   }
+  function tabLabel(t) {
+    return { today: "Today", create: "Create", results: "Results", insights: "Insights", thinking: "Clara’s thinking" }[t] || t;
+  }
+  function crumbs() {
+    var tr = (S.trail || []).slice(-3);
+    if (tr.length <= 1) return "";
+    return (
+      '<div class="crumbs">' +
+      tr
+        .map(function (t, idx) {
+          var last = idx === tr.length - 1;
+          return '<button class="crumb' + (last ? " on" : "") + '" data-a="tab" data-k="' + t + '">' + tabLabel(t) + "</button>" + (last ? "" : '<span class="crumb-sep">›</span>');
+        })
+        .join("") +
+      "</div>"
+    );
+  }
   function navbar() {
     return (
-      '<div class="navbar"><div class="nav-sp"></div><div class="nav-right">' +
+      '<div class="navbar">' + crumbs() + '<div class="nav-sp"></div><div class="nav-right">' +
       '<div class="nav-item"><button class="navbtn bell" data-a="notif" aria-label="Notifications">' + ico("bell") + '<span class="nav-badge">3</span></button>' + (S.notifOpen ? notifDropdown() : "") + "</div>" +
       '<div class="nav-item"><button class="acctbtn' + (S.acctOpen ? " open" : "") + '" data-a="acctmenu"><span class="avatar sm">' + initials(nameOf() === "there" ? "" : nameOf()) + "</span>" + ico("chev") + "</button>" + (S.acctOpen ? acctDropdown() : "") + "</div>" +
       "</div></div>"
     );
   }
   function vApp() {
+    if (!S.trail || !S.trail.length) S.trail = [S.tab];
+    else if (S.trail[S.trail.length - 1] !== S.tab) {
+      var _ix = S.trail.indexOf(S.tab);
+      if (_ix >= 0) S.trail = S.trail.slice(0, _ix + 1);
+      else {
+        S.trail.push(S.tab);
+        if (S.trail.length > 10) S.trail = S.trail.slice(-10);
+      }
+    }
     var nm = nameOf() === "there" ? "Your business" : nameOf();
     var ini = initials(nameOf() === "there" ? "" : nameOf());
     var content =
@@ -2784,6 +2803,7 @@
           locOpen: false,
           notifOpen: false,
           acctOpen: false,
+          trail: ["today"],
           resultView: "list",
           resultPost: null,
           rq: "",

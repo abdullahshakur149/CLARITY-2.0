@@ -947,6 +947,11 @@ body {
 /* ---- Top navbar ---- */
 .stage .navbar{display:flex;align-items:center;gap:6px;height:56px;flex:none;padding:0 28px;border-bottom:1px solid var(--line);background:var(--panel)}
 .stage .nav-sp{flex:1}
+.stage .crumbs{display:flex;align-items:center;gap:2px;min-width:0}
+.stage .crumb{border:none;background:none;font:inherit;font-size:13px;color:var(--soft);padding:5px 8px;border-radius:7px;cursor:pointer;white-space:nowrap;transition:.12s}
+.stage .crumb:hover{background:var(--panel2);color:var(--ink)}
+.stage .crumb.on{color:var(--accent);font-weight:600;pointer-events:none}
+.stage .crumb-sep{color:var(--line2);font-size:14px;padding:0 1px}
 .stage .nav-right{display:flex;align-items:center;gap:8px}
 .stage .nav-item{position:relative}
 .stage .navbtn{position:relative;width:38px;height:38px;border:1px solid var(--line2);background:var(--panel);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;transition:.14s}
