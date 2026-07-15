@@ -38,29 +38,37 @@
     star: "M12 3l2.6 5.6 6 .8-4.4 4.2 1.1 6L12 17l-5.3 2.8 1.1-6L3.4 9.4l6-.8z",
     upload: "M12 15V4 M8 8l4-4 4 4 M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3",
     mic: "M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3 M5 11a7 7 0 0014 0 M12 18v3 M8 21h8",
+    chat: "M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H9l-4 4V6a1 1 0 011-1z M8 10h8 M8 13h5",
+    moon: "M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z",
+    sun: "M12 8a4 4 0 100 8 4 4 0 000-8 M12 2v2 M12 20v2 M2 12h2 M20 12h2 M5 5l1.4 1.4 M17.6 17.6L19 19 M19 5l-1.4 1.4 M6.4 17.6L5 19",
   };
   function gLogo(){return '<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>';}
   function LS(){try{return window.localStorage;}catch(e){return null;}}
   function loadProfile(){var s=LS();if(!s)return null;try{return JSON.parse(s.getItem("clarity_profile"));}catch(e){return null;}}
+  function loadAccount(){var s=LS();if(!s)return null;try{return JSON.parse(s.getItem("clarity_account"));}catch(e){return null;}}
+  function saveAccount(){var s=LS();if(!s)return;try{s.setItem("clarity_account",JSON.stringify(S.account));}catch(e){}}
+  function loadTheme(){var s=LS();if(!s)return false;try{return s.getItem("clarity_theme")==="dark";}catch(e){return false;}}
+  function saveTheme(){var s=LS();if(!s)return;try{s.setItem("clarity_theme",S.dark?"dark":"light");}catch(e){}}
+  function applyTheme(){try{var el=(root.documentElement||document.documentElement);if(el)el.classList[S.dark?"add":"remove"]("dark");}catch(e){}}
   function setSession(v){var s=LS();if(!s)return;try{v?s.setItem("clarity_session","1"):s.removeItem("clarity_session");}catch(e){}}
   function hasSession(){var s=LS();if(!s)return false;try{return s.getItem("clarity_session")==="1";}catch(e){return false;}}
   function fullReset(){var s=LS();if(s){try{s.removeItem("clarity_profile");s.removeItem("clarity_session");s.removeItem("clarity_biz");}catch(e){}}}
   // ---- Multi-business engine ----
-  var PBFIELDS=["p","name","sentence","done","twhy","queue","pub","qtext","qedit","qdraft","posts","ownTasks","camp","sel","cols","cardCol","threads","tweak","insSeen","insSaved","insDismiss","extra","createdAt","hist"];
+  var PBFIELDS=["p","name","sentence","done","twhy","queue","pub","qtext","qedit","qdraft","posts","ownTasks","camp","sel","cols","cardCol","threads","tweak","whySeen","insSeen","insSaved","insDismiss","extra","createdAt","hist"];
   function newBizId(){return "b"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);}
-  function makeBiz(){return {id:newBizId(),p:{ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]},name:"",sentence:"",done:{},twhy:{},queue:[],pub:{},qtext:{},qedit:{},qdraft:{},posts:{},ownTasks:{},camp:{status:"off"},sel:{},cols:[],cardCol:{},threads:{},tweak:{},insSeen:false,insSaved:{},insDismiss:{},extra:[],createdAt:"",hist:{}};}
+  function makeBiz(){return {id:newBizId(),p:{ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]},name:"",sentence:"",done:{},twhy:{},queue:[],pub:{},qtext:{},qedit:{},qdraft:{},posts:{},ownTasks:{},camp:{status:"off"},sel:{},cols:[],cardCol:{},threads:{},tweak:{},whySeen:{},insSeen:false,insSaved:{},insDismiss:{},extra:[],createdAt:"",hist:{}};}
   function bizById(id){for(var i=0;i<S.biz.length;i++)if(S.biz[i].id===id)return S.biz[i];return null;}
   function bizByIdIn(arr,id){for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return null;}
   function snapshot(){if(S.cur==null)return;var r=bizById(S.cur);if(!r)return;PBFIELDS.forEach(function(f){r[f]=S[f];});}
   function loadBiz(id){snapshot();var r=bizById(id);if(!r)return;PBFIELDS.forEach(function(f){S[f]=r[f];});normBiz();S.cur=id;S.tab="today";}
-  function normBiz(){["done","twhy","pub","qtext","qedit","qdraft","posts","ownTasks","sel","cardCol","threads","tweak","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};}
-  function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.qdraft={};S.posts={};S.ownTasks={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.createdAt="";S.hist={};S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
+  function normBiz(){["done","twhy","pub","qtext","qedit","qdraft","posts","ownTasks","sel","cardCol","threads","tweak","whySeen","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};}
+  function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.qdraft={};S.posts={};S.ownTasks={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.whySeen={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.createdAt="";S.hist={};S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
   function deriveName(sent,ind){var t=(sent||"").trim();if(t){t=t.replace(/^(i\s+(?:run|own|have|am|bake|make|coach|sell|do|offer|build|teach|help)\s+(?:a|an|my|the)?\s*)/i,"").replace(/\s+(?:and|but|so|because|that|which)\b.*$/i,"").replace(/,.*$/,"").replace(/[.!?].*$/,"").trim();t=t.split(/\s+/).slice(0,4).join(" ").trim();if(t)return t.charAt(0).toUpperCase()+t.slice(1);}return (typeof INDS!=="undefined"&&INDS[ind])||"My business";}
   function initials(nm){nm=(nm||"").trim();if(!nm)return "YB";var w=nm.split(/\s+/);return ((w[0][0]||"")+(w[1]?w[1][0]:(w[0][1]||""))).toUpperCase();}
   function saveAll(){snapshot();var s=LS();if(!s)return;try{s.setItem("clarity_biz",JSON.stringify({list:S.biz,cur:S.cur,email:S.email||""}));}catch(e){}}
   function loadBizData(){var s=LS();if(!s)return null;try{return JSON.parse(s.getItem("clarity_biz"));}catch(e){return null;}}
   function finalizeBiz(){var b=makeBiz();PBFIELDS.forEach(function(f){b[f]=S[f];});if(!b.name)b.name=deriveName(S.sentence,S.p.ind);b.insSeen=false;b.createdAt=todayISO();S.createdAt=b.createdAt;b.hist={};S.hist={};S.biz.push(b);S.cur=b.id;S.name=b.name;S.insSeen=false;saveAll();setSession(true);S.screen="insights";S.tab="today";render();toast("Now advising "+b.name);}
-  function bootstrap(){var data=loadBizData();if(data&&data.list&&data.list.length){S.biz=data.list;S.email=data.email||"";var cur=data.cur;if(!bizByIdIn(S.biz,cur))cur=S.biz[0].id;loadBiz(cur);S.screen=hasSession()?"app":"login";S.tab="today";return;}var prof=loadProfile();if(prof&&prof.p){var b=makeBiz();b.p=prof.p;b.sentence=prof.sentence||"";b.name=prof.name||deriveName(prof.sentence,prof.p.ind);S.biz=[b];S.email=prof.email||"";loadBiz(b.id);S.screen=hasSession()?"app":"login";S.tab="today";return;}S.screen="welcome";}
+  function bootstrap(){var acc=loadAccount();if(acc)S.account=Object.assign(S.account||{},acc);S.dark=loadTheme();applyTheme();var data=loadBizData();if(data&&data.list&&data.list.length){S.biz=data.list;S.email=data.email||"";var cur=data.cur;if(!bizByIdIn(S.biz,cur))cur=S.biz[0].id;loadBiz(cur);S.screen=hasSession()?"app":"login";S.tab="today";return;}var prof=loadProfile();if(prof&&prof.p){var b=makeBiz();b.p=prof.p;b.sentence=prof.sentence||"";b.name=prof.name||deriveName(prof.sentence,prof.p.ind);S.biz=[b];S.email=prof.email||"";loadBiz(b.id);S.screen=hasSession()?"app":"login";S.tab="today";return;}S.screen="welcome";}
   function ico(n, cls) {
     return (
       '<svg class="' +
@@ -303,9 +311,10 @@
     qdraft: {},
     cFilter: "all",
     createView: "list",
+    createDetail: null,
     cMonth: null,
     composing: false,
-    compose: { type: "", platform: "", angleSel: null, ownText: "", angles: [] },
+    compose: { type: "", platform: "", angleSel: null, ownText: "", angles: [], format: "", brief: null, ctrl: null },
     ownTasks: {},
     posts: {},
     camp: { status: "off" },
@@ -329,12 +338,21 @@
     calMonth: null,
     threads: {},
     tweak: {},
+    whySeen: {},
     wtext: {},
     whyOpen: null,
     locInput: "",
     locOpen: false,
     notifOpen: false,
     acctOpen: false,
+    dark: false,
+    emailOpen: false,
+    proposal: {},
+    propEdit: {},
+    todoOpen: false,
+    todoTitle: "",
+    todoBody: "",
+    account: { fullName: "", email: "", phone: "", title: "", tz: "(GMT+00:00) London" },
     trail: ["today"],
     resultView: "list",
     resultPost: null,
@@ -684,17 +702,61 @@
       restart()
     );
   }
-  function vWelcome() {
+  function authAside(returning) {
+    function tick(t) {
+      return '<div class="as-tick">' + ico("checkc") + " " + t + "</div>";
+    }
     return (
-      '<div class="welcome"><div class="wl">' +
-      mk(56).replace('class="mark m"', 'class="mark bigmark"') +
-      '<div class="logo">Clarity<span class="d">.</span></div><div class="tag">Your personal advisor to go-to-market. Tell me what you’re building — I’ll do the marketing thinking, you approve the moves.</div><button class="btn" data-a="start">Get started ' +
-      ico("arrow") +
-      '</button><div class="hint">A few quick questions — about a minute. No marketing know-how needed.</div></div><div class="wr"><div class="qbubble"><div class="t">' +
-      ico("spark") +
-      " Clara</div><p>“Answer a few quick questions and I’ll hand you a plan.”</p></div></div></div>" +
+      '<div class="wr"><div class="aside2">' +
+      '<div class="as-orb">' + mk(72).replace('class="mark m"', 'class="mark asmark"') + "</div>" +
+      '<p class="as-line">“' + (returning ? "Good to see you — today’s moves are ready." : "Tell me what you’re building. I’ll handle the marketing thinking.") + '”</p>' +
+      '<div class="as-ticks">' + tick("A few smart moves a day") + tick("Written in your voice") + tick("Learns what actually works") + "</div>" +
+      "</div></div>"
+    );
+  }
+  function vAuth() {
+    var list = S.biz || [],
+      returning = list.length > 0,
+      cur = returning ? bizById(S.cur) || list[0] : null,
+      who = cur ? (cur.name && cur.name.trim() ? cur.name : INDS[cur.p.ind] || "your business") : "";
+    var head = returning ? "Welcome back" + (who ? ", " + who : "") + "." : "Marketing that runs itself.";
+    var tag = returning ? "Pick up where you left off — today’s moves are ready." : "Tell Clara what you’re building. She does the marketing thinking — you just approve the moves.";
+    var email = S.emailOpen
+      ? '<div class="authmail"><input class="webinp" data-model="email" placeholder="you@business.com" value="' + esc(S.email || "") + '"><button class="btn block" data-a="magiclink">' + ico("mail") + " Email me a sign-in link</button></div>"
+      : "";
+    var toggle = '<button class="lk mut authtoggle" data-a="emailtoggle">' + (S.emailOpen ? "Hide email sign-in" : "Sign in with email") + "</button>";
+    var actions = returning
+      ? '<button class="btn block gsi" data-a="google">' + gLogo() + " Continue with Google</button>" + toggle + email + '<div class="hint">New here? <button class="lk" data-a="start">Set up a business</button></div>'
+      : '<button class="btn block big" data-a="start">Get started ' + ico("arrow") + "</button>" +
+        '<div class="authdiv"><span>already have an account?</span></div>' +
+        '<button class="btn block gsi" data-a="google">' + gLogo() + " Continue with Google</button>" +
+        toggle + email +
+        '<div class="hint">A minute of setup. No marketing know-how needed.</div>';
+    function step(ic, n, h, p) {
+      return '<div class="step3"><div class="step3-n">' + n + '</div><div class="step3-ic">' + ico(ic) + '</div><div class="step3-tx"><div class="step3-h">' + h + '</div><div class="step3-p">' + p + "</div></div></div>";
+    }
+    var stepsR =
+      '<div class="authR-steps">' +
+      step("compass", "1", "Tell Clara about your business", "A minute of quick questions — no jargon.") +
+      step("spark", "2", "Get a few smart moves a day", "She does the marketing thinking for you.") +
+      step("checkc", "3", "Approve them, and grow", "You stay in control — approve, tweak, or skip.") +
+      "</div>";
+    return (
+      '<div class="authsplit">' +
+      '<div class="authL"><div class="authL-in">' +
+      '<div class="authbrand">' + mk(34).replace('class="mark m"', 'class="mark authmark"') + '<span class="authword">Clarity<span class="d">.</span></span></div>' +
+      '<h1 class="authhead">' + head + "</h1>" +
+      '<p class="authtag">' + tag + "</p>" +
+      '<div class="authcta">' + actions + "</div>" +
+      "</div></div>" +
+      '<div class="authR"><div class="authR-in"><div class="authR-title">' + ico("spark") + " How Clarity works</div>" + stepsR +
+      '<div class="authR-foot">' + ico("checkc") + " Set up in about a minute.</div></div></div>" +
+      "</div>" +
       restart()
     );
+  }
+  function vWelcome() {
+    return vAuth();
   }
   function vInput() {
     var exs = "";
@@ -1115,24 +1177,69 @@
   function audiencePhrase() {
     return (AUDS[S.p.aud] || "your customers").toLowerCase();
   }
+  var ANGLE_ALTS = ["warmer and value-first", "customer-story led", "a bold, contrarian hook", "short and punchy", "an educational how-to framing"];
+  function detectTitle(msg) {
+    var pats = [
+      /(?:change|set|update|rename|edit)\s+(?:the\s+)?(?:title|name|heading)\s+(?:to|:|as|=|into)\s*(.+)/i,
+      /rename\s+(?:it|this|the\s+\w+)?\s*to\s*(.+)/i,
+      /call\s+(?:it|this)\s+(.+)/i,
+      /\b(?:title|name)\s*(?:to|:|=)\s*(.+)/i,
+    ];
+    for (var p = 0; p < pats.length; p++) {
+      var m = (msg || "").match(pats[p]);
+      if (m && m[1]) {
+        var v = m[1].trim().replace(/^["'“”]+|["'“”]+$/g, "").replace(/[.!,]+$/, "").trim();
+        if (v) return v;
+      }
+    }
+    return null;
+  }
+  function claraTaskIntro(title, kind) {
+    var au = (AUDS[S.p.aud] || "your customers").toLowerCase();
+    var tt = (title || "this").trim();
+    if (kind === "content")
+      return "Love that you added “" + tt + ".” Want me to draft it, pick the best platform, or sharpen the angle for " + au + "? Tell me what you’re going for and I’ll help.";
+    return "Nice — “" + tt + "” is a solid move. Want a quick plan, a message to use, or the best time to do it? Tell me your goal and I’ll help you make it land.";
+  }
   function claraReply(i, msg) {
     var t = (msg || "").toLowerCase(),
       found = null,
       kk;
-    for (kk in PLATS) if (t.indexOf(kk) >= 0) found = PLATS[kk];
+    var newTitle = detectTitle(msg);
+    if (newTitle)
+      return { text: "Sure — I’ll rename it to “" + newTitle + "”. Want me to add that as a move?", propose: true, kind: "title", tweak: { title: newTitle }, summary: "Rename this move to “" + newTitle + "”", editText: newTitle };
+    for (kk in PLATS) if (new RegExp("\\b" + kk + "\\b").test(t)) found = PLATS[kk];
     if (found)
-      return { text: "Fair point — " + found + " fits this better for " + audiencePhrase() + ". I’ve switched this move to " + found + " and I’ll draft for it.", tweak: { platform: found } };
-    if (/platform|channel|where/.test(t))
-      return { text: "I chose " + movePlat(i) + " because that’s where " + audiencePhrase() + " are most active for this kind of post. Prefer another? Name it and I’ll switch." };
+      return { text: "Good call — " + found + " fits " + audiencePhrase() + " better here. Want me to switch it?", propose: true, kind: "platform", tweak: { platform: found }, summary: "Switch this move to " + found, editText: found };
     if (/sales|salesy|pushy|hard sell|promotional|too much/.test(t))
-      return { text: "Understood — I’ll keep this softer and value-first, less of a pitch. I’ve updated the angle.", tweak: { angle: "warmer, value-first" } };
+      return { text: "I can soften it — less pitch, more value. Here’s the change:", propose: true, kind: "angle", tweak: { angle: "warmer and value-first" }, summary: "Rewrite it warmer and value-first, less of a pitch", editText: "warmer and value-first" };
+    if (/change|reword|rewrite|shorten|longer|wording|the text|make it|tone|edit/.test(t))
+      return { text: "Sure — here’s how I’d change it:", propose: true, kind: "angle", tweak: { angle: "reworked to your note" }, summary: "Rework the wording the way you described", editText: "reworked to your note" };
     if (/angle|different|another|alternativ|other idea|instead/.test(t))
-      return { text: "Here’s a different angle: lead with a quick customer story rather than the tip. I’ve noted that for the draft.", tweak: { angle: "customer-story led" } };
+      return { text: "Here’s a different angle you could take:", propose: true, kind: "angle", tweak: { angle: "customer-story led" }, summary: "Lead with a quick customer story instead of the tip", editText: "customer-story led" };
+    if (/platform|channel|where/.test(t))
+      return { text: "I chose " + movePlat(i) + " because that’s where " + audiencePhrase() + " are most active for this. Name another and I’ll switch." };
     if (/now|timing|today|wait|later/.test(t))
-      return { text: "It’s today’s highest-leverage move for your goal — small effort, and it compounds. But it can wait; skip it and I’ll resurface it tomorrow." };
+      return { text: "It’s today’s highest-leverage move for your goal — small effort, and it compounds. It can wait, though; skip it and I’ll resurface it tomorrow." };
     if (/\bno\b|disagree|don.?t|why should|not sure|push/.test(t))
-      return { text: "Totally fair to push back. I rank it first because it moves your main goal fastest — but if it doesn’t fit, skip it and I’ll learn from that." };
-    return { text: "Good question. In short: this targets " + audiencePhrase() + " on " + movePlat(i) + ", aimed at your main goal. Tell me what feels off — the platform, the angle, or the timing — and I’ll adjust." };
+      return { text: "Fair to push back. I rank it first because it moves your main goal fastest — but if it doesn’t fit, skip it and I’ll learn from that." };
+    return { text: "In short: this targets " + audiencePhrase() + " on " + movePlat(i) + ", aimed at your main goal. Tell me what feels off — the platform, angle, or timing — and I’ll propose a change." };
+  }
+  function proposalCard(i, pr) {
+    var editing = S.propEdit && S.propEdit[i];
+    return (
+      '<div class="wprop"><div class="wprop-h">' + ico("spark") + " Proposed change</div>" +
+      '<div class="wprop-s">' + esc(pr.summary) + "</div>" +
+      (editing ? '<textarea class="wprop-edit" data-pe="' + i + '" placeholder="Write exactly what you want…">' + esc(pr.userText != null ? pr.userText : pr.editText || "") + "</textarea>" : "") +
+      '<div class="wprop-a">' +
+      (editing
+        ? '<button class="btn xs" data-a="wpropsaveedit" data-k="' + i + '">' + ico("check") + " Use my version</button><button class=\"lk mut\" data-a=\"wpropedit\" data-k=\"" + i + '">Cancel</button>'
+        : '<button class="btn xs" data-a="wpropok" data-k="' + i + '">' + ico("check") + " Approve</button>" +
+          '<button class="lk mut" data-a="wpropno" data-k="' + i + '">Reject</button>' +
+          '<button class="lk mut" data-a="wpropregen" data-k="' + i + '">' + ico("refresh") + " Regenerate</button>" +
+          '<button class="lk mut" data-a="wpropedit" data-k="' + i + '">' + ico("edit") + " Enter your own</button>") +
+      "</div></div>"
+    );
   }
   function thread(i, t) {
     var msgs = [{ from: "clara", text: t.why }].concat((S.threads && S.threads[i]) || []);
@@ -1150,7 +1257,9 @@
     var input =
       '<div class="winput"><input class="wtext" data-wt="' + i + '" placeholder="Ask Clara, or tell her what feels off…" value="' + esc((S.wtext && S.wtext[i]) || "") +
       '"><button class="wsendbtn" data-a="wsend" data-k="' + i + '" aria-label="Send">' + ico("send") + "</button></div>";
-    return '<div class="wl">' + ico("spark") + " Here’s my thinking — ask why, or tell me what feels off</div><div class=\"wmsgs\">" + body + '</div><div class="wchips">' + chips + "</div>" + input;
+    var pr = S.proposal && S.proposal[i];
+    var mid = pr ? proposalCard(i, pr) : '<div class="wchips">' + chips + "</div>";
+    return '<div class="wl">' + ico("spark") + " Here’s my thinking — ask why, or tell me what feels off</div><div class=\"wmsgs\">" + body + "</div>" + mid + input;
   }
   function tweakNote(i) {
     var tw = S.tweak && S.tweak[i];
@@ -1168,14 +1277,15 @@
       : S.queue && S.queue.indexOf(i) >= 0
         ? "drafting"
         : "open";
-    var whyBtn =
-      '<button class="lk mut" data-a="twhy" data-k="' + i + '">' + ico("spark") + " Why this?</button>";
+    var _un = unreadWhy(i);
+    var whyLabel = t.user ? "Discuss" : "Why this?";
+    var whyBtn = '<button class="lk mut whybtn" data-a="twhy" data-k="' + i + '">' + ico("chat") + whyLabel + (_un > 0 ? '<span class="why-badge">' + _un + "</span>" : "") + "</button>";
     var actions;
     if (st === "done")
       actions =
         '<span class="doneflag">' +
         ico("checkc") +
-        (S.done[i] === "skip" ? "Skipped" : S.done[i] === "done" ? "Done" : "Published") +
+        (S.done[i] === "skip" ? "Skipped" : S.done[i] === "replaced" ? "Replaced" : S.done[i] === "done" ? "Done" : "Published") +
         '</span><button class="lk mut" data-a="tundo" data-k="' + i + '">Undo</button>';
     else if (st === "drafting")
       actions =
@@ -1192,6 +1302,7 @@
     var platBadge = post ? '<span class="tc-plat">' + ico(typeIcon(post.type)) + post.platform + "</span>" : "";
     var kbadge = '<span class="kbadge ' + kind + '">' + (kind === "action" ? "Action" : "Content") + "</span>";
     var campChip = t.camp ? '<span class="tc-camp">' + ico("mega") + t.camp + "</span>" : "";
+    var chatChip = "";
     var chk =
       st === "open" && kind === "content"
         ? '<button class="tcheck' + (S.sel[i] ? " on" : "") + '" data-a="tsel" data-k="' + i + '" aria-label="Select">' + (S.sel[i] ? ico("check") : "") + "</button>"
@@ -1209,6 +1320,7 @@
       kbadge +
       platBadge +
       campChip +
+      chatChip +
       '</div><div class="tc-b">' +
       t.body +
       "</div>" +
@@ -1218,10 +1330,41 @@
       "</div></div>"
     );
   }
+  function totalClaraMsgs(i) {
+    var n = 1;
+    var th = S.threads && S.threads[i];
+    if (th) th.forEach(function (m) { if (m.from === "clara") n++; });
+    return n;
+  }
+  function unreadWhy(i) {
+    return Math.max(0, totalClaraMsgs(i) - ((S.whySeen && S.whySeen[i]) || 0));
+  }
+  function newTodoFromChange(origIdx, tweak) {
+    var orig = todayTasks()[origIdx] || {};
+    if (!Array.isArray(S.extra)) S.extra = [];
+    var title = tweak && tweak.title ? tweak.title : orig.title || "New move";
+    var task = { icon: orig.icon || "spark", kind: taskKind(orig), title: title, body: orig.body || "", why: orig.why || "", fromChat: true };
+    S.extra.push(task);
+    var idx = baseTasks().length - 1;
+    var rest = {};
+    if (tweak) { if (tweak.platform) rest.platform = tweak.platform; if (tweak.angle) rest.angle = tweak.angle; }
+    if (Object.keys(rest).length) { if (!S.tweak) S.tweak = {}; S.tweak[idx] = rest; }
+    // carry the whole conversation over to the new move
+    if (!S.threads) S.threads = {};
+    S.threads[idx] = (S.threads[origIdx] || []).slice();
+    if (!S.whySeen) S.whySeen = {};
+    S.whySeen[idx] = S.whySeen[origIdx] || 0;
+    // remove the original from Today
+    if (!S.done) S.done = {};
+    S.done[origIdx] = "replaced";
+    return idx;
+  }
   function whyModal() {
     var i = S.whyOpen,
       t = todayTasks()[i];
     if (!t) return "";
+    if (!S.whySeen) S.whySeen = {};
+    S.whySeen[i] = totalClaraMsgs(i);
     return (
       '<div class="modal-ov" data-a="closewhy"></div><div class="whymod"><div class="whymod-h"><div class="whymod-ttl"><div class="tc-ic">' +
       ico("spark") +
@@ -1230,6 +1373,20 @@
       '</button></div><div class="whymod-body">' +
       thread(i, t) +
       tweakNote(i) +
+      "</div></div>"
+    );
+  }
+  function todoModal() {
+    return (
+      '<div class="modal-ov" data-a="todoclose"></div><div class="whymod todomod"><div class="whymod-h"><div class="whymod-ttl"><div class="tc-ic">' +
+      ico("check") +
+      '</div><div class="wm-title">Add a to-do</div></div><button class="brain-x" data-a="todoclose" aria-label="Close">' +
+      ico("close") +
+      '</button></div><div class="whymod-body">' +
+      '<div class="efield"><label>What do you need to do?</label><input class="pf-inp" data-model="todoTitle" value="' + esc(S.todoTitle || "") + '" placeholder="e.g. Call 10 warm leads"></div>' +
+      '<div class="efield" style="margin-top:12px"><label>Details (optional)</label><textarea class="pf-inp todobody" data-model="todoBody" placeholder="Anything that helps you remember">' + esc(S.todoBody || "") + "</textarea></div>" +
+      '<div class="todomod-hint">' + ico("spark") + ' Creating content to publish? <button class="lk" data-a="todopost">Create a post instead</button></div>' +
+      '<div class="todomod-foot"><button class="lk mut" data-a="todoclose">Cancel</button><button class="btn sm" data-a="todosave">' + ico("plus") + " Add to-do</button></div>" +
       "</div></div>"
     );
   }
@@ -1350,7 +1507,9 @@
         : isTodaySingle
           ? aa + cards + tnote
           : vHistList();
-    return head + (isTodaySingle && !isCal ? offer + banner : "") + body;
+    var addBtn = '<button class="btn sm createnew" data-a="todoadd">' + ico("plus") + " Add to-do</button>";
+    var top = '<div class="createtop">' + head + addBtn + "</div>";
+    return top + (isTodaySingle && !isCal ? offer + banner : "") + body;
   }
   function defaultCols() {
     return [
@@ -1664,14 +1823,42 @@
     var nm = nameOf() === "there" ? "Your business" : nameOf();
     return (
       '<div class="nav-ov" data-a="closemenus"></div><div class="navpop acctpop"><div class="acct-name">' + esc(nm) + '</div>' +
+      '<button class="navmenu-item" data-a="navprofile">' + ico("user") + " Profile settings</button>" +
+      '<button class="navmenu-item" data-a="theme">' + ico(S.dark ? "sun" : "moon") + (S.dark ? " Light mode" : " Dark mode") + "</button>" +
       '<button class="navmenu-item" data-a="navins">' + ico("bulb") + " Insights</button>" +
       '<button class="navmenu-item" data-a="tab" data-k="thinking">' + ico("spark") + " Clara’s thinking</button>" +
       '<button class="navmenu-item" data-a="restart">' + ico("refresh") + " Restart demo</button>" +
       '<button class="navmenu-item" data-a="logout">' + ico("out") + " Log out</button></div>"
     );
   }
+  function vProfile() {
+    var a = S.account || (S.account = { fullName: "", email: "", phone: "", title: "", tz: "(GMT+00:00) London" });
+    if (!a.email) a.email = S.email || "";
+    var av = initials(a.fullName || (nameOf() === "there" ? "" : nameOf()));
+    function field(label, path, val, ph, type) {
+      return '<div class="pf-field"><label>' + label + '</label><input class="pf-inp" data-model="account.' + path + '" value="' + esc(val || "") + '" placeholder="' + (ph || "") + '"' + (type === "email" ? ' type="email"' : "") + "></div>";
+    }
+    var tzs = ["(GMT+00:00) London", "(GMT+01:00) Berlin", "(GMT-05:00) New York", "(GMT-08:00) Los Angeles", "(GMT+05:00) Karachi", "(GMT+05:30) Mumbai", "(GMT+04:00) Dubai", "(GMT+08:00) Singapore", "(GMT+10:00) Sydney"];
+    var tzsel = '<div class="pf-field"><label>Time zone</label><select class="pf-inp" data-model="account.tz">' + tzs.map(function (z) { return "<option" + (a.tz === z ? " selected" : "") + ">" + z + "</option>"; }).join("") + "</select></div>";
+    return (
+      '<div class="todayhead"><div class="th-day">Account</div><h1 class="th-t">Profile settings</h1><p class="th-s">Manage the details linked to your account. Your email address is what you use to sign in.</p></div>' +
+      '<div class="pf-card"><div class="pf-top"><div class="avatar lg">' + av + '</div><div class="pf-top-t"><div class="pf-name">' + esc(a.fullName || "Your name") + '</div><div class="pf-sub">' + esc(a.email || S.email || "you@business.com") + "</div></div></div>" +
+      '<div class="rsec">Personal</div><div class="pf-grid">' +
+      field("Full name", "fullName", a.fullName, "Jane Doe") +
+      field("Email address", "email", a.email, "you@business.com", "email") +
+      field("Phone", "phone", a.phone, "Optional") +
+      field("Job title", "title", a.title, "e.g. Founder") +
+      tzsel +
+      "</div>" +
+      '<div class="rsec">Security</div><div class="pf-grid">' +
+      '<div class="pf-field"><label>Password</label><div class="pf-static">•••••••••• <button class="lk" data-a="pfpass">Change password</button></div></div>' +
+      '<div class="pf-field"><label>Signed in with</label><div class="pf-static">' + gLogo() + " Google</div></div>" +
+      "</div>" +
+      '<div class="pf-foot"><button class="btn" data-a="saveprofile">' + ico("check") + ' Save changes</button><button class="lk mut" data-a="tab" data-k="today">Cancel</button></div>'
+    );
+  }
   function tabLabel(t) {
-    return { today: "Today", create: "Create", results: "Results", insights: "Insights", thinking: "Clara’s thinking" }[t] || t;
+    return { today: "Today", create: "Create", results: "Results", insights: "Insights", thinking: "Clara’s thinking", profile: "Profile settings" }[t] || t;
   }
   function crumbs() {
     var tr = (S.trail || []).slice(-3);
@@ -1690,6 +1877,7 @@
   function navbar() {
     return (
       '<div class="navbar">' + crumbs() + '<div class="nav-sp"></div><div class="nav-right">' +
+      '<button class="navbtn theme" data-a="theme" aria-label="Toggle theme" title="' + (S.dark ? "Switch to light mode" : "Switch to dark mode") + '">' + ico(S.dark ? "sun" : "moon") + "</button>" +
       '<div class="nav-item"><button class="navbtn bell" data-a="notif" aria-label="Notifications">' + ico("bell") + '<span class="nav-badge">3</span></button>' + (S.notifOpen ? notifDropdown() : "") + "</div>" +
       '<div class="nav-item"><button class="acctbtn' + (S.acctOpen ? " open" : "") + '" data-a="acctmenu"><span class="avatar sm">' + initials(nameOf() === "there" ? "" : nameOf()) + "</span>" + ico("chev") + "</button>" + (S.acctOpen ? acctDropdown() : "") + "</div>" +
       "</div></div>"
@@ -1716,7 +1904,9 @@
             ? vInsights()
             : S.tab === "thinking"
               ? vThinking()
-              : vResults();
+              : S.tab === "profile"
+                ? vProfile()
+                : vResults();
     var foot =
       '<div class="rail-foot">' +
       (S.switch ? bizMenu() : "") +
@@ -1754,14 +1944,62 @@
   var FMT_OPTS={image:["Feed post","Carousel","Story","Pin"],video:["Reel","Short","Story"],text:["Post","Article","Thread","Newsletter"],audio:["Podcast","Audiogram","Voice note"]};
   function fmtFor(type,p){var pf=({image:{Instagram:"Feed post",Pinterest:"Pin",Facebook:"Feed post"},video:{TikTok:"Short video",YouTube:"Short",Instagram:"Reel"},text:{LinkedIn:"Post",Email:"Newsletter",X:"Post","Content & SEO":"Article"}})[type]||{};return pf[p]||FMT_OPTS[type][0];}
   var POSTKIT={food:{media:"A close, natural shot of your product mid-craft — flour-dusted, soft daylight, real not staged.",tags:"#madelocal #craftfood #smallbatch #supportlocal"},saas:{media:"A clean before/after or a simple UI frame showing the hours saved — minimal, high-contrast.",tags:"#b2bsaas #productivity #founders #workflow"},fitness:{media:"A candid, real-person shot mid-session — energy over perfection, natural light.",tags:"#fitnessjourney #week1 #coaching #showup"},shop:{media:"A styled-but-honest flat-lay or lifestyle shot — story first, price never.",tags:"#smallbusiness #handmade #shopindie #thestory"},services:{media:"A warm, trustworthy shot — you or your space, faces and credibility over stock.",tags:"#trusted #local #realresults #askanexpert"},creator:{media:"A bold thumbnail-style frame with one clear promise — your face plus the transformation.",tags:"#learnwithme #creator #howto #growth"},other:{media:"A clean, on-brand image that leads with your one clear difference.",tags:"#yourbrand #local #thedifference"}};
-  function buildPost(task,i){var a=arch(),POSTABLE={Instagram:1,LinkedIn:1,TikTok:1,YouTube:1,X:1,Facebook:1,Pinterest:1,Email:1,"Content & SEO":1,"SEO or blog":1,"Google profile":1,Community:1},uc=(S.p.channels||[]).filter(function(c){return POSTABLE[c];}),cands=uc.length?uc:a.channels.filter(function(c){return POSTABLE[c];});if(!cands.length)cands=[a.channels[0]];var idx=(i!=null?i:0)%cands.length;var p=cands[(idx+cands.length)%cands.length];if(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].platform)p=S.tweak[i].platform;var ty=inferType(p),kit=POSTKIT[S.p.ind]||POSTKIT.other;return {type:ty,platform:p,format:fmtFor(ty,p),caption:captionFor(task,0),media:ty==="text"?"":kit.media,hashtags:kit.tags,rev:0};}
+  function buildPost(task,i){var a=arch(),POSTABLE={Instagram:1,LinkedIn:1,TikTok:1,YouTube:1,X:1,Facebook:1,Pinterest:1,Email:1,"Content & SEO":1,"SEO or blog":1,"Google profile":1,Community:1},uc=(S.p.channels||[]).filter(function(c){return POSTABLE[c];}),cands=uc.length?uc:a.channels.filter(function(c){return POSTABLE[c];});if(!cands.length)cands=[a.channels[0]];var idx=(i!=null?i:0)%cands.length;var p=cands[(idx+cands.length)%cands.length];if(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].platform)p=S.tweak[i].platform;var ty=inferType(p),kit=POSTKIT[S.p.ind]||POSTKIT.other;var post={type:ty,platform:p,format:fmtFor(ty,p),caption:captionFor(task,0),media:ty==="text"?"":kit.media,hashtags:kit.tags,rev:0};initEngineFields(post,task);return post;}
+  var CGEN_CONTROLS={
+    text:[
+      {key:"length",label:"Word count",type:"select",opts:["Short (~60 words)","Medium (~120 words)","Long (~250 words)"],def:"Medium (~120 words)"},
+      {key:"tone",label:"Tone",type:"select",opts:["Match brand tone","Warm","Bold","Professional","Playful"],def:"Match brand tone"},
+      {key:"style",label:"Format style",type:"select",opts:["Story-led","Listicle","Punchy one-liner","Q&A / hook"],def:"Story-led"},
+    ],
+    image:[
+      {key:"aspect",label:"Aspect ratio",type:"ro"},
+      {key:"styleDir",label:"Style direction",type:"select",opts:["Editorial craft","Minimal clean","Bold promo","Documentary / BTS"],def:"Editorial craft"},
+      {key:"textOverlay",label:"Text overlay",type:"toggle",def:"On"},
+    ],
+    video:[
+      {key:"vtype",label:"Video type",type:"ro"},
+      {key:"duration",label:"Duration",type:"ro"},
+      {key:"aspect",label:"Aspect ratio",type:"ro"},
+      {key:"visualStyle",label:"Visual style",type:"select",opts:["Casual / UGC","Cinematic","Animated / Motion graphics","Documentary BTS"],def:"Casual / UGC"},
+      {key:"captions",label:"Burn-in captions",type:"toggle",def:"On"},
+      {key:"script",label:"Script or scene description",type:"textarea",ph:"Key scenes, dialogue, or shot list…"},
+    ],
+    audio:[
+      {key:"atype",label:"Audio type",type:"ro"},
+      {key:"duration",label:"Duration",type:"ro"},
+      {key:"voiceStyle",label:"Voice style",type:"select",opts:["Conversational","Calm","Energetic","Professional"],def:"Conversational"},
+      {key:"musicBed",label:"Background music",type:"toggle",def:"On"},
+      {key:"script",label:"Script or talking points",type:"textarea",ph:"Key messages, bullet points, or full script…"},
+    ],
+  };
+  var CGEN_BRIEF=[
+    {key:"goal",label:"Campaign objective",ph:"What measurable outcome do we want?",help:"What you want this piece to achieve."},
+    {key:"whyNow",label:"Why this moment",ph:"Why this campaign now?",help:"The timing reason behind it."},
+    {key:"persona",label:"Primary persona",type:"select",help:"Who this message should feel written for."},
+    {key:"message",label:"Core message",type:"textarea",note:"— single clear sentence",ph:"What is the one idea the audience must remember?",help:"Keep it sharp: offer + differentiator + urgency."},
+    {key:"proof",label:"Proof points",ph:"What makes this claim credible?",help:"Ingredients, process, data, social proof."},
+    {key:"cta",label:"Call to action",ph:"What exactly should people do next?",help:"The one action you want them to take."},
+  ];
+  function ctrlDefs(type){return CGEN_CONTROLS[type]||CGEN_CONTROLS.text;}
+  function personaOpts(){var a=AUDS[S.p.aud]||"Your ideal customer";return a==="Your ideal customer"?[a,"All segments"]:[a,"All segments"];}
+  function aspectFor(fmt){fmt=fmt||"";if(/1\.91/.test(fmt))return "1.91:1";if(/9:16|reel|story|short(?!s)/i.test(fmt))return "9:16";if(/16:9|long/i.test(fmt))return "16:9";if(/4:5|portrait|pin/i.test(fmt))return "4:5";if(/1:1|feed|square|carousel/i.test(fmt))return "1:1";return "1:1";}
+  function durFor(fmt,type){fmt=fmt||"";if(type==="audio"){if(/clip|voice/i.test(fmt))return "3–5 min";if(/video/i.test(fmt))return "20–60 min";return "25–45 min";}if(/story/i.test(fmt))return "0:15";if(/short(?!s)/i.test(fmt))return "0:60";if(/long/i.test(fmt))return "3:00";if(/feed/i.test(fmt))return "0:45";return "0:30";}
+  function roVal(key,post){if(key==="aspect")return aspectFor(post.format);if(key==="duration")return durFor(post.format,post.type);if(key==="vtype"||key==="atype")return post.format||"—";return "—";}
+  function goalPhrase(){return ({customers:"Win new customers",revenue:"Drive sales",visibility:"Grow visibility & reach",edge:"Sharpen your positioning"})[S.p.goal]||"Move your main goal forward";}
+  function ctaFor(){return ({food:"Come taste it this week.",saas:"Start your free trial.",fitness:"Book your first session.",shop:"Shop the drop.",services:"Get in touch today.",creator:"Follow for more."})[S.p.ind]||"Get in touch today.";}
+  function initEngineFields(post,task){
+    if(!post.brief){var a=arch(),aud=AUDS[S.p.aud]||"Your ideal customer";post.brief={goal:goalPhrase(),whyNow:"This is today’s highest-leverage move.",persona:aud,message:(task&&task.title)||a.pos||"",proof:"",cta:ctaFor()};}
+    if(!post.ctrl){var d={};ctrlDefs(post.type).forEach(function(c){if(c.def!=null)d[c.key]=c.def;});post.ctrl=d;}
+  }
+  function setPath(obj,path,val){var p=path.split("."),o=obj;for(var j=0;j<p.length-1;j++){if(!o[p[j]]||typeof o[p[j]]!=="object")o[p[j]]={};o=o[p[j]];}o[p[p.length-1]]=val;}
+  function getPath(obj,path){var p=path.split("."),o=obj;for(var j=0;j<p.length;j++){if(o==null)return undefined;o=o[p[j]];}return o;}
   function typeIcon(ty){return ty==="image"?"img":ty==="video"?"vid":ty==="audio"?"mic":"txt";}
   function typeLabel(ty){return ty==="image"?"Image":ty==="video"?"Video":ty==="audio"?"Audio":"Text";}
   function mediaLabel(ty){return ty==="video"?"Video direction":ty==="audio"?"Audio direction / script":"Image direction";}
   function mediaWord(ty){return ty==="video"?"Video":ty==="audio"?"Audio":"Image";}
-  function openCreate(indices){S.queue=indices.slice();var tasks=todayTasks();indices.forEach(function(i){if(!S.posts[i])S.posts[i]=buildPost(tasks[i],i);});S.screen="app";S.tab="create";render();}
+  function openCreate(indices){if(!Array.isArray(S.queue))S.queue=[];var tasks=todayTasks();indices.forEach(function(i){if(S.queue.indexOf(i)<0)S.queue.push(i);if(!S.posts[i])S.posts[i]=buildPost(tasks[i],i);});S.createView="list";S.cFilter="all";S.createDetail=null;S.screen="app";S.tab="create";render();}
   function qStatus(i){if(S.pub[i])return "scheduled";if(S.qdraft[i])return "draft";return "pending";}
-  function draftCard(task,i){var post=S.posts[i]||(S.posts[i]=buildPost(task,i)),pub=!!S.pub[i],draft=!pub&&!!S.qdraft[i],edit=!pub&&!!S.qedit[i];var dest='<span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span><span class="dc-for">for: '+task.title+'</span>'+(task.camp?'<span class="dc-camp">'+ico("mega")+task.camp+'</span>':'');if(pub)return '<div class="dcard done"><div class="dc-top">'+dest+'</div><div class="dc-a"><span class="doneflag">'+ico("checkc")+(post.scheduled?"Scheduled · "+post.scheduled:"Published")+'</span><button class="lk" data-a="postresult" data-k="'+i+'">'+ico("chart")+' See results</button></div></div>';var flag=draft&&!edit?'<div class="draftflag">'+ico("checkc")+' Draft saved — it’s waiting under <b>Drafts</b>. Schedule it whenever you’re ready.</div>':"";var view;if(edit){var tc="";["text","image","video","audio"].forEach(function(ty){tc+='<button class="tchip'+(post.type===ty?" on":"")+'" data-a="settype" data-k="'+i+'" data-t="'+ty+'">'+ico(typeIcon(ty))+typeLabel(ty)+'</button>';});var pfo="";arch().channels.forEach(function(c){pfo+='<option value="'+c+'"'+(post.platform===c?" selected":"")+'>'+c+'</option>';});var fmo="";(FMT_OPTS[post.type]||[]).forEach(function(f){fmo+='<option value="'+f+'"'+(post.format===f?" selected":"")+'>'+f+'</option>';});view='<div class="editgrid"><div class="efield"><label>Content type</label><div class="tchips">'+tc+'</div></div><div class="erow"><div class="efield"><label>Platform</label><select class="sel" data-psel="platform" data-k="'+i+'">'+pfo+'</select></div><div class="efield"><label>Format</label><select class="sel" data-psel="format" data-k="'+i+'">'+fmo+'</select></div></div><div class="efield"><label>Caption</label><textarea class="dtext-edit" data-pf="caption" data-pi="'+i+'">'+esc(post.caption)+'</textarea></div>'+(post.type!=="text"?'<div class="efield"><label>'+mediaLabel(post.type)+'</label><textarea class="mtext-edit" data-pf="media" data-pi="'+i+'">'+esc(post.media)+'</textarea></div>':"")+'<div class="efield"><label>Hashtags</label><input class="hinp" data-pf="hashtags" data-pi="'+i+'" value="'+esc(post.hashtags)+'"></div></div>';}else{view='<div class="dtext">'+esc(post.caption)+"</div>"+(post.media?'<div class="pmedia"><span class="pm-l">'+mediaWord(post.type)+' direction</span> '+esc(post.media)+"</div>":"")+(post.hashtags?'<div class="ptags">'+esc(post.hashtags)+"</div>":"");}var pubBtn='<button class="btn sm" data-a="qpublish" data-k="'+i+'">'+ico("send")+(draft?' Schedule it':' Publish')+'</button>';var draftBtn='<button class="lk mut" data-a="qdraftsave" data-k="'+i+'">'+ico("flag")+(draft?"Update draft":"Save as draft")+'</button>';var editBtn='<button class="lk mut" data-a="qedit" data-k="'+i+'">'+ico("edit")+(edit?"Done editing":"Edit")+'</button>';var regenBtn='<button class="lk mut" data-a="qregen" data-k="'+i+'">'+ico("refresh")+"Regenerate</button>";var actions=pubBtn+draftBtn+editBtn+regenBtn;return '<div class="dcard'+(draft?" drafted":"")+(edit?" editing":"")+'"><div class="dc-top">'+dest+"</div>"+flag+view+'<div class="dc-a">'+actions+"</div></div>";}
+  function draftCard(task,i){var post=S.posts[i]||(S.posts[i]=buildPost(task,i)),pub=!!S.pub[i],draft=!pub&&!!S.qdraft[i],edit=!pub&&!!S.qedit[i];var dest='<span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span>'+(task.camp?'<span class="dc-camp">'+ico("mega")+task.camp+'</span>':'');if(pub)return '<div class="dcard done"><div class="dc-top">'+dest+'</div><div class="dtext">'+esc(post.caption)+"</div>"+(post.media?'<div class="pmedia"><span class="pm-l">'+mediaWord(post.type)+' direction</span> '+esc(post.media)+"</div>":"")+(post.hashtags?'<div class="ptags">'+esc(post.hashtags)+"</div>":"")+'<div class="dc-a"><span class="doneflag">'+ico("checkc")+(post.scheduled?"Scheduled · "+post.scheduled:"Published")+'</span><button class="lk" data-a="postresult" data-k="'+i+'">'+ico("chart")+' See results</button></div></div>';var flag=draft&&!edit?'<div class="draftflag">'+ico("checkc")+' Draft saved — it’s waiting under <b>Drafts</b>. Schedule it whenever you’re ready.</div>':"";var view;if(edit){var tc="";["text","image","video","audio"].forEach(function(ty){tc+='<button class="tchip'+(post.type===ty?" on":"")+'" data-a="settype" data-k="'+i+'" data-t="'+ty+'">'+ico(typeIcon(ty))+typeLabel(ty)+'</button>';});var pfo="";arch().channels.forEach(function(c){pfo+='<option value="'+c+'"'+(post.platform===c?" selected":"")+'>'+c+'</option>';});var fmo="";(FMT_OPTS[post.type]||[]).forEach(function(f){fmo+='<option value="'+f+'"'+(post.format===f?" selected":"")+'>'+f+'</option>';});view='<div class="editgrid"><div class="efield"><label>Content type</label><div class="tchips">'+tc+'</div></div><div class="erow"><div class="efield"><label>Platform</label><select class="sel" data-psel="platform" data-k="'+i+'">'+pfo+'</select></div><div class="efield"><label>Format</label><select class="sel" data-psel="format" data-k="'+i+'">'+fmo+'</select></div></div><div class="efield"><label>Caption</label><textarea class="dtext-edit" data-pf="caption" data-pi="'+i+'">'+esc(post.caption)+'</textarea></div>'+(post.type!=="text"?'<div class="efield"><label>'+mediaLabel(post.type)+'</label><textarea class="mtext-edit" data-pf="media" data-pi="'+i+'">'+esc(post.media)+'</textarea></div>':"")+'<div class="efield"><label>Hashtags</label><input class="hinp" data-pf="hashtags" data-pi="'+i+'" value="'+esc(post.hashtags)+'"></div></div>';}else{view='<div class="dtext">'+esc(post.caption)+"</div>"+(post.media?'<div class="pmedia"><span class="pm-l">'+mediaWord(post.type)+' direction</span> '+esc(post.media)+"</div>":"")+(post.hashtags?'<div class="ptags">'+esc(post.hashtags)+"</div>":"");}var pubBtn='<button class="btn sm" data-a="qpublish" data-k="'+i+'">'+ico("send")+(draft?' Schedule it':' Publish')+'</button>';var draftBtn='<button class="lk mut" data-a="qdraftsave" data-k="'+i+'">'+ico("flag")+(draft?"Update draft":"Save as draft")+'</button>';var editBtn='<button class="lk mut" data-a="qedit" data-k="'+i+'">'+ico("edit")+(edit?"Done editing":"Edit")+'</button>';var regenBtn='<button class="lk mut" data-a="qregen" data-k="'+i+'">'+ico("refresh")+"Regenerate</button>";var actions=pubBtn+draftBtn+editBtn+regenBtn;return '<div class="dcard'+(draft?" drafted":"")+(edit?" editing":"")+'"><div class="dc-top">'+dest+"</div>"+flag+view+'<div class="dc-a">'+actions+"</div></div>";}
   function createEmpty(){return '<div class="stub"><div class="stub-ic">'+ico("zap")+'</div><h2>Nothing queued yet</h2><p>Approve a move in Today and Clara will draft it here — or create a post of your own.</p><div class="stub-a"><button class="btn sm" data-a="conew">'+ico("plus")+' Create a post</button><button class="lk mut" data-a="tab" data-k="today">'+ico("arrow")+' Go to Today</button></div></div>';}
   function slotISO(k){var raw=(S.posts[k]&&S.posts[k].scheduled)||bestTime(k);var day=(raw.split(",")[0]||"").trim().toLowerCase();var base=new Date();if(day==="today")return isoOf(base);if(day==="this week"){var d0=new Date(base);d0.setDate(d0.getDate()+3);return isoOf(d0);}var names=["sun","mon","tue","wed","thu","fri","sat"];var idx=names.indexOf(day.slice(0,3));if(idx<0)return isoOf(base);var add=(idx-base.getDay()+7)%7;if(add===0)add=7;var d=new Date(base);d.setDate(d.getDate()+add);return isoOf(d);}
   function slotTime(k){var raw=(S.posts[k]&&S.posts[k].scheduled)||bestTime(k);return (raw.split(",")[1]||"").trim();}
@@ -1804,6 +2042,11 @@
   function taskAt(i){return todayTasks()[i]||(S.ownTasks&&S.ownTasks[i])||{};}
   function nextOwnIdx(){var n=900;while((S.ownTasks&&S.ownTasks[n])||S.posts[n])n++;return n;}
   function angleTitle(a){var w=(a||"Custom post").trim().replace(/[.!?]+$/,"").split(/\s+/).slice(0,6).join(" ");return w.charAt(0).toUpperCase()+w.slice(1);}
+  function freshIdea(){var au=(AUDS[S.p.aud]||"your customers").toLowerCase();var nm=nameOf()==="there"?"your business":nameOf();var pool=["Share the story behind "+nm+" and why it exists","Show a real result "+au+" got from working with you","Teach one thing "+au+" always ask you about","Give your honest take on something everyone in your space gets wrong"];return pool[Math.floor(Math.random()*pool.length)];}
+  function enhanceAngle(t){t=(t||"").trim();if(!t)return "";var au=(AUDS[S.p.aud]||"your customers").toLowerCase();var core=t.charAt(0).toUpperCase()+t.slice(1);core=core.replace(/[.!?]+$/,"");var lc=core.charAt(0).toLowerCase()+core.slice(1);var frames=[core+" — told as a short, honest story that "+au+" will remember, ending with one clear ask.",
+    "Open with a hook, then "+lc+" — kept human and specific, so "+au+" feel it and know what to do next.",
+    core+". Lead with why it matters to "+au+", back it with a real detail, and close with a simple next step."];
+    return frames[t.length%frames.length];}
   function angleSuggestions(type,plat){
     var nm=nameOf()==="there"?"your business":nameOf();
     var au=(AUDS[S.p.aud]||"your customers").toLowerCase();
@@ -1827,6 +2070,25 @@
     var b=(angle||"").trim();b=b.charAt(0).toUpperCase()+b.slice(1);if(b&&!/[.!?]$/.test(b))b+=".";
     return hook+"\n\n"+b+"\n\n"+cta+(nm?"\n\n— "+nm:"");
   }
+  function briefEditC(c){
+    return CGEN_BRIEF.map(function(f){
+      var val=getPath(c,"brief."+f.key);if(val==null)val="";var inner;
+      if(f.type==="select"){inner='<select class="sel" data-model="compose.brief.'+f.key+'">'+personaOpts().map(function(o){return "<option"+(val===o?" selected":"")+">"+esc(o)+"</option>";}).join("")+"</select>";}
+      else if(f.type==="textarea"){inner='<textarea class="dtext-edit" data-model="compose.brief.'+f.key+'" placeholder="'+(f.ph||"")+'">'+esc(val)+"</textarea>";}
+      else{inner='<input class="pf-inp" data-model="compose.brief.'+f.key+'" value="'+esc(val)+'" placeholder="'+(f.ph||"")+'">';}
+      return '<div class="efield"><label>'+f.label+(f.note?' <span class="ef-note">'+f.note+"</span>":"")+"</label>"+inner+(f.help?'<div class="ef-help">'+f.help+"</div>":"")+"</div>";
+    }).join("");
+  }
+  function ctrlEditC(c){
+    return ctrlDefs(c.type).map(function(cc){
+      var inner;
+      if(cc.type==="ro")inner='<div class="pf-static">'+esc(roVal(cc.key,{format:c.format,type:c.type}))+" <span class=\"ef-note\">from format</span></div>";
+      else if(cc.type==="select"){var val=getPath(c,"ctrl."+cc.key);if(val==null)val=cc.def;inner='<select class="sel" data-model="compose.ctrl.'+cc.key+'">'+cc.opts.map(function(o){return "<option"+(val===o?" selected":"")+">"+esc(o)+"</option>";}).join("")+"</select>";}
+      else if(cc.type==="toggle"){var on=(getPath(c,"ctrl."+cc.key)||cc.def)==="On";inner='<button class="tog'+(on?" on":"")+'" data-a="ctoggle" data-t="'+cc.key+'"><span class="tog-dot"></span>'+(on?"On":"Off")+"</button>";}
+      else if(cc.type==="textarea"){var tv=getPath(c,"ctrl."+cc.key)||"";inner='<textarea class="mtext-edit" data-model="compose.ctrl.'+cc.key+'" placeholder="'+(cc.ph||"")+'">'+esc(tv)+"</textarea>";}
+      return '<div class="efield"><label>'+cc.label+"</label>"+inner+"</div>";
+    }).join("");
+  }
   function vCompose(){
     var c=S.compose,types=[["text","Text"],["image","Image"],["video","Video"],["audio","Audio"]];
     var tchips=types.map(function(tp){return '<button class="ocard'+(c.type===tp[0]?" on":"")+'" data-a="cotype" data-t="'+tp[0]+'">'+ico(typeIcon(tp[0]))+" "+tp[1]+"</button>";}).join("");
@@ -1837,17 +2099,110 @@
       if(!c.angles||!c.angles.length)c.angles=angleSuggestions(c.type,c.platform);
       var cards=c.angles.map(function(a,idx){return '<button class="anglecard'+(c.angleSel===idx?" on":"")+'" data-a="coangle" data-k="'+idx+'"><span class="ac-n">'+(idx+1)+'</span><span class="ac-t">'+esc(a)+"</span>"+(c.angleSel===idx?ico("check"):"")+"</button>";}).join("");
       var ownCard='<button class="anglecard own'+(c.angleSel==="own"?" on":"")+'" data-a="coangle" data-k="own"><span class="ac-n">'+ico("edit")+'</span><span class="ac-t">I have my own idea</span>'+(c.angleSel==="own"?ico("check"):"")+"</button>";
-      var ownBox=c.angleSel==="own"?'<textarea class="ownbox" data-coown placeholder="Tell Clara what you want this post to be about — e.g. why I started this bakery">'+esc(c.ownText||"")+"</textarea>":"";
+      var ownBox=c.angleSel==="own"?'<textarea class="ownbox" data-coown placeholder="Tell Clara what you want this post to be about — e.g. why I started this bakery">'+esc(c.ownText||"")+'</textarea><div class="ownbar"><button class="btn sm ghost" data-a="coenhance">'+ico("spark")+" Enhance with AI</button><span class=\"ownbar-h\">Type an idea and Clara will sharpen it — or leave it blank and she’ll draft one for you.</span></div>":"";
       angleSec='<div class="rsec">Pick an angle</div><div class="anglelist">'+cards+ownCard+"</div>"+ownBox;
+    }
+    var detailSec="";
+    if(c.type&&c.platform&&c.angleSel!=null){
+      var angleText=c.angleSel==="own"?(c.ownText||""):((c.angles&&c.angles[c.angleSel])||"");
+      if(!c.format)c.format=fmtFor(c.type,c.platform);
+      if(!c.brief)c.brief={goal:goalPhrase(),whyNow:"A fresh piece for your audience.",persona:AUDS[S.p.aud]||"Your ideal customer",message:angleText,proof:"",cta:ctaFor()};
+      if(!c.ctrl){var dd={};ctrlDefs(c.type).forEach(function(cc){if(cc.def!=null)dd[cc.key]=cc.def;});c.ctrl=dd;}
+      var fmo=(FMT_OPTS[c.type]||[]).map(function(f){return "<option"+(c.format===f?" selected":"")+">"+esc(f)+"</option>";}).join("");
+      detailSec='<div class="rsec">Format</div><div class="editgrid"><div class="efield"><label>Format</label><select class="sel" data-model="compose.format">'+fmo+"</select></div></div>"+
+        '<div class="rsec">Creative brief</div><div class="editgrid">'+briefEditC(c)+"</div>"+
+        '<div class="rsec">'+typeLabel(c.type)+' settings</div><div class="editgrid">'+ctrlEditC(c)+"</div>";
     }
     var canGen=c.type&&c.platform&&c.angleSel!=null;
     var foot='<div class="stepfoot"><button class="lk mut" data-a="cocancel">'+ico("arrow")+' Cancel</button><button class="btn'+(canGen?"":" disabled")+'" data-a="cogen">'+ico("spark")+" Generate post</button></div>";
-    return '<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">Create a post</h1><p class="th-s">Pick a type and platform, then choose an angle — or bring your own.</p></div>'+
+    return '<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">Create a post</h1><p class="th-s">Pick a type and platform, choose an angle, then shape the brief — the same fields Clara fills for you.</p></div>'+
       '<div class="rsec">Content type</div><div class="ocardrow">'+tchips+"</div>"+
       '<div class="rsec">Platform</div><div class="ocardrow">'+pchips+"</div>"+
-      angleSec+foot;
+      angleSec+detailSec+foot;
   }
-  function vCreate(){if(S.composing)return vCompose();if(!S.queue||!S.queue.length)return createEmpty();var tasks=todayTasks();var q=S.queue;var nPend=0,nDraft=0,nSched=0;q.forEach(function(i){var st=qStatus(i);if(st==="scheduled")nSched++;else if(st==="draft")nDraft++;else nPend++;});var allPub=nSched===q.length;var head='<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">'+(allPub?"Published":q.length>1?"Your content, ready to review":"Ready to publish")+'</h1><p class="th-s">'+(allPub?"Nice work — that’s today’s content live.":"Clara drafted "+(q.length>1?("all "+q.length+" in your voice"):"this in your voice")+". Review, tweak, publish — or save as a draft for later.")+'</p></div>';var newBtn='<button class="btn sm createnew" data-a="conew">'+ico("plus")+' Create a post</button>';var top='<div class="createtop">'+head+newBtn+'</div>';var vtog=nSched>0?'<div class="viewtog cvtog"><button class="vt'+(S.createView!=="calendar"?" on":"")+'" data-a="createview" data-k="list">'+ico("list")+' List</button><button class="vt'+(S.createView==="calendar"?" on":"")+'" data-a="createview" data-k="calendar">'+ico("cal")+' Calendar</button></div>':"";if(nSched>0&&S.createView==="calendar")return top+vtog+vCreateCal();var filt=S.cFilter||"all";var bar="";if(q.length>1||nDraft){function cf(k,label,n){return '<button class="cf'+(filt===k?" on":"")+'" data-a="cfilter" data-k="'+k+'">'+label+' <span class="cf-n">'+n+'</span></button>';}bar='<div class="cfilter">'+cf("all","All",q.length)+cf("pending","Pending",nPend)+cf("draft","Drafts",nDraft)+cf("scheduled","Scheduled",nSched)+'</div>';}var shown=q.filter(function(i){return filt==="all"||qStatus(i)===filt;});var cards="";shown.forEach(function(i){cards+=draftCard(taskAt(i),i);});if(!shown.length)cards='<div class="rempty">No '+(filt==="pending"?"pending":filt==="draft"?"draft":filt==="scheduled"?"scheduled":"")+' posts right now.</div>';var foot=allPub?'<div class="tnote"><div class="tn-h">'+ico("checkc")+' Done for today</div><p>Nicely done — that’s today live. <button class="lk" data-a="seeresults">See your results</button> · <button class="lk" data-a="tab" data-k="today">Back to Today</button></p></div>':"";return top+vtog+bar+cards+foot;}
+  function ccard(task,i){
+    var post=S.posts[i]||(S.posts[i]=buildPost(task,i));
+    var st=qStatus(i),live=post.live;
+    var sl=st==="scheduled"?(live?"Live":"Scheduled"):st==="draft"?"Draft":"Pending";
+    var scls=st==="scheduled"?(live?"live":"sched"):st;
+    var footL=st==="scheduled"?(ico("cal")+" "+(post.scheduled||"—")):(st==="draft"?"Saved as draft":"Ready to review");
+    return '<div class="pcard '+scls+'">'+
+      '<div class="pcard-top"><span class="dch">'+ico(typeIcon(post.type))+post.platform+'</span><span class="pcard-st '+scls+'">'+sl+"</span></div>"+
+      '<div class="pcard-for">'+esc(task.title||"Post")+"</div>"+
+      '<div class="pcard-foot"><span class="pcard-fl">'+footL+'</span><button class="pcard-open" data-a="copen" data-k="'+i+'">Open '+ico("arrow")+"</button></div>"+
+      "</div>";
+  }
+  function briefEdit(i,post){
+    return CGEN_BRIEF.map(function(f){
+      var val=getPath(post,"brief."+f.key);if(val==null)val="";var inner;
+      if(f.type==="select"){inner='<select class="sel" data-psel="brief.'+f.key+'" data-k="'+i+'">'+personaOpts().map(function(o){return "<option"+(val===o?" selected":"")+">"+esc(o)+"</option>";}).join("")+"</select>";}
+      else if(f.type==="textarea"){inner='<textarea class="dtext-edit" data-pf="brief.'+f.key+'" data-pi="'+i+'" placeholder="'+(f.ph||"")+'">'+esc(val)+"</textarea>";}
+      else{inner='<input class="pf-inp" data-pf="brief.'+f.key+'" data-pi="'+i+'" value="'+esc(val)+'" placeholder="'+(f.ph||"")+'">';}
+      return '<div class="efield"><label>'+f.label+(f.note?' <span class="ef-note">'+f.note+"</span>":"")+"</label>"+inner+(f.help?'<div class="ef-help">'+f.help+"</div>":"")+"</div>";
+    }).join("");
+  }
+  function ctrlEdit(i,post){
+    return ctrlDefs(post.type).map(function(c){
+      var inner;
+      if(c.type==="ro")inner='<div class="pf-static">'+esc(roVal(c.key,post))+" <span class=\"ef-note\">from format</span></div>";
+      else if(c.type==="select"){var val=getPath(post,"ctrl."+c.key);if(val==null)val=c.def;inner='<select class="sel" data-psel="ctrl.'+c.key+'" data-k="'+i+'">'+c.opts.map(function(o){return "<option"+(val===o?" selected":"")+">"+esc(o)+"</option>";}).join("")+"</select>";}
+      else if(c.type==="toggle"){var on=(getPath(post,"ctrl."+c.key)||c.def)==="On";inner='<button class="tog'+(on?" on":"")+'" data-a="ptoggle" data-k="'+i+'" data-t="ctrl.'+c.key+'"><span class="tog-dot"></span>'+(on?"On":"Off")+"</button>";}
+      else if(c.type==="textarea"){var tv=getPath(post,"ctrl."+c.key)||"";inner='<textarea class="mtext-edit" data-pf="ctrl.'+c.key+'" data-pi="'+i+'" placeholder="'+(c.ph||"")+'">'+esc(tv)+"</textarea>";}
+      return '<div class="efield"><label>'+c.label+"</label>"+inner+"</div>";
+    }).join("");
+  }
+  function briefRead(post){
+    var b=post.brief||{};
+    var facts=[["Objective",b.goal],["Why now",b.whyNow],["Persona",b.persona],["Proof",b.proof],["CTA",b.cta]].filter(function(x){return (x[1]||"").toString().trim();});
+    var f=facts.map(function(x){return '<div class="pd-fact"><span class="pd-fl">'+x[0]+'</span><span class="pd-fv">'+esc(x[1])+"</span></div>";}).join("");
+    var msg=(b.message||"").trim()?'<div class="pd-box" style="margin-bottom:10px">'+esc(b.message)+"</div>":"";
+    if(!f&&!msg)return "";
+    return '<section class="pd-sec"><div class="pd-lab">'+ico("compass")+' Creative brief</div>'+msg+(f?'<div class="pd-facts">'+f+"</div>":"")+"</section>";
+  }
+  function ctrlRead(post){
+    var items=ctrlDefs(post.type).filter(function(c){return c.type!=="textarea";}).map(function(c){
+      var v=c.type==="ro"?roVal(c.key,post):(getPath(post,"ctrl."+c.key)!=null?getPath(post,"ctrl."+c.key):(c.def||"—"));
+      return '<div class="pd-fact"><span class="pd-fl">'+c.label+'</span><span class="pd-fv">'+esc(v)+"</span></div>";
+    }).join("");
+    var sc=ctrlDefs(post.type).filter(function(c){return c.type==="textarea";})[0],scriptBox="";
+    if(sc){var sv=getPath(post,"ctrl."+sc.key);if((sv||"").trim())scriptBox='<div class="pd-lab" style="margin-top:12px">'+esc(sc.label)+'</div><div class="pd-box pd-dir">'+esc(sv)+"</div>";}
+    return '<section class="pd-sec"><div class="pd-lab">'+ico(typeIcon(post.type))+" "+typeLabel(post.type)+' settings</div><div class="pd-facts">'+items+"</div>"+scriptBox+"</section>";
+  }
+  function vPostDetail(i){
+    var task=taskAt(i),post=S.posts[i]||(S.posts[i]=buildPost(task,i));
+    initEngineFields(post,task);
+    var pub=!!S.pub[i],draft=!pub&&!!S.qdraft[i],edit=!pub&&!!S.qedit[i];
+    var st=qStatus(i),live=post.live;
+    var sl=st==="scheduled"?(live?"Live":"Scheduled"):st==="draft"?"Draft":"Pending";
+    var scls=st==="scheduled"?(live?"live":"sched"):st;
+    var back='<button class="lk mut resback" data-a="cback">'+ico("arrow")+" All posts</button>";
+    var head='<div class="todayhead"><div class="th-day">Create · post</div><h1 class="th-t">'+esc(task.title||"Post")+'</h1><div class="pd-meta"><span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span><span class="pcard-st '+scls+'">'+sl+"</span>"+(post.scheduled?'<span class="pd-when">'+ico("cal")+" "+post.scheduled+"</span>":"")+(task.camp?'<span class="dc-camp">'+ico("mega")+task.camp+"</span>":"")+"</div></div>";
+    function fact(l,v){return '<div class="pd-fact"><span class="pd-fl">'+l+'</span><span class="pd-fv">'+esc(v)+"</span></div>";}
+    var body;
+    if(edit){
+      var tc="";["text","image","video","audio"].forEach(function(ty){tc+='<button class="tchip'+(post.type===ty?" on":"")+'" data-a="settype" data-k="'+i+'" data-t="'+ty+'">'+ico(typeIcon(ty))+typeLabel(ty)+"</button>";});
+      var pfo="";arch().channels.forEach(function(c){pfo+='<option value="'+c+'"'+(post.platform===c?" selected":"")+'>'+c+"</option>";});
+      var fmo="";(FMT_OPTS[post.type]||[]).forEach(function(f){fmo+='<option value="'+f+'"'+(post.format===f?" selected":"")+'>'+f+"</option>";});
+      body='<div class="pd-body">'+
+        '<section class="pd-sec"><div class="pd-lab">Details</div><div class="editgrid"><div class="efield"><label>Content type</label><div class="tchips">'+tc+'</div></div><div class="erow"><div class="efield"><label>Platform</label><select class="sel" data-psel="platform" data-k="'+i+'">'+pfo+'</select></div><div class="efield"><label>Format</label><select class="sel" data-psel="format" data-k="'+i+'">'+fmo+"</select></div></div></div></section>"+
+        '<section class="pd-sec"><div class="pd-lab">'+ico("txt")+' Caption</div><textarea class="dtext-edit pd-fullw" data-pf="caption" data-pi="'+i+'">'+esc(post.caption)+"</textarea></section>"+
+        '<section class="pd-sec"><div class="pd-lab">'+ico("compass")+' Creative brief</div><div class="editgrid">'+briefEdit(i,post)+"</div></section>"+
+        '<section class="pd-sec"><div class="pd-lab">'+ico(typeIcon(post.type))+" "+typeLabel(post.type)+' settings</div><div class="editgrid">'+ctrlEdit(i,post)+"</div></section>"+
+        '<section class="pd-sec"><div class="pd-lab">'+ico("spark")+' Hashtags</div><input class="hinp pd-fullw" data-pf="hashtags" data-pi="'+i+'" value="'+esc(post.hashtags)+'"></section>'+
+        "</div>";
+    }else{
+      var facts='<section class="pd-sec"><div class="pd-lab">Details</div><div class="pd-facts">'+fact("Platform",post.platform)+fact("Format",post.format)+fact("Content type",typeLabel(post.type))+fact("Status",sl)+(post.scheduled?fact("Scheduled",post.scheduled):"")+"</div></section>";
+      var caption='<section class="pd-sec"><div class="pd-lab">'+ico("txt")+' Caption</div><div class="pd-box pd-cap">'+esc(post.caption)+"</div></section>";
+      var tags=post.hashtags?'<section class="pd-sec"><div class="pd-lab">'+ico("spark")+' Hashtags</div><div class="pd-tags">'+esc(post.hashtags)+"</div></section>":"";
+      body='<div class="pd-body">'+facts+caption+briefRead(post)+ctrlRead(post)+tags+"</div>";
+    }
+    var flag=draft&&!edit?'<div class="draftflag">'+ico("checkc")+" Draft saved — it’s waiting under <b>Drafts</b>. Schedule it whenever you’re ready.</div>":"";
+    var actions;
+    if(pub)actions='<span class="doneflag">'+ico("checkc")+(post.scheduled?"Scheduled · "+post.scheduled:"Published")+'</span><button class="btn sm" data-a="postresult" data-k="'+i+'">'+ico("chart")+" See results</button>";
+    else actions='<button class="btn sm" data-a="qpublish" data-k="'+i+'">'+ico("send")+(draft?" Schedule it":" Publish")+'</button><button class="lk mut" data-a="qdraftsave" data-k="'+i+'">'+ico("flag")+(draft?"Update draft":"Save as draft")+'</button><button class="lk mut" data-a="qedit" data-k="'+i+'">'+ico("edit")+(edit?"Done editing":"Edit")+'</button><button class="lk mut" data-a="qregen" data-k="'+i+'">'+ico("refresh")+"Regenerate</button>";
+    return back+head+flag+body+'<div class="pd-actions">'+actions+"</div>";
+  }
+  function vCreate(){if(S.composing)return vCompose();if(!S.queue||!S.queue.length)return createEmpty();if(S.createDetail!=null&&S.queue.indexOf(+S.createDetail)>=0)return vPostDetail(+S.createDetail);var q=S.queue;var nPend=0,nDraft=0,nSched=0;q.forEach(function(i){var st=qStatus(i);if(st==="scheduled")nSched++;else if(st==="draft")nDraft++;else nPend++;});var allPub=nSched===q.length;var head='<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">'+(allPub?"Published":q.length>1?"Your content, ready to review":"Ready to publish")+'</h1><p class="th-s">'+(allPub?"Nice work — that’s today’s content live.":"Clara drafted "+(q.length>1?("all "+q.length+" in your voice"):"this in your voice")+". Tap a card to review, edit, publish — or save as a draft.")+'</p></div>';var newBtn='<button class="btn sm createnew" data-a="conew">'+ico("plus")+' Create a post</button>';var top='<div class="createtop">'+head+newBtn+'</div>';var vtog=nSched>0?'<div class="viewtog cvtog"><button class="vt'+(S.createView!=="calendar"?" on":"")+'" data-a="createview" data-k="list">'+ico("list")+' List</button><button class="vt'+(S.createView==="calendar"?" on":"")+'" data-a="createview" data-k="calendar">'+ico("cal")+' Calendar</button></div>':"";if(nSched>0&&S.createView==="calendar")return top+vtog+vCreateCal();var filt=S.cFilter||"all";var bar="";if(q.length>1||nDraft){function cf(k,label,n){return '<button class="cf'+(filt===k?" on":"")+'" data-a="cfilter" data-k="'+k+'">'+label+' <span class="cf-n">'+n+'</span></button>';}bar='<div class="cfilter">'+cf("all","All",q.length)+cf("pending","Pending",nPend)+cf("draft","Drafts",nDraft)+cf("scheduled","Scheduled",nSched)+'</div>';}var shown=q.filter(function(i){return filt==="all"||qStatus(i)===filt;});var cards=shown.length?'<div class="pgrid">'+shown.map(function(i){return ccard(taskAt(i),i);}).join("")+"</div>":'<div class="rempty">No '+(filt==="pending"?"pending":filt==="draft"?"draft":filt==="scheduled"?"scheduled":"")+' posts right now.</div>';var foot=allPub?'<div class="tnote"><div class="tn-h">'+ico("checkc")+' Done for today</div><p>Nicely done — that’s today live. <button class="lk" data-a="seeresults">See your results</button> · <button class="lk" data-a="tab" data-k="today">Back to Today</button></p></div>':"";return top+vtog+bar+cards+foot;}
   function resultsEmpty(){return '<div class="stub"><div class="stub-ic">'+ico("chart")+'</div><h2>Nothing to measure yet</h2><p>Publish a move in Create and its results land here — then they feed back into tomorrow’s Today.</p><button class="btn sm" data-a="tab" data-k="today">'+ico("arrow")+' Go to Today</button></div>';}
   function fmtNum(n){return (n||0).toLocaleString("en-US");}
   function postMetrics(i){var seed=(i+1)*97;var reach=380+((seed*13)%760);var rate=9+(seed%12);var eng=Math.round(reach*rate/100);var clicks=Math.round(eng*(0.18+((seed%7)/50)));var conv=Math.max(0,Math.round(clicks*(0.10+(seed%6)/100)));return {reach:reach,eng:eng,clicks:clicks,conv:conv};}
@@ -1875,7 +2230,13 @@
   function rstatCard(l,v,d){return '<div class="rstat"><div class="rs-v">'+v+'</div><div class="rs-l">'+l+'</div>'+(d?'<div class="rs-d">'+d+"</div>":"")+"</div>";}
   function rrow(r){
     var x=postMetrics(r.i);
-    return '<button class="rrow" data-rname="'+esc(r.name.toLowerCase())+'" data-a="postresult" data-k="'+r.i+'"><span class="rr-ic">'+ico(typeIcon(r.type))+'</span><span class="rr-main"><span class="rr-name">'+r.name+'</span><span class="rr-sub">'+(r.platform||"—")+(r.scheduled?" · "+r.scheduled:"")+'</span></span><span class="rr-views">'+fmtNum(x.reach)+' views</span><span class="rr-status '+(r.live?"live":"sched")+'">'+r.status+"</span>"+ico("arrow")+"</button>";
+    var scls=r.live?"live":"sched";
+    return '<div class="pcard rescard" data-rname="'+esc(r.name.toLowerCase())+'">'+
+      '<div class="pcard-top"><span class="dch">'+ico(typeIcon(r.type))+(r.platform||"—")+'</span><span class="pcard-st '+scls+'">'+r.status+"</span></div>"+
+      '<div class="pcard-for">'+esc(r.name)+"</div>"+
+      '<div class="res-metric"><span class="res-v">'+fmtNum(x.reach)+"</span> views</div>"+
+      '<div class="pcard-foot"><span class="pcard-fl">'+(r.scheduled?ico("cal")+" "+r.scheduled:"—")+'</span><button class="pcard-open" data-a="postresult" data-k="'+r.i+'">See stats '+ico("arrow")+"</button></div>"+
+      "</div>";
   }
   function vResultsList(){
     var recs=postRecords();
@@ -1886,8 +2247,8 @@
     var platOpts={all:"All platforms"};plats.forEach(function(p){platOpts[p]=p;});
     var toolbar='<div class="rtools"><div class="rsearch">'+ico("search")+'<input data-rsearch placeholder="Search by name…" value="'+esc(S.rq||"")+'"></div>'+rfSelect("rStatus",{all:"All statuses",Scheduled:"Scheduled",Live:"Live"})+rfSelect("rPlat",platOpts)+rfSelect("rType",{all:"All types",text:"Text",image:"Image",video:"Video",audio:"Audio"})+rfSelect("rDate",{all:"All dates",today:"Today"})+"</div>";
     var recsF=recFilters(recs);
-    var rows=recsF.length?recsF.map(rrow).join(""):'<div class="rempty">No posts match your filters.</div>';
-    return '<div class="todayhead"><div class="th-day">Results</div><h1 class="th-t">Your posts</h1><p class="th-s">Everything you’ve scheduled and published. Search, filter, or open a post for full stats.</p></div>'+cards+toolbar+'<div class="rlist">'+rows+"</div>";
+    var rows=recsF.length?'<div class="pgrid">'+recsF.map(rrow).join("")+"</div>":'<div class="rempty">No posts match your filters.</div>';
+    return '<div class="todayhead"><div class="th-day">Results</div><h1 class="th-t">Your posts</h1><p class="th-s">Everything you’ve scheduled and published. Search, filter, or open a post for full stats.</p></div>'+cards+toolbar+rows;
   }
   var CHART_COLORS=["#6c5ce7","#00b894","#0984e3","#f0a92e","#e17055","#e84393","#00cec9"];
   function pad2(n){return (n<10?"0":"")+n;}
@@ -2041,7 +2402,7 @@
   function bestTime(k){var p=(S.posts[k]||{}).platform||"";return ({Instagram:"today, 6:30pm",LinkedIn:"Tue, 8:15am","Content & SEO":"Wed, 10:00am",Email:"Thu, 9:00am",TikTok:"today, 7:45pm",YouTube:"Sat, 11:00am",Community:"today, 8:00pm",X:"today, 12:30pm",Pinterest:"Sun, 8:00pm",Facebook:"today, 1:00pm","Local partnerships":"this week",Referrals:"this week","Google profile":"today"})[p]||"today, 6:30pm";}
   function publishModal(){return '<div class="modal-ov"><div class="modal"><div class="orb"><div class="ring"></div><div class="ring r2"></div><div class="core">'+ico("spark")+'</div></div><h3>Clara’s finding the best time to post</h3><div class="line" id="publine">Reading when your audience is most active…</div><div class="pbar"><i id="pubpb"></i></div></div></div>';}
   function runPublish(k){var lines=["Reading when your audience is most active…","Checking your channel’s peak windows…","Locking in the best moment…"];var i=0;var pb=root.querySelector("#pubpb");if(pb)pb.style.width="15%";var iv=setInterval(function(){var el=root.querySelector("#publine");if(!el||S.publishing==null){clearInterval(iv);return;}i++;if(i<lines.length){el.textContent=lines[i];if(pb)pb.style.width=(15+i*30)+"%";}},560);setTimeout(function(){if(S.publishing==null)return;var t=bestTime(k);S.pub[k]=true;S.done[k]=true;S.qedit[k]=false;S.qdraft[k]=false;if(S.posts[k])S.posts[k].scheduled=t;S.publishing=null;var _tk=taskAt(+k);recordHist({icon:_tk.icon||"send",title:_tk.title||"Published a post",kind:"content"});saveAll();render();toast("Scheduled for "+t+" — Clara picked your peak time");setTimeout(function(){if(S.posts[k]&&S.pub[k]){S.posts[k].live=true;render();}},3200);},2050);}
-  function vLogin(){var list=S.biz||[];var returning=list.length>0;var cur=returning?(bizById(S.cur)||list[0]):null;var who=cur?((cur.name&&cur.name.trim())?cur.name:(INDS[cur.p.ind]||"your business")):"";var many=list.length>1;var tag=returning?("Welcome back"+(who&&!many?", "+who:"")+". "+(many?"Sign in and pick up any of your "+list.length+" businesses.":"Your advisor’s kept thinking — pick up where you left off.")):"Your personal advisor to go-to-market. Sign in to get today’s moves.";return '<div class="welcome"><div class="wl"><div class="loginwrap">'+mk(56).replace('class="mark m"','class="mark bigmark"')+'<div class="logo">Clarity<span class="d">.</span></div><div class="tag">'+tag+'</div><div class="loginbox"><button class="btn block gsi" data-a="google">'+gLogo()+' Continue with Google</button><div class="divider"><span>or</span></div><input class="webinp" data-model="email" placeholder="you@business.com" value="'+esc(S.email||"")+'"><button class="btn block" data-a="magiclink" style="margin-top:10px">'+ico("mail")+' Email me a sign-in link</button></div><div class="hint">'+(returning?'<button class="lk mut" data-a="gonew">Set up a different business</button>':'New to Clarity? <button class="lk" data-a="gonew">Get started</button>')+'</div></div></div><div class="wr"><div class="qbubble"><div class="t">'+ico("spark")+' Clara</div><p>“'+(returning?"Good to see you again — I’ve got today’s moves ready.":"Give me one sentence and I’ll hand you a plan.")+'”</p></div></div></div>'+restart();}
+  function vLogin(){var list=S.biz||[];var returning=list.length>0;var cur=returning?(bizById(S.cur)||list[0]):null;var who=cur?((cur.name&&cur.name.trim())?cur.name:(INDS[cur.p.ind]||"your business")):"";var many=list.length>1;var tag=returning?("Welcome back"+(who&&!many?", "+who:"")+". "+(many?"Sign in and pick up any of your "+list.length+" businesses.":"Your advisor’s kept thinking — pick up where you left off.")):"Your personal advisor to go-to-market. Sign in to get today’s moves.";return vAuth();}
   function vMagic(){return '<div class="center"><div class="cwrap" style="max-width:440px;text-align:center"><div style="text-align:center">'+mk(56).replace('class="mark m"','class="mark bigmark"')+'</div><h1 class="q" style="margin-top:6px">Check your inbox</h1><p class="sub">I’ve sent a sign-in link to <b>'+esc(S.email||"your email")+'</b>. Click it and you’re in — no password to remember.</p><button class="btn" data-a="magicopen">Open the sign-in link '+ico("arrow")+'</button><div class="hint" style="margin-top:16px"><button class="lk mut" data-a="tologin">Back</button> · Demo shortcut — no real email is sent.</div></div></div>'+restart();}
   function bsec(t, inner) {
     return '<section class="bp-sec"><h3 class="bp-h">' + t + "</h3>" + inner + "</section>";
@@ -2255,19 +2616,30 @@
                   : vApp();
     if (S.publishing != null) h += publishModal();
     if (S.whyOpen != null) h += whyModal();
+    if (S.todoOpen) h += todoModal();
     app.innerHTML = h;
     bind();
   }
   function bind() {
     app.querySelectorAll("[data-model]").forEach(function (el) {
-      el.addEventListener("input", function () {
-        S[el.getAttribute("data-model")] = el.value;
-      });
+      var setModel = function () {
+        var path = el.getAttribute("data-model");
+        if (path.indexOf(".") >= 0) {
+          var parts = path.split("."),
+            o = S;
+          for (var j = 0; j < parts.length - 1; j++) {
+            if (!o[parts[j]]) o[parts[j]] = {};
+            o = o[parts[j]];
+          }
+          o[parts[parts.length - 1]] = el.value;
+        } else S[path] = el.value;
+      };
+      el.addEventListener("input", setModel);
+      el.addEventListener("change", setModel);
     });
     app.querySelectorAll("[data-pf]").forEach(function (el) {
       el.addEventListener("input", function () {
-        S.posts[el.getAttribute("data-pi")][el.getAttribute("data-pf")] =
-          el.value;
+        setPath(S.posts[el.getAttribute("data-pi")], el.getAttribute("data-pf"), el.value);
       });
     });
     app.querySelectorAll("[data-coown]").forEach(function (el) {
@@ -2279,9 +2651,11 @@
       el.addEventListener("change", function () {
         var i = el.getAttribute("data-k"),
           f = el.getAttribute("data-psel");
-        S.posts[i][f] = el.value;
-        if (f === "platform")
-          S.posts[i].format = fmtFor(S.posts[i].type, el.value);
+        if (f.indexOf(".") >= 0) setPath(S.posts[i], f, el.value);
+        else {
+          S.posts[i][f] = el.value;
+          if (f === "platform") S.posts[i].format = fmtFor(S.posts[i].type, el.value);
+        }
         render();
       });
     });
@@ -2365,10 +2739,16 @@
       el.addEventListener("input", function () {
         S.rq = el.value;
         var q = el.value.toLowerCase();
-        app.querySelectorAll(".rrow").forEach(function (row) {
+        app.querySelectorAll(".rescard").forEach(function (row) {
           var n = row.getAttribute("data-rname") || "";
           row.style.display = !q || n.indexOf(q) >= 0 ? "" : "none";
         });
+      });
+    });
+    app.querySelectorAll("[data-pe]").forEach(function (el) {
+      el.addEventListener("input", function () {
+        var i = el.getAttribute("data-pe");
+        if (S.proposal && S.proposal[i]) S.proposal[i].userText = el.value;
       });
     });
     app.querySelectorAll("[data-locadd]").forEach(function (el) {
@@ -2611,7 +2991,8 @@
           S.screen = "app";
           S.tab = "today";
         } else {
-          S.screen = "welcome";
+          S.step = 1;
+          S.screen = "steps";
         }
         render();
         break;
@@ -2680,6 +3061,7 @@
       case "tab":
         if (k !== "insights" && !S.insSeen) S.insSeen = true;
         if (k === "results") { S.resultView = "list"; S.resultPost = null; }
+        if (k === "create") S.createDetail = null;
         S.tab = k;
         S.acctOpen = false;
         S.notifOpen = false;
@@ -2734,6 +3116,68 @@
         S.tab = "insights";
         S.acctOpen = false;
         render();
+        break;
+      case "theme":
+        S.dark = !S.dark;
+        applyTheme();
+        saveTheme();
+        S.acctOpen = false;
+        render();
+        break;
+      case "emailtoggle":
+        S.emailOpen = !S.emailOpen;
+        render();
+        break;
+      case "todoadd":
+        S.todoOpen = true;
+        S.todoTitle = "";
+        S.todoBody = "";
+        render();
+        break;
+      case "todoclose":
+        S.todoOpen = false;
+        render();
+        break;
+      case "todopost":
+        S.todoOpen = false;
+        S.composing = true;
+        S.compose = { type: "", platform: "", angleSel: null, ownText: "", angles: [] };
+        S.tab = "create";
+        render();
+        break;
+      case "todosave":
+        var _tt = (S.todoTitle || "").trim();
+        if (!_tt) {
+          toast("Give your to-do a title");
+          return;
+        }
+        if (!Array.isArray(S.extra)) S.extra = [];
+        S.extra.push({ icon: "check", kind: "action", title: _tt, body: (S.todoBody || "").trim(), user: true, why: claraTaskIntro(_tt, "action") });
+        S.todoOpen = false;
+        S.todoTitle = "";
+        S.todoBody = "";
+        S.day = todayISO();
+        S.todayView = S.todayView === "calendar" ? "list" : S.todayView;
+        saveAll();
+        render();
+        toast("Added to today");
+        break;
+      case "navprofile":
+        if (!S.account) S.account = { fullName: "", email: "", phone: "", title: "", tz: "(GMT+00:00) London" };
+        if (!S.account.email) S.account.email = S.email || "";
+        S.tab = "profile";
+        S.acctOpen = false;
+        render();
+        break;
+      case "saveprofile":
+        if (S.account && S.account.email) S.email = S.account.email;
+        saveAccount();
+        saveAll();
+        render();
+        toast("Profile saved");
+        break;
+      case "pfpass":
+        toast("In the demo, password changes aren’t wired up — this would open your account security settings.");
         break;
       case "setday":
         S.day = k;
@@ -2877,6 +3321,15 @@
         break;
       case "cfilter":
         S.cFilter = k;
+        S.createDetail = null;
+        render();
+        break;
+      case "copen":
+        S.createDetail = +k;
+        render();
+        break;
+      case "cback":
+        S.createDetail = null;
         render();
         break;
       case "createview":
@@ -2901,7 +3354,7 @@
         break;
       case "conew":
         S.composing = true;
-        S.compose = { type: "", platform: "", angleSel: null, ownText: "", angles: [] };
+        S.compose = { type: "", platform: "", angleSel: null, ownText: "", angles: [], format: "", brief: null, ctrl: null };
         render();
         break;
       case "cocancel":
@@ -2910,15 +3363,35 @@
         break;
       case "cotype":
         S.compose.type = t;
+        S.compose.format = fmtFor(t, S.compose.platform || "");
+        S.compose.ctrl = null;
         render();
         break;
       case "coplat":
         S.compose.platform = k;
+        S.compose.format = fmtFor(S.compose.type, k);
         render();
         break;
       case "coangle":
         S.compose.angleSel = k === "own" ? "own" : +k;
+        if (S.compose.brief) {
+          var _at = k === "own" ? (S.compose.ownText || "") : (S.compose.angles && S.compose.angles[+k]) || "";
+          if (_at) S.compose.brief.message = _at;
+        }
         render();
+        break;
+      case "ctoggle":
+        if (!S.compose.ctrl) S.compose.ctrl = {};
+        S.compose.ctrl[t] = S.compose.ctrl[t] === "On" ? "Off" : "On";
+        render();
+        break;
+      case "coenhance":
+        var _ct = (S.compose.ownText || "").trim();
+        var _blank = !_ct;
+        S.compose.ownText = enhanceAngle(_blank ? freshIdea() : _ct);
+        if (S.compose.brief) S.compose.brief.message = S.compose.ownText;
+        render();
+        toast(_blank ? "Clara drafted an idea — tweak it if you like" : "Enhanced — tweak it if you like");
         break;
       case "cogen": {
         var cc2 = S.compose;
@@ -2931,22 +3404,27 @@
           toast("Type your idea first");
           return;
         }
+        var seed = (cc2.brief && (cc2.brief.message || "").trim()) || angle;
         var oi = nextOwnIdx(),
           kit = POSTKIT[S.p.ind] || POSTKIT.other;
         if (!S.ownTasks) S.ownTasks = {};
         S.ownTasks[oi] = { icon: "spark", kind: "content", title: angleTitle(angle), body: angle, own: true };
-        S.posts[oi] = {
+        var np = {
           type: cc2.type,
           platform: cc2.platform,
-          format: fmtFor(cc2.type, cc2.platform),
-          caption: captionFromAngle(angle, cc2.type, cc2.platform),
+          format: cc2.format || fmtFor(cc2.type, cc2.platform),
+          caption: captionFromAngle(seed, cc2.type, cc2.platform),
           media: cc2.type === "text" ? "" : cc2.type === "audio" ? "Short spoken segment — natural and conversational, about 60 seconds." : kit.media,
           hashtags: kit.tags,
           rev: 0,
+          brief: cc2.brief || null,
+          ctrl: cc2.ctrl || null,
         };
+        initEngineFields(np, S.ownTasks[oi]);
+        S.posts[oi] = np;
         if (S.queue.indexOf(oi) < 0) S.queue.push(oi);
         S.composing = false;
-        S.compose = { type: "", platform: "", angleSel: null, ownText: "", angles: [] };
+        S.compose = { type: "", platform: "", angleSel: null, ownText: "", angles: [], format: "", brief: null, ctrl: null };
         S.createView = "list";
         S.cFilter = "all";
         saveAll();
@@ -2959,6 +3437,11 @@
         S.posts[k].caption = captionFor(todayTasks()[+k], S.posts[k].rev);
         render();
         toast("Regenerated in your voice");
+        break;
+      case "ptoggle":
+        var pw = S.posts[k];
+        setPath(pw, t, getPath(pw, t) === "On" ? "Off" : "On");
+        render();
         break;
       case "settype":
         var pt = S.posts[k];
@@ -3049,17 +3532,84 @@
         S.threads[wi].push({ from: "you", text: msg });
         var rep = claraReply(wi, msg);
         S.threads[wi].push({ from: "clara", text: rep.text });
-        if (rep.tweak) {
-          S.tweak[wi] = Object.assign({}, S.tweak[wi] || {}, rep.tweak);
-          if (rep.tweak.platform && S.posts[wi]) {
-            S.posts[wi].platform = rep.tweak.platform;
-            S.posts[wi].type = inferType(rep.tweak.platform);
-            S.posts[wi].format = fmtFor(S.posts[wi].type, rep.tweak.platform);
-          }
+        if (rep.propose && rep.tweak) {
+          if (!S.proposal) S.proposal = {};
+          S.proposal[wi] = { tweak: rep.tweak, summary: rep.summary, editText: rep.editText, kind: rep.kind, seed: 0 };
+          if (S.propEdit) delete S.propEdit[wi];
         }
         if (S.wtext) S.wtext[wi] = "";
         render();
         break;
+      case "wpropok": {
+        var pp = S.proposal && S.proposal[k];
+        if (!pp) break;
+        var ni = newTodoFromChange(+k, pp.tweak);
+        if (!S.threads[ni]) S.threads[ni] = [];
+        S.threads[ni].push({ from: "clara", text: "Done — I’ve applied that. This is the updated move, and I’ve kept everything we talked about." });
+        delete S.proposal[k];
+        if (S.propEdit) delete S.propEdit[k];
+        S.whyOpen = ni;
+        saveAll();
+        render();
+        toast("Move updated");
+        break;
+      }
+      case "wpropno":
+        if (S.proposal) delete S.proposal[k];
+        if (S.propEdit) delete S.propEdit[k];
+        if (!S.threads) S.threads = {};
+        if (!S.threads[k]) S.threads[k] = [];
+        S.threads[k].push({ from: "clara", text: "No problem — I’ll leave it as is." });
+        render();
+        break;
+      case "wpropregen": {
+        var pg = S.proposal && S.proposal[k];
+        if (!pg) break;
+        if (pg.kind === "title") {
+          toast("That’s your title — use “Enter your own” to change it");
+          return;
+        }
+        pg.seed = (pg.seed || 0) + 1;
+        if (pg.kind === "platform") {
+          var opts = ["Instagram", "LinkedIn", "TikTok", "Facebook", "Email", "X", "Pinterest"].filter(function (x) { return x !== pg.tweak.platform; });
+          var np = opts[pg.seed % opts.length];
+          pg.tweak = { platform: np };
+          pg.summary = "Switch this move to " + np;
+          pg.editText = np;
+        } else {
+          var na = ANGLE_ALTS[pg.seed % ANGLE_ALTS.length];
+          pg.tweak = { angle: na };
+          pg.summary = "Try this angle instead: " + na;
+          pg.editText = na;
+        }
+        pg.userText = null;
+        render();
+        break;
+      }
+      case "wpropedit":
+        if (!S.propEdit) S.propEdit = {};
+        S.propEdit[k] = !S.propEdit[k];
+        render();
+        break;
+      case "wpropsaveedit": {
+        var pe = S.proposal && S.proposal[k];
+        if (!pe) break;
+        var v = (pe.userText != null ? pe.userText : pe.editText || "").trim();
+        if (!v) {
+          toast("Type your version first");
+          return;
+        }
+        var ni2 = newTodoFromChange(+k, pe.kind === "platform" ? { platform: v } : pe.kind === "title" ? { title: v } : { angle: v });
+        if (!S.threads[ni2]) S.threads[ni2] = [];
+        S.threads[ni2].push({ from: "clara", text: "Got it — I’ve used your version. This is the updated move, and I’ve kept our conversation." });
+        delete S.proposal[k];
+        if (S.propEdit) delete S.propEdit[k];
+        S.whyOpen = ni2;
+        saveAll();
+        render();
+        toast("Move updated");
+        break;
+      }
       case "tedit":
         toast("Edit mode (prototype)");
         break;
