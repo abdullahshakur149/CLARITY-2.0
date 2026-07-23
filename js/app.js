@@ -61,7 +61,7 @@
   function bizByIdIn(arr,id){for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return null;}
   function snapshot(){if(S.cur==null)return;var r=bizById(S.cur);if(!r)return;PBFIELDS.forEach(function(f){r[f]=S[f];});}
   function loadBiz(id){snapshot();var r=bizById(id);if(!r)return;PBFIELDS.forEach(function(f){S[f]=r[f];});normBiz();S.cur=id;S.tab="today";}
-  function normBiz(){["done","twhy","pub","qtext","qedit","qdraft","posts","ownTasks","sel","cardCol","threads","tweak","whySeen","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};if(!Array.isArray(S.personas)||!S.personas.length)S.personas=seedPersonas();if(!S.pthreads||typeof S.pthreads!=="object")S.pthreads={};}
+  function normBiz(){["done","twhy","pub","qtext","qedit","qdraft","posts","ownTasks","sel","cardCol","threads","tweak","whySeen","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};if(!Array.isArray(S.personas)||!S.personas.length||!S.personas[0].moves)S.personas=seedPersonas();if(!S.pthreads||typeof S.pthreads!=="object")S.pthreads={};}
   function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.qdraft={};S.posts={};S.ownTasks={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.whySeen={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.createdAt="";S.hist={};S.personas=[];S.pthreads={};S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
   function deriveName(sent,ind){var t=(sent||"").trim();if(t){t=t.replace(/^(i\s+(?:run|own|have|am|bake|make|coach|sell|do|offer|build|teach|help)\s+(?:a|an|my|the)?\s*)/i,"").replace(/\s+(?:and|but|so|because|that|which)\b.*$/i,"").replace(/,.*$/,"").replace(/[.!?].*$/,"").trim();t=t.split(/\s+/).slice(0,4).join(" ").trim();if(t)return t.charAt(0).toUpperCase()+t.slice(1);}return (typeof INDS!=="undefined"&&INDS[ind])||"My business";}
   function initials(nm){nm=(nm||"").trim();if(!nm)return "YB";var w=nm.split(/\s+/);return ((w[0][0]||"")+(w[1]?w[1][0]:(w[0][1]||""))).toUpperCase();}
@@ -178,44 +178,58 @@
   // ---- Personas (2–3 per business, Clara-seeded, user-editable) ----
   var PERSONAS = {
     food: [
-      { name: "The neighbourhood regular", desc: "Lives nearby, values freshness and story, happy to pay a little more for something made with care.", wants: "somewhere that feels like theirs, made with care", fear: "paying more for something that turns out ordinary", where: "Instagram and local Facebook groups" },
-      { name: "The weekend treat-seeker", desc: "Comes out on Saturdays for something special, follows food accounts, shares what looks good.", wants: "a little weekend ritual worth photographing", fear: "queuing for something that disappoints", where: "Instagram and TikTok" },
-      { name: "The gifting planner", desc: "Buys for birthdays and office treats, needs it to look thoughtful and arrive on time.", wants: "an easy order that makes them look thoughtful", fear: "it arriving late or looking cheap", where: "Google and word of mouth" },
+      { name: "The neighbourhood regular", desc: "Lives nearby, values freshness and story, happy to pay a little more for something made with care.", wants: "somewhere that feels like theirs, made with care", fear: "paying more for something that turns out ordinary", where: "Instagram and local Facebook groups", spend: "£8–15 a visit, more at weekends", finds: "walking past, and Instagram", moves: "warmth, story, and seeing regulars love it" },
+      { name: "The weekend treat-seeker", desc: "Comes out on Saturdays for something special, follows food accounts, shares what looks good.", wants: "a little weekend ritual worth photographing", fear: "queuing for something that disappoints", where: "Instagram and TikTok", spend: "£15–30 on a weekend treat", finds: "Instagram and TikTok reels", moves: "something photogenic worth the trip" },
+      { name: "The gifting planner", desc: "Buys for birthdays and office treats, needs it to look thoughtful and arrive on time.", wants: "an easy order that makes them look thoughtful", fear: "it arriving late or looking cheap", where: "Google and word of mouth", spend: "£25–60 per order", finds: "Google and recommendations", moves: "looks thoughtful and turns up on time" },
     ],
     saas: [
-      { name: "The time-poor operator", desc: "Drowning in tools, allergic to hype, buys what visibly saves hours in the first week.", wants: "hours back and one less tab open", fear: "another tool that adds work instead of removing it", where: "LinkedIn and peer communities" },
-      { name: "The cautious evaluator", desc: "Compares options carefully, reads docs and reviews, needs proof before committing budget.", wants: "proof it works before they stake their name on it", fear: "picking wrong and owning the fallout", where: "LinkedIn and review sites" },
-      { name: "The scaling founder", desc: "Growing fast, wants something that won't break at 10x, cares about roadmap and support.", wants: "something that grows with them, not against them", fear: "outgrowing it in six months", where: "founder communities and referrals" },
+      { name: "The time-poor operator", desc: "Drowning in tools, allergic to hype, buys what visibly saves hours in the first week.", wants: "hours back and one less tab open", fear: "another tool that adds work instead of removing it", where: "LinkedIn and peer communities", spend: "$30–100/mo, usually expensed", finds: "LinkedIn and peer Slack groups", moves: "a clear before/after of hours saved" },
+      { name: "The cautious evaluator", desc: "Compares options carefully, reads docs and reviews, needs proof before committing budget.", wants: "proof it works before they stake their name on it", fear: "picking wrong and owning the fallout", where: "LinkedIn and review sites", spend: "$100–500/mo, needs sign-off", finds: "review sites and comparison searches", moves: "proof, docs, and a low-risk trial" },
+      { name: "The scaling founder", desc: "Growing fast, wants something that won't break at 10x, cares about roadmap and support.", wants: "something that grows with them, not against them", fear: "outgrowing it in six months", where: "founder communities and referrals", spend: "$500+/mo and rising", finds: "founder communities and referrals", moves: "roadmap, support, and it scaling with them" },
     ],
     fitness: [
-      { name: "The comeback starter", desc: "Has tried and stopped before; wants belief and a plan more than a discount.", wants: "a week-one plan they genuinely can't fail", fear: "starting again and quitting again", where: "Instagram and TikTok" },
-      { name: "The busy parent", desc: "Wants to feel strong again but has 30 minutes, not two hours, and no time to waste.", wants: "results that fit around real life", fear: "committing to something they can't keep up", where: "Instagram and local groups" },
-      { name: "The goal-driven improver", desc: "Already active, chasing a specific goal — a race, a number, a look — and wants structure.", wants: "a clear plan to hit a specific target", fear: "plateauing or training without direction", where: "YouTube and Instagram" },
+      { name: "The comeback starter", desc: "Has tried and stopped before; wants belief and a plan more than a discount.", wants: "a week-one plan they genuinely can't fail", fear: "starting again and quitting again", where: "Instagram and TikTok", spend: "£20–50/mo", finds: "Instagram and TikTok", moves: "belief and a week-one plan they can't fail" },
+      { name: "The busy parent", desc: "Wants to feel strong again but has 30 minutes, not two hours, and no time to waste.", wants: "results that fit around real life", fear: "committing to something they can't keep up", where: "Instagram and local groups", spend: "£30–60/mo", finds: "Instagram and local groups", moves: "results that fit 30 minutes around real life" },
+      { name: "The goal-driven improver", desc: "Already active, chasing a specific goal — a race, a number, a look — and wants structure.", wants: "a clear plan to hit a specific target", fear: "plateauing or training without direction", where: "YouTube and Instagram", spend: "£50–120/mo", finds: "YouTube and Instagram", moves: "a clear plan to hit a specific target" },
     ],
     shop: [
-      { name: "The considered browser", desc: "Saves before they buy, reads reviews, converts when the story and the proof line up.", wants: "to feel sure before they spend", fear: "buyer's remorse on something they can't return", where: "Instagram and TikTok" },
-      { name: "The gift buyer", desc: "Shopping for someone else, needs it to feel special and land on time.", wants: "a gift that looks thoughtful and arrives on time", fear: "it turning up late or looking cheap", where: "Instagram and Google" },
-      { name: "The trend follower", desc: "Discovers through what's hot right now, buys fast when something catches the moment.", wants: "to be early on something that's about to blow up", fear: "missing the moment or looking behind", where: "TikTok and Instagram" },
+      { name: "The considered browser", desc: "Saves before they buy, reads reviews, converts when the story and the proof line up.", wants: "to feel sure before they spend", fear: "buyer's remorse on something they can't return", where: "Instagram and TikTok", spend: "£25–80 per order", finds: "Instagram and TikTok", moves: "reviews, proof, and a story that lines up" },
+      { name: "The gift buyer", desc: "Shopping for someone else, needs it to feel special and land on time.", wants: "a gift that looks thoughtful and arrives on time", fear: "it turning up late or looking cheap", where: "Instagram and Google", spend: "£30–70 per gift", finds: "Instagram and Google", moves: "it looks special and lands on time" },
+      { name: "The trend follower", desc: "Discovers through what's hot right now, buys fast when something catches the moment.", wants: "to be early on something that's about to blow up", fear: "missing the moment or looking behind", where: "TikTok and Instagram", spend: "£15–50, often impulse", finds: "TikTok and Instagram", moves: "being early on something about to blow up" },
     ],
     services: [
-      { name: "The cautious researcher", desc: "Choosing a person to trust, not a product. Wants evidence, credibility and zero risk.", wants: "to feel safe they've picked the right person", fear: "trusting the wrong provider and regretting it", where: "Google and your profile" },
-      { name: "The referred lead", desc: "Came from a recommendation, half-sold already, just needs reassurance to book.", wants: "quick proof the referral was right about you", fear: "the recommendation not living up to the hype", where: "referrals and your website" },
-      { name: "The comparison shopper", desc: "Getting a few quotes, weighing price against trust, deciding who feels most credible.", wants: "clear reasons you're worth choosing over cheaper options", fear: "overpaying, or under-paying and regretting it", where: "Google and LinkedIn" },
+      { name: "The cautious researcher", desc: "Choosing a person to trust, not a product. Wants evidence, credibility and zero risk.", wants: "to feel safe they've picked the right person", fear: "trusting the wrong provider and regretting it", where: "Google and your profile", spend: "£200–2,000+ per engagement", finds: "Google and your profile", moves: "evidence, credibility, and zero risk" },
+      { name: "The referred lead", desc: "Came from a recommendation, half-sold already, just needs reassurance to book.", wants: "quick proof the referral was right about you", fear: "the recommendation not living up to the hype", where: "referrals and your website", spend: "£200–2,000+", finds: "referrals and your website", moves: "quick reassurance the referral was right" },
+      { name: "The comparison shopper", desc: "Getting a few quotes, weighing price against trust, deciding who feels most credible.", wants: "clear reasons you're worth choosing over cheaper options", fear: "overpaying, or under-paying and regretting it", where: "Google and LinkedIn", spend: "£150–1,500", finds: "Google and LinkedIn", moves: "clear reasons you beat the cheaper option" },
     ],
     creator: [
-      { name: "The aspiring learner", desc: "Follows for free value, buys when they believe you can get them a specific result.", wants: "to believe you can get them a specific result", fear: "buying another course they never finish", where: "YouTube and Instagram" },
-      { name: "The loyal superfan", desc: "Watches everything you make, ready to buy — they just need you to actually ask.", wants: "more of you, and a way to support you", fear: "missing something you released", where: "email and Instagram" },
-      { name: "The skeptical newcomer", desc: "Just found you, not sure you're the real deal yet, needs a quick win to trust you.", wants: "a fast reason to believe you're worth their time", fear: "wasting time on another overhyped creator", where: "TikTok and YouTube" },
+      { name: "The aspiring learner", desc: "Follows for free value, buys when they believe you can get them a specific result.", wants: "to believe you can get them a specific result", fear: "buying another course they never finish", where: "YouTube and Instagram", spend: "£20–200 per course", finds: "YouTube and Instagram", moves: "believing you'll get them a specific result" },
+      { name: "The loyal superfan", desc: "Watches everything you make, ready to buy — they just need you to actually ask.", wants: "more of you, and a way to support you", fear: "missing something you released", where: "email and Instagram", spend: "£50–500+/yr", finds: "email and Instagram", moves: "more of you, and a way to support you" },
+      { name: "The skeptical newcomer", desc: "Just found you, not sure you're the real deal yet, needs a quick win to trust you.", wants: "a fast reason to believe you're worth their time", fear: "wasting time on another overhyped creator", where: "TikTok and YouTube", spend: "£0 at first", finds: "TikTok and YouTube", moves: "a fast free win that proves you're worth it" },
     ],
     other: [
-      { name: "Your ideal customer", desc: "The person who feels the problem you solve most sharply and can act on it soonest.", wants: "the one thing you do better than anyone nearby", fear: "settling for a worse option because they didn't know about you", where: "Instagram and word of mouth" },
-      { name: "The ready-to-act buyer", desc: "Already looking for what you offer, just needs to find you and trust you quickly.", wants: "to solve their problem now, with someone they trust", fear: "choosing wrong under time pressure", where: "Google and referrals" },
-      { name: "The curious follower", desc: "Interested but not ready yet, warming up until the timing or the proof is right.", wants: "to keep learning until the moment is right", fear: "committing before they're sure", where: "Instagram and email" },
+      { name: "Your ideal customer", desc: "The person who feels the problem you solve most sharply and can act on it soonest.", wants: "the one thing you do better than anyone nearby", fear: "settling for a worse option because they didn't know about you", where: "Instagram and word of mouth", spend: "varies", finds: "Instagram and word of mouth", moves: "the one thing you do better than anyone nearby" },
+      { name: "The ready-to-act buyer", desc: "Already looking for what you offer, just needs to find you and trust you quickly.", wants: "to solve their problem now, with someone they trust", fear: "choosing wrong under time pressure", where: "Google and referrals", spend: "ready to spend now", finds: "Google and referrals", moves: "solving it now with someone they trust" },
+      { name: "The curious follower", desc: "Interested but not ready yet, warming up until the timing or the proof is right.", wants: "to keep learning until the moment is right", fear: "committing before they're sure", where: "Instagram and email", spend: "not spending yet", finds: "Instagram and email", moves: "learning until the timing is right" },
     ],
   };
   function seedPersonas() {
     var src = PERSONAS[S.p.ind] || PERSONAS.other;
-    return src.map(function (p, i) { return { id: "p" + i, name: p.name, desc: p.desc, wants: p.wants, fear: p.fear, where: p.where }; });
+    return src.map(function (p, i) { return { id: "p" + i, name: p.name, desc: p.desc, wants: p.wants, fear: p.fear, where: p.where, spend: p.spend, finds: p.finds, moves: p.moves }; });
+  }
+  // deterministic synthetic headline stats for a persona (illustrative)
+  function personaStats(id) {
+    var l = personasList(), idx = 0;
+    for (var i = 0; i < l.length; i++) if (l[i].id === id) idx = i;
+    var seed = (idx + 1) * 37;
+    var shares = l.map(function (_, k) { return 30 + ((k + 1) * 53) % 45; });
+    var tot = shares.reduce(function (a, b) { return a + b; }, 0);
+    return {
+      share: Math.round((shares[idx] / tot) * 100),
+      engage: 4 + (seed % 7) + Math.round((seed % 10) / 10 * 10) / 10,
+      convert: 1 + (seed % 5),
+      fit: 68 + (seed % 28),
+    };
   }
   function personasList() {
     if (!Array.isArray(S.personas) || !S.personas.length) S.personas = seedPersonas();
@@ -239,6 +253,40 @@
   function personaWhy(persona, plat) {
     if (!persona) return "";
     return "This speaks to " + persona.name.replace(/^The /, "the ") + " — they want " + persona.wants + (plat ? ", and " + plat + " is where they are" : "") + ".";
+  }
+  // Clara matches a finished (user-created) post to the best-fit persona
+  function bestPersonaFor(post, task) {
+    var l = personasList();
+    var text = (((task && task.title) || "") + " " + ((task && task.body) || "") + " " + ((post && post.caption) || "") + " " + ((post && post.brief && post.brief.message) || "")).toLowerCase();
+    var plat = ((post && post.platform) || "").toLowerCase();
+    var best = l[0], bestScore = -1;
+    l.forEach(function (p) {
+      var bag = (p.wants + " " + p.moves + " " + p.desc + " " + p.where + " " + p.finds).toLowerCase();
+      var seen = {}, score = 0;
+      bag.split(/[^a-z]+/).forEach(function (w) { if (w.length > 3 && !seen[w] && text.indexOf(w) >= 0) { seen[w] = 1; score++; } });
+      if (plat && (p.where.toLowerCase().indexOf(plat) >= 0 || p.finds.toLowerCase().indexOf(plat) >= 0)) score += 2;
+      if (score > bestScore) { bestScore = score; best = p; }
+    });
+    return { id: best.id, weak: bestScore < 2 };
+  }
+  // when nothing fits, Clara builds a persona from the post itself
+  function newPersonaFromPost(post, task) {
+    var l = personasList();
+    var kw = (((task && task.title) || "this content").replace(/[^a-zA-Z ]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).join(" ")).toLowerCase();
+    var np = {
+      id: "p" + Date.now().toString(36),
+      name: "The " + (kw || "new") + " crowd",
+      desc: "A segment Clara built from this specific post, because none of your existing personas matched it well.",
+      wants: "content that speaks to the moment this post is about",
+      fear: "generic content that doesn't feel made for them",
+      where: (post && post.platform) || "your channels",
+      spend: "still learning",
+      finds: (post && post.platform) || "your channels",
+      moves: "posts like this one",
+      custom: true,
+    };
+    l.push(np);
+    return np.id;
   }
   function mapInd(t) {
     t = (t || "").toLowerCase();
@@ -1352,6 +1400,7 @@
     var _un = unreadWhy(i);
     var whyLabel = t.user ? "Discuss" : "Why this?";
     var whyBtn = '<button class="lk mut whybtn" data-a="twhy" data-k="' + i + '">' + ico("chat") + whyLabel + (_un > 0 ? '<span class="why-badge">' + _un + "</span>" : "") + "</button>";
+    var perBtn = taskKind(t) === "content" ? '<button class="lk mut perbtn" data-a="pmodal" data-k="' + personaFor(i).id + '">' + ico("user") + "Persona</button>" : "";
     var actions;
     if (st === "done")
       actions =
@@ -1361,14 +1410,14 @@
         '</span><button class="lk mut" data-a="tundo" data-k="' + i + '">Undo</button>';
     else if (st === "drafting")
       actions =
-        '<button class="lk" data-a="tab" data-k="create">' + ico("arrow") + "Finish in Create</button>" + whyBtn;
+        '<button class="lk" data-a="tab" data-k="create">' + ico("arrow") + "Finish in Create</button>" + whyBtn + perBtn;
     else if (kind === "action")
       actions =
         '<button class="lk" data-a="tdone" data-k="' + i + '">' + ico("check") + "Mark as done</button>" + whyBtn +
         '<button class="lk mut" data-a="tskip" data-k="' + i + '">Skip</button>';
     else
       actions =
-        '<button class="lk" data-a="tapprove" data-k="' + i + '">' + ico("check") + "Approve</button>" + whyBtn +
+        '<button class="lk" data-a="tapprove" data-k="' + i + '">' + ico("check") + "Approve</button>" + whyBtn + perBtn +
         '<button class="lk mut" data-a="tskip" data-k="' + i + '">Skip</button>';
     var post = kind === "content" ? (S.posts[i] || buildPost(t, i)) : null;
     var platBadge = post ? '<span class="tc-plat">' + ico(typeIcon(post.type)) + post.platform + "</span>" : "";
@@ -1899,6 +1948,8 @@
     var nm = nameOf() === "there" ? "Your business" : nameOf();
     return (
       '<div class="nav-ov" data-a="closemenus"></div><div class="navpop acctpop"><div class="acct-name">' + esc(nm) + '</div>' +
+      '<button class="navmenu-item" data-a="navpersonas">' + ico("user") + " Personas</button>" +
+      '<button class="navmenu-item" data-a="navtraining">' + ico("spark") + " Clara training</button>" +
       '<button class="navmenu-item" data-a="navprofile">' + ico("user") + " Profile settings</button>" +
       '<button class="navmenu-item" data-a="theme">' + ico(S.dark ? "sun" : "moon") + (S.dark ? " Light mode" : " Dark mode") + "</button>" +
       '<button class="navmenu-item" data-a="navins">' + ico("bulb") + " Insights</button>" +
@@ -1934,7 +1985,7 @@
     );
   }
   function tabLabel(t) {
-    return { today: "Today", create: "Create", personas: "Personas", results: "Results", insights: "Insights", thinking: "Clara’s thinking", profile: "Profile settings" }[t] || t;
+    return { today: "Today", create: "Create", personas: "Personas", training: "Clara training", results: "Results", insights: "Insights", thinking: "Clara’s thinking", profile: "Profile settings" }[t] || t;
   }
   function crumbs() {
     var tr = (S.trail || []).slice(-3);
@@ -1978,6 +2029,8 @@
           ? vCreate()
           : S.tab === "personas"
           ? vPersonasTab()
+          : S.tab === "training"
+          ? vTraining()
           : S.tab === "insights"
             ? vInsights()
             : S.tab === "thinking"
@@ -2005,7 +2058,6 @@
       '<span>Clarity</span></div><nav class="rail-nav">' +
       navItem("today", "Today", "home") +
       navItem("create", "Create", "zap") +
-      navItem("personas", "Personas", "user") +
       navItem("results", "Results", "chart") +
       "</nav>" +
       foot +
@@ -2188,8 +2240,7 @@
       if(!c.brief)c.brief={goal:goalPhrase(),whyNow:"A fresh piece for your audience.",persona:AUDS[S.p.aud]||"Your ideal customer",message:angleText,proof:"",cta:ctaFor()};
       if(!c.ctrl){var dd={};ctrlDefs(c.type).forEach(function(cc){if(cc.def!=null)dd[cc.key]=cc.def;});c.ctrl=dd;}
       var fmo=(FMT_OPTS[c.type]||[]).map(function(f){return "<option"+(c.format===f?" selected":"")+">"+esc(f)+"</option>";}).join("");
-      if(!c.personaId)c.personaId=personasList()[0].id;var pcur=personaById(c.personaId);var perOpts=personasList().map(function(pp){return '<button class="anglecard'+(c.personaId===pp.id?" on":"")+'" data-a="coper" data-k="'+pp.id+'"><span class="ac-n">'+ico("user")+'</span><span class="ac-t">'+esc(pp.name)+"</span>"+(c.personaId===pp.id?ico("check"):"")+"</button>";}).join("");var personaSec='<div class="rsec">Who this is for</div><div class="anglelist">'+perOpts+'</div><div class="co-perwhy">'+ico("spark")+" "+esc(personaWhy(pcur,c.platform))+"</div>";
-      detailSec=personaSec+'<div class="rsec">Format</div><div class="editgrid"><div class="efield"><label>Format</label><select class="sel" data-model="compose.format">'+fmo+"</select></div></div>"+
+      detailSec='<div class="co-perhint">'+ico("user")+" Clara will match this to the right persona once you generate it.</div>"+'<div class="rsec">Format</div><div class="editgrid"><div class="efield"><label>Format</label><select class="sel" data-model="compose.format">'+fmo+"</select></div></div>"+
         '<div class="rsec">Creative brief</div><div class="editgrid">'+briefEditC(c)+"</div>"+
         '<div class="rsec">'+typeLabel(c.type)+' settings</div><div class="editgrid">'+ctrlEditC(c)+"</div>";
     }
@@ -2283,7 +2334,9 @@
     }else{
       var facts='<section class="pd-sec"><div class="pd-lab">Details</div><div class="pd-facts">'+fact("Platform",post.platform)+fact("Format",post.format)+fact("Content type",typeLabel(post.type))+fact("Status",sl)+(post.scheduled?fact("Scheduled",post.scheduled):"")+"</div></section>";
       var caption='<section class="pd-sec"><div class="pd-lab">'+ico("txt")+' Caption</div><div class="pd-box pd-cap">'+esc(post.caption)+"</div></section>";
-      var whoFor=persona?'<section class="pd-sec"><div class="pd-lab">'+ico("user")+' Who this is for</div><div class="pd-persona"><div class="pd-pn">'+esc(persona.name)+'</div><div class="pd-pd">'+esc(persona.desc)+'</div><div class="pd-pwhy">'+ico("spark")+" "+esc(personaWhy(persona,post.platform))+'</div><button class="btn sm ghost pd-askp" data-a="askpersona" data-k="'+persona.id+'">'+ico("spark")+" Ask "+esc(persona.name)+"</button></div></section>":"";
+      var matchNote=post.personaAuto?'<div class="pd-matchnote">'+ico("spark")+" Clara matched this persona after you created the post — change it in Edit if it's off.</div>":"";
+      var weakOffer=post.personaWeak?'<div class="pd-weakoffer">'+ico("bulb")+" Clara wasn't sure any of your personas fit this post. <button class=\"lk\" data-a=\"pnew\" data-k=\""+i+"\">Create a new persona for it</button></div>":"";
+      var whoFor=persona?'<section class="pd-sec"><div class="pd-lab">'+ico("user")+' Who this is for</div><div class="pd-persona"><div class="pd-pn">'+esc(persona.name)+'</div><div class="pd-pd">'+esc(persona.desc)+'</div><div class="pd-pwhy">'+ico("spark")+" "+esc(personaWhy(persona,post.platform))+'</div>'+matchNote+weakOffer+'<button class="btn sm ghost pd-askp" data-a="askpersona" data-k="'+persona.id+'">'+ico("spark")+" Ask "+esc(persona.name)+"</button></div></section>":"";
       var tagSec='<section class="pd-sec"><div class="pd-lab">'+ico("mega")+' Tags</div>'+((post.tags&&post.tags.length)?tagChips(post.tags):'<div class="pd-pd">No tags yet — add some in Edit to group related posts.</div>')+"</section>";
       var tags=post.hashtags?'<section class="pd-sec"><div class="pd-lab">'+ico("spark")+' Hashtags</div><div class="pd-tags">'+esc(post.hashtags)+"</div></section>":"";
       body='<div class="pd-body">'+facts+caption+whoFor+briefRead(post)+ctrlRead(post)+tagSec+tags+"</div>";
@@ -2704,36 +2757,83 @@
   function vPersonas() {
     var list = personasList();
     var cards = list.map(function (p) {
-      return '<div class="percard"><div class="per-top"><span class="per-av">' + ico("user") + '</span><div class="per-hd"><div class="per-n">' + esc(p.name) + '</div><div class="per-w">wants ' + esc(p.wants) + "</div></div></div>" +
+      var st = personaStats(p.id);
+      return '<div class="percard percard-btn" data-a="perdetail" data-k="' + p.id + '"><div class="per-top"><span class="per-av">' + ico("user") + '</span><div class="per-hd"><div class="per-n">' + esc(p.name) + '</div><div class="per-w">wants ' + esc(p.wants) + "</div></div></div>" +
         '<div class="per-desc">' + esc(p.desc) + "</div>" +
-        '<div class="per-facts"><div class="per-f"><span class="per-fl">Fears</span> ' + esc(p.fear) + '</div><div class="per-f"><span class="per-fl">Found on</span> ' + esc(p.where) + "</div></div>" +
-        '<div class="per-a"><button class="btn sm" data-a="perchat" data-k="' + p.id + '">' + ico("spark") + " Chat with " + esc(p.name) + "</button></div></div>";
+        '<div class="per-mini"><span class="per-mini-i"><b>' + st.share + '%</b> of your audience</span><span class="per-mini-i"><b>£</b> ' + esc(p.spend) + "</span></div>" +
+        '<div class="per-a"><span class="per-open">View persona ' + ico("arrow") + "</span></div></div>";
     }).join("");
-    return '<div class="todayhead"><div class="th-day">Personas</div><h1 class="th-t">Who you’re talking to</h1><p class="th-s">Clara built these from your business. Every post targets one of them — and you can talk to them directly to learn what they want.</p></div>' +
+    return '<div class="todayhead"><div class="th-day">Personas</div><h1 class="th-t">Who you’re talking to</h1><p class="th-s">Clara built these from your business. Every post targets one of them. Open a persona for the full read — or talk to them directly.</p></div>' +
       '<div class="pergrid">' + cards + "</div>" +
-      '<div class="tnote"><div class="tn-h">' + ico("spark") + ' Live consumer research</div><p>In the live product each persona is an agent doing real-time research on your market — here the replies are illustrative.</p></div>';
+      '<div class="tnote"><div class="tn-h">' + ico("spark") + ' Live consumer research</div><p>In the live product each persona is an agent doing real-time research on your market — here the numbers and replies are illustrative.</p></div>';
   }
-  function vPersonaChat(id) {
+  function vPersonaDetail(id) {
+    var p = personaById(id), st = personaStats(id);
+    function stat(v, l) { return '<div class="pstat"><div class="pstat-v">' + v + '</div><div class="pstat-l">' + l + "</div></div>"; }
+    function fact(l, v) { return '<div class="pd-fact"><span class="pd-fl">' + l + '</span><span class="pd-fv">' + esc(v) + "</span></div>"; }
+    return '<button class="lk mut resback" data-a="perback">' + ico("arrow") + " All personas</button>" +
+      '<div class="todayhead"><div class="th-day">Personas · profile</div><h1 class="th-t">' + esc(p.name) + '</h1><p class="th-s">' + esc(p.desc) + "</p></div>" +
+      '<div class="pstatrow">' + stat(st.share + "%", "of your audience") + stat(st.engage.toFixed(1) + "%", "engagement lean") + stat(st.convert + "%", "converts to action") + stat(st.fit + "%", "fit to your business") + "</div>" +
+      '<section class="pd-sec"><div class="pd-lab">' + ico("user") + " Headline analytics</div><div class=\"pd-facts\">" +
+        fact("Typical spend", p.spend) + fact("Finds you through", p.finds) + fact("What moves them", p.moves) + fact("What they want", p.wants) + fact("What puts them off", p.fear) + fact("Where they are", p.where) +
+      "</div></section>" +
+      '<div class="pd-actions"><button class="btn sm" data-a="pmodal" data-k="' + p.id + '">' + ico("spark") + " Talk to " + esc(p.name) + "</button></div>" +
+      '<div class="tnote"><div class="tn-h">' + ico("spark") + ' Illustrative</div><p>Sample figures for the mockup. Live, these come from Clara’s ongoing consumer research for this persona.</p></div>';
+  }
+  function personaLog(id) {
     var p = personaById(id);
     var thread = S.pthreads[id] || (S.pthreads[id] = [{ from: "persona", text: "Hi — I'm " + p.name.replace(/^The /, "the ") + ". " + p.desc + " Ask me anything about what I want." }]);
     var msgs = thread.map(function (m) { return '<div class="pmsg ' + (m.from === "you" ? "me" : "them") + '"><div class="pmsg-b">' + esc(m.text) + "</div></div>"; }).join("");
     var chips = PCHIPS.map(function (c) { return '<button class="psugg" data-a="perask" data-k="' + esc(c) + '">' + esc(c) + "</button>"; }).join("");
-    return '<button class="lk mut resback" data-a="perback">' + ico("arrow") + " All personas</button>" +
-      '<div class="todayhead"><div class="th-day">Personas · chat</div><h1 class="th-t">' + esc(p.name) + '</h1><p class="th-s">' + esc(p.desc) + "</p></div>" +
-      '<div class="perchat"><div class="perchat-log">' + msgs + "</div>" +
-      '<div class="psuggs">' + chips + "</div>" +
-      '<div class="perchat-in"><input class="pin" data-perin placeholder="Ask ' + esc(p.name) + ' something…" value="' + esc(S.pinput || "") + '"><button class="btn sm" data-a="persend">' + ico("send") + "</button></div></div>";
+    return '<div class="perchat-log">' + msgs + "</div><div class=\"psuggs\">" + chips + "</div>" +
+      '<div class="perchat-in"><input class="pin" data-perin placeholder="Ask ' + esc(p.name) + ' something…" value="' + esc(S.pinput || "") + '"><button class="btn sm" data-a="persend">' + ico("send") + "</button></div>";
+  }
+  function personaModal() {
+    var id = S.pModal, p = personaById(id);
+    if (!p) return "";
+    return '<div class="modal-ov" data-a="closepmodal"></div><div class="whymod permod"><div class="whymod-h"><div class="whymod-ttl"><span class="per-av sm">' + ico("user") +
+      '</span><div class="wm-title">' + esc(p.name) + '<span class="wm-sub">talking to your persona</span></div></div><button class="brain-x" data-a="closepmodal" aria-label="Close">' + ico("close") +
+      '</button></div><div class="whymod-body permod-body">' + personaLog(id) + "</div></div>";
   }
   function personaSend(msg) {
     msg = (msg || "").trim();
-    if (!msg || !S.pchat) return;
-    var id = S.pchat, thread = S.pthreads[id] || (S.pthreads[id] = []);
+    var id = S.pModal || S.pchat;
+    if (!msg || !id) return;
+    var thread = S.pthreads[id] || (S.pthreads[id] = []);
     thread.push({ from: "you", text: msg });
     thread.push({ from: "persona", text: personaReply(personaById(id), msg).text });
     S.pinput = "";
     render();
   }
-  function vPersonasTab() { return S.pchat ? vPersonaChat(S.pchat) : vPersonas(); }
+  function vPersonasTab() { return S.pDetail ? vPersonaDetail(S.pDetail) : vPersonas(); }
+  function trainingPct() {
+    var d = Math.min(60, Math.max(0, dayDiff(S.createdAt || todayISO(), todayISO())));
+    var pub = 0; for (var k in (S.pub || {})) if (S.pub[k]) pub++;
+    var done = 0; for (var k2 in (S.done || {})) if (S.done[k2]) done++;
+    var chats = 0; for (var id in (S.pthreads || {})) chats += (S.pthreads[id] || []).filter(function (m) { return m.from === "you"; }).length;
+    var pct = 8 + d * 0.7 + pub * 4 + done * 2 + chats * 2;
+    return Math.max(6, Math.min(88, Math.round(pct)));
+  }
+  function trainRing(pct) {
+    var r = 52, circ = 2 * Math.PI * r, len = pct / 100 * circ;
+    return '<svg class="tring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + len.toFixed(1) + " " + (circ - len).toFixed(1) + '" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" class="tring-n">' + pct + '%</text><text x="60" y="76" text-anchor="middle" class="tring-l">trained</text></svg>';
+  }
+  function vTraining() {
+    var pct = trainingPct();
+    var pub = 0; for (var k in (S.pub || {})) if (S.pub[k]) pub++;
+    var nm = nameOf() === "there" ? "your business" : esc(nameOf());
+    var signals = [
+      ["Business basics from onboarding", 92],
+      ["Your personas", Math.min(96, 70 + pub * 3)],
+      ["Content you've approved", Math.min(95, 35 + pub * 8)],
+      ["Your edits & feedback", Math.min(90, 30 + pub * 6)],
+      ["Results Clara has seen", Math.min(85, 20 + pub * 10)],
+    ];
+    return '<div class="todayhead"><div class="th-day">Clara training</div><h1 class="th-t">How well Clara knows you</h1><p class="th-s">The more you use Clara — approving moves, editing, chatting, publishing — the more she learns to sound and think like you.</p></div>' +
+      '<div class="traingrid"><div class="traincard trainbig">' + trainRing(pct) + '<div class="trainbig-tx"><div class="trainbig-h">Clara is ' + pct + '% trained to run ' + nm + '</div><div class="trainbig-s">She started from an educated guess and sharpens every day you feed her. Keep going and this climbs.</div></div></div>' +
+      '<div class="traincard"><div class="pd-lab">' + ico("spark") + ' What she\'s learned from</div>' + chartBars(signals) + "</div></div>" +
+      '<div class="tnote"><div class="tn-h">' + ico("bulb") + ' If this dips, that\'s useful</div><p>A drop means Clara hit something she didn\'t know about your business — a nudge to feed her a bit more, not a failure. Illustrative for the mockup; the real figure comes from the agent.</p></div>';
+  }
   function render() {
     var h =
       S.screen === "login"
@@ -2760,6 +2860,7 @@
     if (S.publishing != null) h += publishModal();
     if (S.whyOpen != null) h += whyModal();
     if (S.todoOpen) h += todoModal();
+    if (S.pModal != null) h += personaModal();
     app.innerHTML = h;
     bind();
   }
@@ -2808,6 +2909,7 @@
         else {
           S.posts[i][f] = el.value;
           if (f === "platform") S.posts[i].format = fmtFor(S.posts[i].type, el.value);
+          if (f === "personaId") { S.posts[i].personaWeak = false; S.posts[i].personaAuto = false; }
         }
         render();
       });
@@ -3486,16 +3588,48 @@
         render();
         break;
       case "askpersona":
-        S.tab = "personas";
-        S.pchat = k;
-        render();
-        break;
+      case "pmodal":
       case "perchat":
-        S.pchat = k;
+        S.pModal = k;
         render();
         break;
+      case "closepmodal":
+        S.pModal = null;
+        S.pinput = "";
+        render();
+        break;
+      case "navpersonas":
+        S.tab = "personas";
+        S.pDetail = null;
+        S.acctOpen = false;
+        S.notifOpen = false;
+        render();
+        break;
+      case "navtraining":
+        S.tab = "training";
+        S.acctOpen = false;
+        S.notifOpen = false;
+        render();
+        break;
+      case "perdetail":
+        S.pDetail = k;
+        render();
+        break;
+      case "pnew": {
+        var _pi = +k, _pp = S.posts[_pi];
+        if (_pp) {
+          var _nid = newPersonaFromPost(_pp, taskAt(_pi));
+          _pp.personaId = _nid;
+          _pp.personaWeak = false;
+          _pp.personaAuto = false;
+          saveAll();
+          render();
+          toast("Clara built a new persona for this post");
+        }
+        break;
+      }
       case "perback":
-        S.pchat = null;
+        S.pDetail = null;
         render();
         break;
       case "perask":
@@ -3598,21 +3732,27 @@
           media: cc2.type === "text" ? "" : cc2.type === "audio" ? "Short spoken segment — natural and conversational, about 60 seconds." : kit.media,
           hashtags: kit.tags,
           rev: 0,
-          personaId: cc2.personaId || pickPersonaId(oi),
+          personaId: null,
           tags: [],
           brief: cc2.brief || null,
           ctrl: cc2.ctrl || null,
         };
         initEngineFields(np, S.ownTasks[oi]);
         S.posts[oi] = np;
+        // Clara attaches the best-fit persona AFTER the post is made
+        var _bf = bestPersonaFor(np, S.ownTasks[oi]);
+        np.personaId = _bf.id;
+        np.personaWeak = _bf.weak;
+        np.personaAuto = true;
         if (S.queue.indexOf(oi) < 0) S.queue.push(oi);
         S.composing = false;
         S.compose = { type: "", platform: "", angleSel: null, ownText: "", angles: [], format: "", brief: null, ctrl: null };
         S.createView = "list";
         S.cFilter = "all";
+        S.createDetail = oi;
         saveAll();
         render();
-        toast("Post ready — review and publish");
+        toast(_bf.weak ? "Post ready — Clara wasn't sure which persona fits" : "Post ready — Clara tagged it for a persona");
         break;
       }
       case "qregen":
