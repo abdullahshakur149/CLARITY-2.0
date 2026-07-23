@@ -1947,3 +1947,59 @@ html.dark .stage .pcard-st.live{color:#7ee0b3;background:#16311f}
 .stage .loop-arr{color:var(--soft);display:inline-flex}
 .stage .loop-arr svg{width:15px;height:15px}
 .stage .loop-note{margin:0;font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* ---- Personas + tags (feedback 3 & 4) ---- */
+.stage .pers-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--accent-tint);padding:3px 9px;border-radius:999px}
+.stage .pers-tag svg{width:12px;height:12px}
+.stage .pcard-persona{margin:2px 0 0}
+.stage .tc-persona{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--accent-ink);background:var(--accent-tint);padding:2px 8px;border-radius:999px;margin-left:9px;vertical-align:middle}
+.stage .tc-persona svg{width:12px;height:12px}
+.stage .tc-trend{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:#8a5a00;background:#fbeecf;padding:2px 8px;border-radius:999px;margin-left:9px;vertical-align:middle}
+html.dark .stage .tc-trend{color:#f0c987;background:#3a2f16}
+.stage .tc-trend svg{width:12px;height:12px}
+.stage .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.stage .tagchip{display:inline-flex;align-items:center;font-size:11px;font-weight:600;color:var(--muted);background:var(--bg);border:1px solid var(--line2);padding:2px 9px;border-radius:999px}
+html.dark .stage .tagchip{background:var(--panel2)}
+.stage .tf-lab{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.04em;margin-right:2px}
+.stage .tf-lab svg{width:13px;height:13px}
+.stage .tagfilter{margin-top:-4px}
+/* persona pill in post detail meta */
+.stage .pd-persona-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--accent-tint);padding:3px 10px;border-radius:999px}
+.stage .pd-persona-pill svg{width:12px;height:12px}
+/* "who this is for" block */
+.stage .pd-persona{background:var(--accent-soft);border:1px solid var(--accent-tint);border-radius:12px;padding:14px 16px}
+.stage .pd-pn{font-size:15px;font-weight:700;color:var(--ink)}
+.stage .pd-pd{font-size:13px;color:var(--muted);line-height:1.5;margin-top:3px}
+.stage .pd-pwhy{display:flex;align-items:flex-start;gap:6px;font-size:12.5px;color:var(--accent-ink);line-height:1.45;margin-top:9px}
+.stage .pd-pwhy svg{width:14px;height:14px;flex:none;margin-top:1px}
+.stage .pd-askp{margin-top:12px}
+/* personas grid */
+.stage .pergrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:6px}
+.stage .percard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column}
+.stage .per-top{display:flex;align-items:center;gap:11px}
+.stage .per-av{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:var(--accent-tint);color:var(--accent-ink);flex:none}
+.stage .per-av svg{width:19px;height:19px}
+.stage .per-n{font-size:15.5px;font-weight:700;color:var(--ink)}
+.stage .per-w{font-size:12px;color:var(--accent-ink)}
+.stage .per-desc{font-size:13px;color:var(--muted);line-height:1.5;margin:12px 0}
+.stage .per-facts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.stage .per-f{font-size:12.5px;color:var(--ink2,var(--ink));line-height:1.45}
+.stage .per-fl{display:inline-block;min-width:64px;font-weight:700;color:var(--soft);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em}
+.stage .per-a{margin-top:auto}
+/* persona chat */
+.stage .perchat{max-width:720px;margin-top:8px}
+.stage .perchat-log{display:flex;flex-direction:column;gap:10px;padding:6px 2px 14px}
+.stage .pmsg{display:flex}
+.stage .pmsg.me{justify-content:flex-end}
+.stage .pmsg-b{max-width:78%;font-size:13.5px;line-height:1.5;padding:10px 14px;border-radius:14px}
+.stage .pmsg.them .pmsg-b{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-bottom-left-radius:4px}
+.stage .pmsg.me .pmsg-b{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.stage .psuggs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 12px}
+.stage .psugg{font-size:12px;font-weight:500;color:var(--accent-ink);background:var(--accent-tint);border:none;padding:6px 12px;border-radius:999px;cursor:pointer}
+.stage .psugg:hover{background:var(--accent-soft)}
+.stage .perchat-in{display:flex;gap:8px;align-items:center}
+.stage .pin{flex:1;font-size:14px;padding:11px 14px;border:1px solid var(--line2);border-radius:10px;background:var(--panel);color:var(--ink);font-family:inherit}
+.stage .pin:focus{outline:none;border-color:var(--accent)}
+.stage .co-perwhy{display:flex;align-items:flex-start;gap:6px;font-size:12.5px;color:var(--accent-ink);line-height:1.45;margin-top:10px}
+.stage .co-perwhy svg{width:14px;height:14px;flex:none;margin-top:1px}
+.stage .anglecard .ac-n svg{width:15px;height:15px}

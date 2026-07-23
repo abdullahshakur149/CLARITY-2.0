@@ -54,15 +54,15 @@
   function hasSession(){var s=LS();if(!s)return false;try{return s.getItem("clarity_session")==="1";}catch(e){return false;}}
   function fullReset(){var s=LS();if(s){try{s.removeItem("clarity_profile");s.removeItem("clarity_session");s.removeItem("clarity_biz");}catch(e){}}}
   // ---- Multi-business engine ----
-  var PBFIELDS=["p","name","sentence","done","twhy","queue","pub","qtext","qedit","qdraft","posts","ownTasks","camp","sel","cols","cardCol","threads","tweak","whySeen","insSeen","insSaved","insDismiss","extra","createdAt","hist"];
+  var PBFIELDS=["p","name","sentence","done","twhy","queue","pub","qtext","qedit","qdraft","posts","ownTasks","camp","sel","cols","cardCol","threads","tweak","whySeen","insSeen","insSaved","insDismiss","extra","createdAt","hist","personas","pthreads"];
   function newBizId(){return "b"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);}
-  function makeBiz(){return {id:newBizId(),p:{ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]},name:"",sentence:"",done:{},twhy:{},queue:[],pub:{},qtext:{},qedit:{},qdraft:{},posts:{},ownTasks:{},camp:{status:"off"},sel:{},cols:[],cardCol:{},threads:{},tweak:{},whySeen:{},insSeen:false,insSaved:{},insDismiss:{},extra:[],createdAt:"",hist:{}};}
+  function makeBiz(){return {id:newBizId(),p:{ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]},name:"",sentence:"",done:{},twhy:{},queue:[],pub:{},qtext:{},qedit:{},qdraft:{},posts:{},ownTasks:{},camp:{status:"off"},sel:{},cols:[],cardCol:{},threads:{},tweak:{},whySeen:{},insSeen:false,insSaved:{},insDismiss:{},extra:[],createdAt:"",hist:{},personas:[],pthreads:{}};}
   function bizById(id){for(var i=0;i<S.biz.length;i++)if(S.biz[i].id===id)return S.biz[i];return null;}
   function bizByIdIn(arr,id){for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return null;}
   function snapshot(){if(S.cur==null)return;var r=bizById(S.cur);if(!r)return;PBFIELDS.forEach(function(f){r[f]=S[f];});}
   function loadBiz(id){snapshot();var r=bizById(id);if(!r)return;PBFIELDS.forEach(function(f){S[f]=r[f];});normBiz();S.cur=id;S.tab="today";}
-  function normBiz(){["done","twhy","pub","qtext","qedit","qdraft","posts","ownTasks","sel","cardCol","threads","tweak","whySeen","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};}
-  function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.qdraft={};S.posts={};S.ownTasks={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.whySeen={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.createdAt="";S.hist={};S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
+  function normBiz(){["done","twhy","pub","qtext","qedit","qdraft","posts","ownTasks","sel","cardCol","threads","tweak","whySeen","wtext","insSaved","insDismiss"].forEach(function(f){if(!S[f]||typeof S[f]!=="object")S[f]={};});if(!Array.isArray(S.queue))S.queue=[];if(!Array.isArray(S.cols))S.cols=[];if(!Array.isArray(S.extra))S.extra=[];if(S.p&&!Array.isArray(S.p.locs))S.p.locs=S.p.loc?[S.p.loc]:[];if(!S.hist||typeof S.hist!=="object")S.hist={};if(!S.createdAt){var _cd=new Date();_cd.setDate(_cd.getDate()-21);S.createdAt=isoOf(_cd);}if(S.insSeen===undefined)S.insSeen=true;if(!S.camp||typeof S.camp!=="object")S.camp={status:"off"};if(!S.p||typeof S.p!=="object")S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",channels:[],budget:"",loc:""};if(!Array.isArray(S.personas)||!S.personas.length)S.personas=seedPersonas();if(!S.pthreads||typeof S.pthreads!=="object")S.pthreads={};}
+  function blankWorking(){S.p={ind:"other",goal:"customers",aud:"any",tone:"warm",type:"",goalSel:"",goals:[],channels:[],budget:"",loc:"",locs:[]};S.name="";S.sentence="";S.done={};S.twhy={};S.queue=[];S.pub={};S.qtext={};S.qedit={};S.qdraft={};S.posts={};S.ownTasks={};S.camp={status:"off"};S.sel={};S.cols=[];S.cardCol={};S.threads={};S.tweak={};S.whySeen={};S.wtext={};S.insSeen=false;S.insSaved={};S.insDismiss={};S.extra=[];S.createdAt="";S.hist={};S.personas=[];S.pthreads={};S.website="";S.useWeb=false;S.why=false;S.helping=false;S.helpOpen=false;S.suggestion="";S.step=1;}
   function deriveName(sent,ind){var t=(sent||"").trim();if(t){t=t.replace(/^(i\s+(?:run|own|have|am|bake|make|coach|sell|do|offer|build|teach|help)\s+(?:a|an|my|the)?\s*)/i,"").replace(/\s+(?:and|but|so|because|that|which)\b.*$/i,"").replace(/,.*$/,"").replace(/[.!?].*$/,"").trim();t=t.split(/\s+/).slice(0,4).join(" ").trim();if(t)return t.charAt(0).toUpperCase()+t.slice(1);}return (typeof INDS!=="undefined"&&INDS[ind])||"My business";}
   function initials(nm){nm=(nm||"").trim();if(!nm)return "YB";var w=nm.split(/\s+/);return ((w[0][0]||"")+(w[1]?w[1][0]:(w[0][1]||""))).toUpperCase();}
   function saveAll(){snapshot();var s=LS();if(!s)return;try{s.setItem("clarity_biz",JSON.stringify({list:S.biz,cur:S.cur,email:S.email||""}));}catch(e){}}
@@ -175,6 +175,71 @@
         "We’ll win on the one thing you do better than anyone nearby — the plan builds from there.",
     },
   };
+  // ---- Personas (2–3 per business, Clara-seeded, user-editable) ----
+  var PERSONAS = {
+    food: [
+      { name: "The neighbourhood regular", desc: "Lives nearby, values freshness and story, happy to pay a little more for something made with care.", wants: "somewhere that feels like theirs, made with care", fear: "paying more for something that turns out ordinary", where: "Instagram and local Facebook groups" },
+      { name: "The weekend treat-seeker", desc: "Comes out on Saturdays for something special, follows food accounts, shares what looks good.", wants: "a little weekend ritual worth photographing", fear: "queuing for something that disappoints", where: "Instagram and TikTok" },
+      { name: "The gifting planner", desc: "Buys for birthdays and office treats, needs it to look thoughtful and arrive on time.", wants: "an easy order that makes them look thoughtful", fear: "it arriving late or looking cheap", where: "Google and word of mouth" },
+    ],
+    saas: [
+      { name: "The time-poor operator", desc: "Drowning in tools, allergic to hype, buys what visibly saves hours in the first week.", wants: "hours back and one less tab open", fear: "another tool that adds work instead of removing it", where: "LinkedIn and peer communities" },
+      { name: "The cautious evaluator", desc: "Compares options carefully, reads docs and reviews, needs proof before committing budget.", wants: "proof it works before they stake their name on it", fear: "picking wrong and owning the fallout", where: "LinkedIn and review sites" },
+      { name: "The scaling founder", desc: "Growing fast, wants something that won't break at 10x, cares about roadmap and support.", wants: "something that grows with them, not against them", fear: "outgrowing it in six months", where: "founder communities and referrals" },
+    ],
+    fitness: [
+      { name: "The comeback starter", desc: "Has tried and stopped before; wants belief and a plan more than a discount.", wants: "a week-one plan they genuinely can't fail", fear: "starting again and quitting again", where: "Instagram and TikTok" },
+      { name: "The busy parent", desc: "Wants to feel strong again but has 30 minutes, not two hours, and no time to waste.", wants: "results that fit around real life", fear: "committing to something they can't keep up", where: "Instagram and local groups" },
+      { name: "The goal-driven improver", desc: "Already active, chasing a specific goal — a race, a number, a look — and wants structure.", wants: "a clear plan to hit a specific target", fear: "plateauing or training without direction", where: "YouTube and Instagram" },
+    ],
+    shop: [
+      { name: "The considered browser", desc: "Saves before they buy, reads reviews, converts when the story and the proof line up.", wants: "to feel sure before they spend", fear: "buyer's remorse on something they can't return", where: "Instagram and TikTok" },
+      { name: "The gift buyer", desc: "Shopping for someone else, needs it to feel special and land on time.", wants: "a gift that looks thoughtful and arrives on time", fear: "it turning up late or looking cheap", where: "Instagram and Google" },
+      { name: "The trend follower", desc: "Discovers through what's hot right now, buys fast when something catches the moment.", wants: "to be early on something that's about to blow up", fear: "missing the moment or looking behind", where: "TikTok and Instagram" },
+    ],
+    services: [
+      { name: "The cautious researcher", desc: "Choosing a person to trust, not a product. Wants evidence, credibility and zero risk.", wants: "to feel safe they've picked the right person", fear: "trusting the wrong provider and regretting it", where: "Google and your profile" },
+      { name: "The referred lead", desc: "Came from a recommendation, half-sold already, just needs reassurance to book.", wants: "quick proof the referral was right about you", fear: "the recommendation not living up to the hype", where: "referrals and your website" },
+      { name: "The comparison shopper", desc: "Getting a few quotes, weighing price against trust, deciding who feels most credible.", wants: "clear reasons you're worth choosing over cheaper options", fear: "overpaying, or under-paying and regretting it", where: "Google and LinkedIn" },
+    ],
+    creator: [
+      { name: "The aspiring learner", desc: "Follows for free value, buys when they believe you can get them a specific result.", wants: "to believe you can get them a specific result", fear: "buying another course they never finish", where: "YouTube and Instagram" },
+      { name: "The loyal superfan", desc: "Watches everything you make, ready to buy — they just need you to actually ask.", wants: "more of you, and a way to support you", fear: "missing something you released", where: "email and Instagram" },
+      { name: "The skeptical newcomer", desc: "Just found you, not sure you're the real deal yet, needs a quick win to trust you.", wants: "a fast reason to believe you're worth their time", fear: "wasting time on another overhyped creator", where: "TikTok and YouTube" },
+    ],
+    other: [
+      { name: "Your ideal customer", desc: "The person who feels the problem you solve most sharply and can act on it soonest.", wants: "the one thing you do better than anyone nearby", fear: "settling for a worse option because they didn't know about you", where: "Instagram and word of mouth" },
+      { name: "The ready-to-act buyer", desc: "Already looking for what you offer, just needs to find you and trust you quickly.", wants: "to solve their problem now, with someone they trust", fear: "choosing wrong under time pressure", where: "Google and referrals" },
+      { name: "The curious follower", desc: "Interested but not ready yet, warming up until the timing or the proof is right.", wants: "to keep learning until the moment is right", fear: "committing before they're sure", where: "Instagram and email" },
+    ],
+  };
+  function seedPersonas() {
+    var src = PERSONAS[S.p.ind] || PERSONAS.other;
+    return src.map(function (p, i) { return { id: "p" + i, name: p.name, desc: p.desc, wants: p.wants, fear: p.fear, where: p.where }; });
+  }
+  function personasList() {
+    if (!Array.isArray(S.personas) || !S.personas.length) S.personas = seedPersonas();
+    return S.personas;
+  }
+  function personaById(id) {
+    var l = personasList();
+    for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i];
+    return l[0];
+  }
+  function pickPersonaId(i) {
+    var l = personasList();
+    if (!l.length) return null;
+    return l[(((i || 0) % l.length) + l.length) % l.length].id;
+  }
+  function personaFor(i) {
+    var post = S.posts[i];
+    if (post && post.personaId) return personaById(post.personaId);
+    return personaById(pickPersonaId(i));
+  }
+  function personaWhy(persona, plat) {
+    if (!persona) return "";
+    return "This speaks to " + persona.name.replace(/^The /, "the ") + " — they want " + persona.wants + (plat ? ", and " + plat + " is where they are" : "") + ".";
+  }
   function mapInd(t) {
     t = (t || "").toLowerCase();
     if (/bak|cafe|coffee|restaurant|food|kitchen|brew|deli/.test(t))
@@ -366,6 +431,11 @@
     insDismiss: {},
     extra: [],
     insDetail: null,
+    personas: [],
+    pthreads: {},
+    pchat: null,
+    pEdit: null,
+    cTag: "all",
   };
   var app = root.querySelector("#app"),
     toastEl = root.querySelector("#toast");
@@ -1165,8 +1235,10 @@
   }
   function campaignFor(){var a=arch(),ch=a.channels,nm=(nameOf()==="there"?"your business":nameOf()),au=(AUDS[S.p.aud]||"your customers").toLowerCase();var meta=({food:{name:"Weekend market push",occ:"Your busiest weekend is a couple of weeks out — worth a run-up."},saas:{name:"Feature-launch push",occ:"You’ve got something worth a proper moment, not a quiet post."},fitness:{name:"Fresh-start push",occ:"There’s a natural ‘new me’ window coming — a good time to ride it."},shop:{name:"Seasonal push",occ:"A seasonal buying moment is coming up."},services:{name:"Fill-the-book fortnight",occ:"A focused two weeks can fill your quieter slots."},creator:{name:"Launch-week push",occ:"You’ve got a launch worth building up to."},other:{name:"Two-week growth push",occ:"A short, focused sprint could move things."}})[S.p.ind]||{name:"Two-week growth push",occ:"A short, focused sprint could move things."};var moves=[{icon:"mega",title:"Announce it early",body:"A "+ch[0]+" post that builds anticipation — tell "+au+" it’s coming.",why:"Campaigns win on the run-up. Warming people up beats a cold launch-day post."},{icon:"bulb",title:"Share the story behind it",body:"One piece on why this matters — the reason, not the features.",why:"Story is what makes a push feel like an event, not an ad."},{icon:"flag",title:"Make the ask, clearly",body:"A direct "+(ch[2]||ch[0])+" post with one clear action for "+au+".",why:"Every campaign needs a moment where you actually ask. This is it."}];return {name:meta.name,occ:meta.occ,dayN:2,dayTotal:14,moves:moves,status:"active"};}
   function campaignPreview(){var c=campaignFor();return {name:c.name,occ:c.occ,dayTotal:c.dayTotal,moves:c.moves.length};}
-  function campCount(){return S.camp&&S.camp.status==="active"?S.camp.moves.length:0;}
-  function todayTasks(){var b=baseTasks();if(!campCount())return b;var cm=S.camp.moves.map(function(m){return {icon:m.icon,title:m.title,body:m.body,why:m.why,camp:S.camp.name};});return b.concat(cm);}
+  function campCount(){return 0;}
+  function currentTrend(){var T=[["fresh-start energy","new-year-reset"],["fresh-start energy","new-year-reset"],["spring refresh","spring-refresh"],["spring refresh","spring-refresh"],["early-summer buzz","summer-launch"],["summer social season","summer-social"],["summer social season","summer-social"],["back-to-routine mood","back-to-routine"],["autumn / fall colours","fall-colours"],["autumn / fall colours","fall-colours"],["festive run-up","festive-season"],["festive gifting","festive-gifting"]];var x=T[new Date().getMonth()]||T[0];return {label:x[0],tag:x[1]};}
+  function trendTask(){var tr=currentTrend(),au=(AUDS[S.p.aud]||"your customers").toLowerCase();return {icon:"bulb",trend:true,tag:tr.tag,title:"Ride the "+tr.label+" trend",body:"“"+tr.label.charAt(0).toUpperCase()+tr.label.slice(1)+"” is trending right now — post a piece that ties what you do to the moment for "+au+".",why:"Trends give you a timely reason to post that doesn’t feel salesy. Clara auto-tags everything from this trend as #"+tr.tag+" so the related posts stay grouped together."};}
+  function todayTasks(){return baseTasks().concat([trendTask()]);}
   function taskKind(t){if(t&&t.kind)return t.kind;var s=((t&&t.title)||"")+" "+((t&&t.body)||"");s=s.toLowerCase();if(/send it to|reach \d+|add value in|communities or threads|pick one|re-approach|put one testimonial|warm leads/.test(s))return "action";return "content";}
   function kindOf(i){return taskKind(taskAt(i));}
   var PLATS = { instagram: "Instagram", linkedin: "LinkedIn", tiktok: "TikTok", facebook: "Facebook", youtube: "YouTube", email: "Email", x: "X", twitter: "X", pinterest: "Pinterest" };
@@ -1301,7 +1373,9 @@
     var post = kind === "content" ? (S.posts[i] || buildPost(t, i)) : null;
     var platBadge = post ? '<span class="tc-plat">' + ico(typeIcon(post.type)) + post.platform + "</span>" : "";
     var kbadge = '<span class="kbadge ' + kind + '">' + (kind === "action" ? "Action" : "Content") + "</span>";
-    var campChip = t.camp ? '<span class="tc-camp">' + ico("mega") + t.camp + "</span>" : "";
+    var personaChip = (kind === "content" && post) ? '<span class="tc-persona">' + ico("user") + " " + esc(personaFor(i).name) + "</span>" : "";
+    var trendChip = t.trend ? '<span class="tc-trend">' + ico("bulb") + " Trending</span>" : "";
+    var tagRow = (post && post.tags && post.tags.length) ? tagChips(post.tags) : (t.tag ? tagChips([t.tag]) : "");
     var chatChip = "";
     var chk =
       st === "open" && kind === "content"
@@ -1319,11 +1393,13 @@
       t.title +
       kbadge +
       platBadge +
-      campChip +
+      personaChip +
+      trendChip +
       chatChip +
       '</div><div class="tc-b">' +
       t.body +
       "</div>" +
+      tagRow +
       tweakNote(i) +
       '</div></div><div class="tc-a">' +
       actions +
@@ -1858,7 +1934,7 @@
     );
   }
   function tabLabel(t) {
-    return { today: "Today", create: "Create", results: "Results", insights: "Insights", thinking: "Clara’s thinking", profile: "Profile settings" }[t] || t;
+    return { today: "Today", create: "Create", personas: "Personas", results: "Results", insights: "Insights", thinking: "Clara’s thinking", profile: "Profile settings" }[t] || t;
   }
   function crumbs() {
     var tr = (S.trail || []).slice(-3);
@@ -1900,6 +1976,8 @@
         ? vToday()
         : S.tab === "create"
           ? vCreate()
+          : S.tab === "personas"
+          ? vPersonasTab()
           : S.tab === "insights"
             ? vInsights()
             : S.tab === "thinking"
@@ -1927,6 +2005,7 @@
       '<span>Clarity</span></div><nav class="rail-nav">' +
       navItem("today", "Today", "home") +
       navItem("create", "Create", "zap") +
+      navItem("personas", "Personas", "user") +
       navItem("results", "Results", "chart") +
       "</nav>" +
       foot +
@@ -1944,7 +2023,7 @@
   var FMT_OPTS={image:["Feed post","Carousel","Story","Pin"],video:["Reel","Short","Story"],text:["Post","Article","Thread","Newsletter"],audio:["Podcast","Audiogram","Voice note"]};
   function fmtFor(type,p){var pf=({image:{Instagram:"Feed post",Pinterest:"Pin",Facebook:"Feed post"},video:{TikTok:"Short video",YouTube:"Short",Instagram:"Reel"},text:{LinkedIn:"Post",Email:"Newsletter",X:"Post","Content & SEO":"Article"}})[type]||{};return pf[p]||FMT_OPTS[type][0];}
   var POSTKIT={food:{media:"A close, natural shot of your product mid-craft — flour-dusted, soft daylight, real not staged.",tags:"#madelocal #craftfood #smallbatch #supportlocal"},saas:{media:"A clean before/after or a simple UI frame showing the hours saved — minimal, high-contrast.",tags:"#b2bsaas #productivity #founders #workflow"},fitness:{media:"A candid, real-person shot mid-session — energy over perfection, natural light.",tags:"#fitnessjourney #week1 #coaching #showup"},shop:{media:"A styled-but-honest flat-lay or lifestyle shot — story first, price never.",tags:"#smallbusiness #handmade #shopindie #thestory"},services:{media:"A warm, trustworthy shot — you or your space, faces and credibility over stock.",tags:"#trusted #local #realresults #askanexpert"},creator:{media:"A bold thumbnail-style frame with one clear promise — your face plus the transformation.",tags:"#learnwithme #creator #howto #growth"},other:{media:"A clean, on-brand image that leads with your one clear difference.",tags:"#yourbrand #local #thedifference"}};
-  function buildPost(task,i){var a=arch(),POSTABLE={Instagram:1,LinkedIn:1,TikTok:1,YouTube:1,X:1,Facebook:1,Pinterest:1,Email:1,"Content & SEO":1,"SEO or blog":1,"Google profile":1,Community:1},uc=(S.p.channels||[]).filter(function(c){return POSTABLE[c];}),cands=uc.length?uc:a.channels.filter(function(c){return POSTABLE[c];});if(!cands.length)cands=[a.channels[0]];var idx=(i!=null?i:0)%cands.length;var p=cands[(idx+cands.length)%cands.length];if(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].platform)p=S.tweak[i].platform;var ty=inferType(p),kit=POSTKIT[S.p.ind]||POSTKIT.other;var post={type:ty,platform:p,format:fmtFor(ty,p),caption:captionFor(task,0),media:ty==="text"?"":kit.media,hashtags:kit.tags,rev:0};initEngineFields(post,task);return post;}
+  function buildPost(task,i){var a=arch(),POSTABLE={Instagram:1,LinkedIn:1,TikTok:1,YouTube:1,X:1,Facebook:1,Pinterest:1,Email:1,"Content & SEO":1,"SEO or blog":1,"Google profile":1,Community:1},uc=(S.p.channels||[]).filter(function(c){return POSTABLE[c];}),cands=uc.length?uc:a.channels.filter(function(c){return POSTABLE[c];});if(!cands.length)cands=[a.channels[0]];var idx=(i!=null?i:0)%cands.length;var p=cands[(idx+cands.length)%cands.length];if(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].platform)p=S.tweak[i].platform;var ty=inferType(p),kit=POSTKIT[S.p.ind]||POSTKIT.other;var post={type:ty,platform:p,format:fmtFor(ty,p),caption:captionFor(task,0),media:ty==="text"?"":kit.media,hashtags:kit.tags,rev:0};post.personaId=(i!=null&&S.tweak&&S.tweak[i]&&S.tweak[i].personaId)?S.tweak[i].personaId:pickPersonaId(i);post.tags=(task&&Array.isArray(task.tags))?task.tags.slice():(task&&task.tag?[task.tag]:[]);initEngineFields(post,task);return post;}
   var CGEN_CONTROLS={
     text:[
       {key:"length",label:"Word count",type:"select",opts:["Short (~60 words)","Medium (~120 words)","Long (~250 words)"],def:"Medium (~120 words)"},
@@ -2109,7 +2188,8 @@
       if(!c.brief)c.brief={goal:goalPhrase(),whyNow:"A fresh piece for your audience.",persona:AUDS[S.p.aud]||"Your ideal customer",message:angleText,proof:"",cta:ctaFor()};
       if(!c.ctrl){var dd={};ctrlDefs(c.type).forEach(function(cc){if(cc.def!=null)dd[cc.key]=cc.def;});c.ctrl=dd;}
       var fmo=(FMT_OPTS[c.type]||[]).map(function(f){return "<option"+(c.format===f?" selected":"")+">"+esc(f)+"</option>";}).join("");
-      detailSec='<div class="rsec">Format</div><div class="editgrid"><div class="efield"><label>Format</label><select class="sel" data-model="compose.format">'+fmo+"</select></div></div>"+
+      if(!c.personaId)c.personaId=personasList()[0].id;var pcur=personaById(c.personaId);var perOpts=personasList().map(function(pp){return '<button class="anglecard'+(c.personaId===pp.id?" on":"")+'" data-a="coper" data-k="'+pp.id+'"><span class="ac-n">'+ico("user")+'</span><span class="ac-t">'+esc(pp.name)+"</span>"+(c.personaId===pp.id?ico("check"):"")+"</button>";}).join("");var personaSec='<div class="rsec">Who this is for</div><div class="anglelist">'+perOpts+'</div><div class="co-perwhy">'+ico("spark")+" "+esc(personaWhy(pcur,c.platform))+"</div>";
+      detailSec=personaSec+'<div class="rsec">Format</div><div class="editgrid"><div class="efield"><label>Format</label><select class="sel" data-model="compose.format">'+fmo+"</select></div></div>"+
         '<div class="rsec">Creative brief</div><div class="editgrid">'+briefEditC(c)+"</div>"+
         '<div class="rsec">'+typeLabel(c.type)+' settings</div><div class="editgrid">'+ctrlEditC(c)+"</div>";
     }
@@ -2120,15 +2200,22 @@
       '<div class="rsec">Platform</div><div class="ocardrow">'+pchips+"</div>"+
       angleSec+detailSec+foot;
   }
+  function personaTag(persona){if(!persona)return "";return '<span class="pers-tag">'+ico("user")+" "+esc(persona.name)+"</span>";}
+  function tagChip(t){return '<span class="tagchip">#'+esc(t)+"</span>";}
+  function tagChips(tags){if(!tags||!tags.length)return "";return '<div class="tagrow">'+tags.map(tagChip).join("")+"</div>";}
+  function allQueueTags(){var set={},order=[];(S.queue||[]).forEach(function(i){var p=S.posts[i];if(p&&p.tags)p.tags.forEach(function(t){if(!set[t]){set[t]=1;order.push(t);}});});return order;}
   function ccard(task,i){
     var post=S.posts[i]||(S.posts[i]=buildPost(task,i));
     var st=qStatus(i),live=post.live;
     var sl=st==="scheduled"?(live?"Live":"Scheduled"):st==="draft"?"Draft":"Pending";
     var scls=st==="scheduled"?(live?"live":"sched"):st;
     var footL=st==="scheduled"?(ico("cal")+" "+(post.scheduled||"—")):(st==="draft"?"Saved as draft":"Ready to review");
+    var persona=personaFor(i);
     return '<div class="pcard '+scls+'">'+
       '<div class="pcard-top"><span class="dch">'+ico(typeIcon(post.type))+post.platform+'</span><span class="pcard-st '+scls+'">'+sl+"</span></div>"+
       '<div class="pcard-for">'+esc(task.title||"Post")+"</div>"+
+      '<div class="pcard-persona">'+personaTag(persona)+"</div>"+
+      ((post.tags&&post.tags.length)?tagChips(post.tags):"")+
       '<div class="pcard-foot"><span class="pcard-fl">'+footL+'</span><button class="pcard-open" data-a="copen" data-k="'+i+'">Open '+ico("arrow")+"</button></div>"+
       "</div>";
   }
@@ -2171,12 +2258,13 @@
   function vPostDetail(i){
     var task=taskAt(i),post=S.posts[i]||(S.posts[i]=buildPost(task,i));
     initEngineFields(post,task);
+    var persona=personaFor(i);
     var pub=!!S.pub[i],draft=!pub&&!!S.qdraft[i],edit=!pub&&!!S.qedit[i];
     var st=qStatus(i),live=post.live;
     var sl=st==="scheduled"?(live?"Live":"Scheduled"):st==="draft"?"Draft":"Pending";
     var scls=st==="scheduled"?(live?"live":"sched"):st;
     var back='<button class="lk mut resback" data-a="cback">'+ico("arrow")+" All posts</button>";
-    var head='<div class="todayhead"><div class="th-day">Create · post</div><h1 class="th-t">'+esc(task.title||"Post")+'</h1><div class="pd-meta"><span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span><span class="pcard-st '+scls+'">'+sl+"</span>"+(post.scheduled?'<span class="pd-when">'+ico("cal")+" "+post.scheduled+"</span>":"")+(task.camp?'<span class="dc-camp">'+ico("mega")+task.camp+"</span>":"")+"</div></div>";
+    var head='<div class="todayhead"><div class="th-day">Create · post</div><h1 class="th-t">'+esc(task.title||"Post")+'</h1><div class="pd-meta"><span class="dch">'+ico(typeIcon(post.type))+post.platform+" · "+post.format+'</span><span class="pcard-st '+scls+'">'+sl+"</span>"+(post.scheduled?'<span class="pd-when">'+ico("cal")+" "+post.scheduled+"</span>":"")+(persona?'<span class="pd-persona-pill">'+ico("user")+" "+esc(persona.name)+"</span>":"")+"</div></div>";
     function fact(l,v){return '<div class="pd-fact"><span class="pd-fl">'+l+'</span><span class="pd-fv">'+esc(v)+"</span></div>";}
     var body;
     if(edit){
@@ -2186,15 +2274,19 @@
       body='<div class="pd-body">'+
         '<section class="pd-sec"><div class="pd-lab">Details</div><div class="editgrid"><div class="efield"><label>Content type</label><div class="tchips">'+tc+'</div></div><div class="erow"><div class="efield"><label>Platform</label><select class="sel" data-psel="platform" data-k="'+i+'">'+pfo+'</select></div><div class="efield"><label>Format</label><select class="sel" data-psel="format" data-k="'+i+'">'+fmo+"</select></div></div></div></section>"+
         '<section class="pd-sec"><div class="pd-lab">'+ico("txt")+' Caption</div><textarea class="dtext-edit pd-fullw" data-pf="caption" data-pi="'+i+'">'+esc(post.caption)+"</textarea></section>"+
+        '<section class="pd-sec"><div class="pd-lab">'+ico("user")+' Who this is for</div><div class="editgrid"><div class="efield"><label>Target persona</label><select class="sel" data-psel="personaId" data-k="'+i+'">'+personasList().map(function(pp){return '<option value="'+pp.id+'"'+(post.personaId===pp.id?" selected":"")+'>'+esc(pp.name)+"</option>";}).join("")+'</select><div class="ef-help">'+esc(personaWhy(persona,post.platform))+'</div></div></div></section>'+
         '<section class="pd-sec"><div class="pd-lab">'+ico("compass")+' Creative brief</div><div class="editgrid">'+briefEdit(i,post)+"</div></section>"+
         '<section class="pd-sec"><div class="pd-lab">'+ico(typeIcon(post.type))+" "+typeLabel(post.type)+' settings</div><div class="editgrid">'+ctrlEdit(i,post)+"</div></section>"+
         '<section class="pd-sec"><div class="pd-lab">'+ico("spark")+' Hashtags</div><input class="hinp pd-fullw" data-pf="hashtags" data-pi="'+i+'" value="'+esc(post.hashtags)+'"></section>'+
+        '<section class="pd-sec"><div class="pd-lab">'+ico("mega")+' Tags</div><input class="hinp pd-fullw" data-ptags="'+i+'" value="'+esc((post.tags||[]).join(", "))+'" placeholder="Comma-separated, e.g. fall-colours, promo"><div class="ef-help">Auto-tags come from insights. Add your own to group related posts.</div></section>'+
         "</div>";
     }else{
       var facts='<section class="pd-sec"><div class="pd-lab">Details</div><div class="pd-facts">'+fact("Platform",post.platform)+fact("Format",post.format)+fact("Content type",typeLabel(post.type))+fact("Status",sl)+(post.scheduled?fact("Scheduled",post.scheduled):"")+"</div></section>";
       var caption='<section class="pd-sec"><div class="pd-lab">'+ico("txt")+' Caption</div><div class="pd-box pd-cap">'+esc(post.caption)+"</div></section>";
+      var whoFor=persona?'<section class="pd-sec"><div class="pd-lab">'+ico("user")+' Who this is for</div><div class="pd-persona"><div class="pd-pn">'+esc(persona.name)+'</div><div class="pd-pd">'+esc(persona.desc)+'</div><div class="pd-pwhy">'+ico("spark")+" "+esc(personaWhy(persona,post.platform))+'</div><button class="btn sm ghost pd-askp" data-a="askpersona" data-k="'+persona.id+'">'+ico("spark")+" Ask "+esc(persona.name)+"</button></div></section>":"";
+      var tagSec='<section class="pd-sec"><div class="pd-lab">'+ico("mega")+' Tags</div>'+((post.tags&&post.tags.length)?tagChips(post.tags):'<div class="pd-pd">No tags yet — add some in Edit to group related posts.</div>')+"</section>";
       var tags=post.hashtags?'<section class="pd-sec"><div class="pd-lab">'+ico("spark")+' Hashtags</div><div class="pd-tags">'+esc(post.hashtags)+"</div></section>":"";
-      body='<div class="pd-body">'+facts+caption+briefRead(post)+ctrlRead(post)+tags+"</div>";
+      body='<div class="pd-body">'+facts+caption+whoFor+briefRead(post)+ctrlRead(post)+tagSec+tags+"</div>";
     }
     var flag=draft&&!edit?'<div class="draftflag">'+ico("checkc")+" Draft saved — it’s waiting under <b>Drafts</b>. Schedule it whenever you’re ready.</div>":"";
     var actions;
@@ -2202,7 +2294,7 @@
     else actions='<button class="btn sm" data-a="qpublish" data-k="'+i+'">'+ico("send")+(draft?" Schedule it":" Publish")+'</button><button class="lk mut" data-a="qdraftsave" data-k="'+i+'">'+ico("flag")+(draft?"Update draft":"Save as draft")+'</button><button class="lk mut" data-a="qedit" data-k="'+i+'">'+ico("edit")+(edit?"Done editing":"Edit")+'</button><button class="lk mut" data-a="qregen" data-k="'+i+'">'+ico("refresh")+"Regenerate</button>";
     return back+head+flag+body+'<div class="pd-actions">'+actions+"</div>";
   }
-  function vCreate(){if(S.composing)return vCompose();if(!S.queue||!S.queue.length)return createEmpty();if(S.createDetail!=null&&S.queue.indexOf(+S.createDetail)>=0)return vPostDetail(+S.createDetail);var q=S.queue;var nPend=0,nDraft=0,nSched=0;q.forEach(function(i){var st=qStatus(i);if(st==="scheduled")nSched++;else if(st==="draft")nDraft++;else nPend++;});var allPub=nSched===q.length;var head='<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">'+(allPub?"Published":q.length>1?"Your content, ready to review":"Ready to publish")+'</h1><p class="th-s">'+(allPub?"Nice work — that’s today’s content live.":"Clara drafted "+(q.length>1?("all "+q.length+" in your voice"):"this in your voice")+". Tap a card to review, edit, publish — or save as a draft.")+'</p></div>';var newBtn='<button class="btn sm createnew" data-a="conew">'+ico("plus")+' Create a post</button>';var top='<div class="createtop">'+head+newBtn+'</div>';var vtog=nSched>0?'<div class="viewtog cvtog"><button class="vt'+(S.createView!=="calendar"?" on":"")+'" data-a="createview" data-k="list">'+ico("list")+' List</button><button class="vt'+(S.createView==="calendar"?" on":"")+'" data-a="createview" data-k="calendar">'+ico("cal")+' Calendar</button></div>':"";if(nSched>0&&S.createView==="calendar")return top+vtog+vCreateCal();var filt=S.cFilter||"all";var bar="";if(q.length>1||nDraft){function cf(k,label,n){return '<button class="cf'+(filt===k?" on":"")+'" data-a="cfilter" data-k="'+k+'">'+label+' <span class="cf-n">'+n+'</span></button>';}bar='<div class="cfilter">'+cf("all","All",q.length)+cf("pending","Pending",nPend)+cf("draft","Drafts",nDraft)+cf("scheduled","Scheduled",nSched)+'</div>';}var shown=q.filter(function(i){return filt==="all"||qStatus(i)===filt;});var cards=shown.length?'<div class="pgrid">'+shown.map(function(i){return ccard(taskAt(i),i);}).join("")+"</div>":'<div class="rempty">No '+(filt==="pending"?"pending":filt==="draft"?"draft":filt==="scheduled"?"scheduled":"")+' posts right now.</div>';var foot=allPub?'<div class="tnote"><div class="tn-h">'+ico("checkc")+' Done for today</div><p>Nicely done — that’s today live. <button class="lk" data-a="seeresults">See your results</button> · <button class="lk" data-a="tab" data-k="today">Back to Today</button></p></div>':"";return top+vtog+bar+cards+foot;}
+  function vCreate(){if(S.composing)return vCompose();if(!S.queue||!S.queue.length)return createEmpty();if(S.createDetail!=null&&S.queue.indexOf(+S.createDetail)>=0)return vPostDetail(+S.createDetail);var q=S.queue;var nPend=0,nDraft=0,nSched=0;q.forEach(function(i){var st=qStatus(i);if(st==="scheduled")nSched++;else if(st==="draft")nDraft++;else nPend++;});var allPub=nSched===q.length;var head='<div class="todayhead"><div class="th-day">Create</div><h1 class="th-t">'+(allPub?"Published":q.length>1?"Your content, ready to review":"Ready to publish")+'</h1><p class="th-s">'+(allPub?"Nice work — that’s today’s content live.":"Clara drafted "+(q.length>1?("all "+q.length+" in your voice"):"this in your voice")+". Tap a card to review, edit, publish — or save as a draft.")+'</p></div>';var newBtn='<button class="btn sm createnew" data-a="conew">'+ico("plus")+' Create a post</button>';var top='<div class="createtop">'+head+newBtn+'</div>';var vtog=nSched>0?'<div class="viewtog cvtog"><button class="vt'+(S.createView!=="calendar"?" on":"")+'" data-a="createview" data-k="list">'+ico("list")+' List</button><button class="vt'+(S.createView==="calendar"?" on":"")+'" data-a="createview" data-k="calendar">'+ico("cal")+' Calendar</button></div>':"";if(nSched>0&&S.createView==="calendar")return top+vtog+vCreateCal();var filt=S.cFilter||"all";var bar="";if(q.length>1||nDraft){function cf(k,label,n){return '<button class="cf'+(filt===k?" on":"")+'" data-a="cfilter" data-k="'+k+'">'+label+' <span class="cf-n">'+n+'</span></button>';}bar='<div class="cfilter">'+cf("all","All",q.length)+cf("pending","Pending",nPend)+cf("draft","Drafts",nDraft)+cf("scheduled","Scheduled",nSched)+'</div>';}var qtags=allQueueTags();var curTag=S.cTag||"all";var tagBar=qtags.length?'<div class="cfilter tagfilter"><span class="tf-lab">'+ico("mega")+' Tags</span><button class="cf'+(curTag==="all"?" on":"")+'" data-a="ctag" data-k="all">All</button>'+qtags.map(function(tg){return '<button class="cf'+(curTag===tg?" on":"")+'" data-a="ctag" data-k="'+esc(tg)+'">#'+esc(tg)+"</button>";}).join("")+"</div>":"";var shown=q.filter(function(i){var okS=filt==="all"||qStatus(i)===filt;var pp=S.posts[i];var okT=curTag==="all"||(pp&&pp.tags&&pp.tags.indexOf(curTag)>=0);return okS&&okT;});var cards=shown.length?'<div class="pgrid">'+shown.map(function(i){return ccard(taskAt(i),i);}).join("")+"</div>":'<div class="rempty">No posts match'+(curTag!=="all"?" #"+esc(curTag):"")+' right now.</div>';var foot=allPub?'<div class="tnote"><div class="tn-h">'+ico("checkc")+' Done for today</div><p>Nicely done — that’s today live. <button class="lk" data-a="seeresults">See your results</button> · <button class="lk" data-a="tab" data-k="today">Back to Today</button></p></div>':"";return top+vtog+bar+tagBar+cards+foot;}
   function resultsEmpty(){return '<div class="stub"><div class="stub-ic">'+ico("chart")+'</div><h2>Nothing to measure yet</h2><p>Publish a move in Create and its results land here — then they feed back into tomorrow’s Today.</p><button class="btn sm" data-a="tab" data-k="today">'+ico("arrow")+' Go to Today</button></div>';}
   function fmtNum(n){return (n||0).toLocaleString("en-US");}
   function postMetrics(i){var seed=(i+1)*97;var reach=380+((seed*13)%760);var rate=9+(seed%12);var eng=Math.round(reach*rate/100);var clicks=Math.round(eng*(0.18+((seed%7)/50)));var conv=Math.max(0,Math.round(clicks*(0.10+(seed%6)/100)));return {reach:reach,eng:eng,clicks:clicks,conv:conv};}
@@ -2591,6 +2683,57 @@
       restart()
     );
   }
+  var PCHIPS = ["Would you buy this?", "What puts you off?", "Where do you hang out?", "What content would grab you?"];
+  function personaReply(persona, msg) {
+    var t = (msg || "").toLowerCase();
+    function r(x) { return { text: x }; }
+    if (/buy|purchase|pay|convert|sign ?up|book|order|checkout/.test(t))
+      return r("Honestly? I buy when I can see it'll give me " + persona.wants + ". Show me that fast and I'm in — make me dig for it and I'll move on.");
+    if (/why not|wouldn'?t|would not|hesitat|put off|puts me off|stop|worry|worried|concern|objection|risk|doubt/.test(t))
+      return r("What holds me back is simple — " + persona.fear + ". Take that worry away and most of my hesitation goes with it.");
+    if (/where|find you|hang|platform|reach|channel|see you|scroll|discover/.test(t))
+      return r("You'll usually catch me on " + persona.where + ". That's where I'm actually paying attention — meet me there, don't make me come looking.");
+    if (/price|expensive|cost|cheap|afford|budget|discount|money/.test(t))
+      return r("Price matters, but it's not the whole story. I'll happily pay more if I trust it delivers " + persona.wants + ". A discount won't win me while I'm still unsure.");
+    if (/content|post|idea|what should|topic|angle|caption|write|say/.test(t))
+      return r("If you want me to stop scrolling, talk about " + persona.wants + " — a real story or proof, not a sales pitch. That's what actually gets my attention.");
+    if (/care|want|value|important|matter|looking for|need/.test(t))
+      return r("What I really care about is " + persona.wants + ". Everything else is secondary — lead with that and you've got me.");
+    return r("I'm " + persona.name.replace(/^The /, "the ") + " — " + persona.desc + " Ask me what I want, what puts me off, where I hang out, or what content would grab me.");
+  }
+  function vPersonas() {
+    var list = personasList();
+    var cards = list.map(function (p) {
+      return '<div class="percard"><div class="per-top"><span class="per-av">' + ico("user") + '</span><div class="per-hd"><div class="per-n">' + esc(p.name) + '</div><div class="per-w">wants ' + esc(p.wants) + "</div></div></div>" +
+        '<div class="per-desc">' + esc(p.desc) + "</div>" +
+        '<div class="per-facts"><div class="per-f"><span class="per-fl">Fears</span> ' + esc(p.fear) + '</div><div class="per-f"><span class="per-fl">Found on</span> ' + esc(p.where) + "</div></div>" +
+        '<div class="per-a"><button class="btn sm" data-a="perchat" data-k="' + p.id + '">' + ico("spark") + " Chat with " + esc(p.name) + "</button></div></div>";
+    }).join("");
+    return '<div class="todayhead"><div class="th-day">Personas</div><h1 class="th-t">Who you’re talking to</h1><p class="th-s">Clara built these from your business. Every post targets one of them — and you can talk to them directly to learn what they want.</p></div>' +
+      '<div class="pergrid">' + cards + "</div>" +
+      '<div class="tnote"><div class="tn-h">' + ico("spark") + ' Live consumer research</div><p>In the live product each persona is an agent doing real-time research on your market — here the replies are illustrative.</p></div>';
+  }
+  function vPersonaChat(id) {
+    var p = personaById(id);
+    var thread = S.pthreads[id] || (S.pthreads[id] = [{ from: "persona", text: "Hi — I'm " + p.name.replace(/^The /, "the ") + ". " + p.desc + " Ask me anything about what I want." }]);
+    var msgs = thread.map(function (m) { return '<div class="pmsg ' + (m.from === "you" ? "me" : "them") + '"><div class="pmsg-b">' + esc(m.text) + "</div></div>"; }).join("");
+    var chips = PCHIPS.map(function (c) { return '<button class="psugg" data-a="perask" data-k="' + esc(c) + '">' + esc(c) + "</button>"; }).join("");
+    return '<button class="lk mut resback" data-a="perback">' + ico("arrow") + " All personas</button>" +
+      '<div class="todayhead"><div class="th-day">Personas · chat</div><h1 class="th-t">' + esc(p.name) + '</h1><p class="th-s">' + esc(p.desc) + "</p></div>" +
+      '<div class="perchat"><div class="perchat-log">' + msgs + "</div>" +
+      '<div class="psuggs">' + chips + "</div>" +
+      '<div class="perchat-in"><input class="pin" data-perin placeholder="Ask ' + esc(p.name) + ' something…" value="' + esc(S.pinput || "") + '"><button class="btn sm" data-a="persend">' + ico("send") + "</button></div></div>";
+  }
+  function personaSend(msg) {
+    msg = (msg || "").trim();
+    if (!msg || !S.pchat) return;
+    var id = S.pchat, thread = S.pthreads[id] || (S.pthreads[id] = []);
+    thread.push({ from: "you", text: msg });
+    thread.push({ from: "persona", text: personaReply(personaById(id), msg).text });
+    S.pinput = "";
+    render();
+  }
+  function vPersonasTab() { return S.pchat ? vPersonaChat(S.pchat) : vPersonas(); }
   function render() {
     var h =
       S.screen === "login"
@@ -2641,6 +2784,16 @@
       el.addEventListener("input", function () {
         setPath(S.posts[el.getAttribute("data-pi")], el.getAttribute("data-pf"), el.value);
       });
+    });
+    app.querySelectorAll("[data-ptags]").forEach(function (el) {
+      el.addEventListener("input", function () {
+        var i = el.getAttribute("data-ptags"), p = S.posts[i];
+        if (p) p.tags = el.value.split(",").map(function (s) { return s.trim().replace(/^#/, "").replace(/\s+/g, "-").toLowerCase(); }).filter(function (s) { return s; });
+      });
+    });
+    app.querySelectorAll("[data-perin]").forEach(function (el) {
+      el.addEventListener("input", function () { S.pinput = el.value; });
+      el.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); act("persend"); } });
     });
     app.querySelectorAll("[data-coown]").forEach(function (el) {
       el.addEventListener("input", function () {
@@ -3332,6 +3485,30 @@
         S.createDetail = null;
         render();
         break;
+      case "askpersona":
+        S.tab = "personas";
+        S.pchat = k;
+        render();
+        break;
+      case "perchat":
+        S.pchat = k;
+        render();
+        break;
+      case "perback":
+        S.pchat = null;
+        render();
+        break;
+      case "perask":
+        personaSend(k);
+        break;
+      case "persend":
+        personaSend(S.pinput || "");
+        break;
+      case "ctag":
+        S.cTag = k;
+        S.createDetail = null;
+        render();
+        break;
       case "createview":
         S.createView = k;
         if (k === "calendar" && !S.cMonth) S.cMonth = cCalMonth();
@@ -3370,6 +3547,10 @@
       case "coplat":
         S.compose.platform = k;
         S.compose.format = fmtFor(S.compose.type, k);
+        render();
+        break;
+      case "coper":
+        S.compose.personaId = k;
         render();
         break;
       case "coangle":
@@ -3417,6 +3598,8 @@
           media: cc2.type === "text" ? "" : cc2.type === "audio" ? "Short spoken segment — natural and conversational, about 60 seconds." : kit.media,
           hashtags: kit.tags,
           rev: 0,
+          personaId: cc2.personaId || pickPersonaId(oi),
+          tags: [],
           brief: cc2.brief || null,
           ctrl: cc2.ctrl || null,
         };
